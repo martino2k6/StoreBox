@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="key_boolean">boolean</string>
+    <string name="key_float">float</string>
+    <string name="key_int">int</string>
+    <string name="key_long">long</string>
+    <string name="key_string">string</string>
+    
+    <string name="default_string">default</string>
+    <bool name="default_boolean">true</bool>
+    <item name="default_float" format="float" type="dimen">0.5</item>
+    <integer name="default_int">1</integer>
+</resources>

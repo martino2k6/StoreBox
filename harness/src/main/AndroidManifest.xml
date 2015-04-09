@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    package="net.orange_box.storebox.harness">
+
+    <application
+        android:label="StoreBox Harness"
+        android:icon="@android:drawable/sym_def_app_icon"
+        android:allowBackup="false">
+        
+        <activity android:name=".activities.TestActivity" />
+    </application>
+</manifest>
