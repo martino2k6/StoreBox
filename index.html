@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>StoreBox by martino2k6</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">StoreBox</h1>
+      <h2 class="project-tagline">Android library for nicer SharedPreferences use</h2>
+      <a href="https://github.com/martino2k6/StoreBox" class="btn">View on GitHub</a>
+      <a href="https://github.com/martino2k6/StoreBox/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/martino2k6/StoreBox/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h1>
+<a id="storebox" class="anchor" href="#storebox" aria-hidden="true"><span class="octicon octicon-link"></span></a>StoreBox</h1>
+
+<p><strong>Android library for nicer SharedPreferences use.</strong></p>
+
+<p>When getting a value from any preferences, whether private Activity or default shared preferences, you would normally have to get a reference to a <code>SharedPreferences</code> instance, for example using</p>
+
+<div class="highlight highlight-Java"><pre><span class="pl-smi">SharedPreferences</span> prefs <span class="pl-k">=</span> <span class="pl-smi">PreferenceManager</span><span class="pl-k">.</span>getDefaultSharedPreferences(someContext);</pre></div>
+
+<p>Only after that we can start getting the values out, such as</p>
+
+<div class="highlight highlight-Java"><pre><span class="pl-smi">String</span> myValue <span class="pl-k">=</span> prefs<span class="pl-k">.</span>getString(<span class="pl-s"><span class="pl-pds">"</span>someKey<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>someDefaultValue<span class="pl-pds">"</span></span>);</pre></div>
+
+<p>This can get reasonably tedious if the preferences need to be accessed from multiple places, and the API always requires us to pass a key and a default value. This can get error prone quickly, and increases with the amount of keys and default values that need to be used. Putting commonly accessed preferences behind a wrapper is a reasonable solution, but still requires some boilerplate code.</p>
+
+<p>What if however we could define an interface like</p>
+
+<div class="highlight highlight-Java"><pre><span class="pl-k">public</span> <span class="pl-k">interface</span> <span class="pl-en">MyPreferences</span> {
+
+    <span class="pl-k">@KeyByString</span>(<span class="pl-s"><span class="pl-pds">"</span>someKey<span class="pl-pds">"</span></span>)
+    <span class="pl-smi">String</span> <span class="pl-en">getSomeValue</span>();
+}</pre></div>
+
+<p>for everyone to use in order to save and get values?</p>
+
+<p>With StoreBox that becomes reality. Given the above interface definition you can easily create an instance of the interface using</p>
+
+<div class="highlight highlight-Java"><pre><span class="pl-smi">MyPeferences</span> prefs <span class="pl-k">=</span> <span class="pl-smi">StoreBox</span><span class="pl-k">.</span>create(context, <span class="pl-smi">MyPeferences</span><span class="pl-k">.</span>class);</pre></div>
+
+<p>and you will be able to retrieve the value just by calling the defined method</p>
+
+<div class="highlight highlight-Java"><pre><span class="pl-smi">String</span> myValue <span class="pl-k">=</span> prefs<span class="pl-k">.</span>getSomeValue();</pre></div>
+
+<p>How about saving values? How about doing X or Y? Read on to find out more details about how StoreBox can be used and how you can add it to your Android project.</p>
+
+<h2>
+<a id="adding-to-a-project" class="anchor" href="#adding-to-a-project" aria-hidden="true"><span class="octicon octicon-link"></span></a>Adding to a project</h2>
+
+<p>StoreBox supports API10 and newer (Android 2.3.3+).</p>
+
+<h3>
+<a id="gradle" class="anchor" href="#gradle" aria-hidden="true"><span class="octicon octicon-link"></span></a>Gradle</h3>
+
+<p>TODO</p>
+
+<h3>
+<a id="maven" class="anchor" href="#maven" aria-hidden="true"><span class="octicon octicon-link"></span></a>Maven</h3>
+
+<p>TODO</p>
+
+<h2>
+<a id="defining-an-interface-and-bringing-it-to-life" class="anchor" href="#defining-an-interface-and-bringing-it-to-life" aria-hidden="true"><span class="octicon octicon-link"></span></a>Defining an interface and bringing it to life</h2>
+
+<p>Simply create a new interface class in your IDE or a text editor, give it an access modifier which suits its use, and name it as appropriate.</p>
+
+<div class="highlight highlight-Java"><pre><span class="pl-k">public</span> <span class="pl-k">interface</span> <span class="pl-en">MyPreferences</span> {
+
+}</pre></div>
+
+<p>Now you're ready to use <code>StoreBox.create()</code> to create an instance.</p>
+
+<div class="highlight highlight-Java"><pre><span class="pl-smi">MyPreferences</span> instance <span class="pl-k">=</span> <span class="pl-smi">StoreBox</span><span class="pl-k">.</span>create(context, <span class="pl-smi">MyPreferences</span><span class="pl-k">.</span>class);</pre></div>
+
+<h2>
+<a id="adding-get-and-set-methods" class="anchor" href="#adding-get-and-set-methods" aria-hidden="true"><span class="octicon octicon-link"></span></a>Adding get and set methods</h2>
+
+<p>If you would like to add a <strong>getter</strong> just add a method to the interface which returns a value and make sure to annotate it using <code>@KeyByString</code> or <code>@KeyByResource</code>. Please note that for now only values which the <code>SharedPreferences</code> accept can be used (except <code>Set&lt;String&gt;</code> for the moment).</p>
+
+<div class="highlight highlight-Java"><pre>@KeyByString(<span class="pl-s"><span class="pl-pds">"</span>my_string<span class="pl-pds">"</span></span>)
+<span class="pl-smi">String</span> getMyString();
+
+@KeyByResource(<span class="pl-smi">R</span><span class="pl-k">.</span>string<span class="pl-k">.</span>key_my_boolean)
+<span class="pl-k">boolean</span> getMyBoolean();</pre></div>
+
+<p>If you try to define a method that returns something like a <code>Date</code> object, which cannot be saved by Android, an exception will be thrown.</p>
+
+<div class="highlight highlight-Java"><pre>@KeyByString(<span class="pl-s"><span class="pl-pds">"</span>some_key<span class="pl-pds">"</span></span>)
+<span class="pl-smi">Date</span> willNotWork(); <span class="pl-c">// invalid</span></pre></div>
+
+<p>Adding a <strong>setter</strong> is just as easy. The same annotations will need to be used as for getter methods, but now our method will return a <code>Void</code> type and will have to provide a parameter for supplying the value that we we would like to save.</p>
+
+<div class="highlight highlight-Java"><pre>@KeyByString(<span class="pl-s"><span class="pl-pds">"</span>my_string<span class="pl-pds">"</span></span>)
+<span class="pl-k">void</span> setMyString(<span class="pl-smi">String</span> value)
+
+@KeyByResource(<span class="pl-smi">R</span><span class="pl-k">.</span>string<span class="pl-k">.</span>key_my_boolean)
+<span class="pl-k">void</span> setMyBoolean(<span class="pl-k">boolean</span> value)</pre></div>
+
+<p>Just like with get methods only the common types are supported, and as such the example below will not work.</p>
+
+<div class="highlight highlight-Java"><pre>@KeyByString(<span class="pl-s"><span class="pl-pds">"</span>some_key<span class="pl-pds">"</span></span>)
+<span class="pl-k">void</span> willNotWork(<span class="pl-smi">Intent</span> value); <span class="pl-c">// invalid</span></pre></div>
+
+<h2>
+<a id="specifying-defaults-for-get-methods" class="anchor" href="#specifying-defaults-for-get-methods" aria-hidden="true"><span class="octicon octicon-link"></span></a>Specifying defaults for get methods</h2>
+
+<p>This can be achieved in two ways, through an argument or by using an annotation.</p>
+
+<p>For the first option we can just do the following.</p>
+
+<div class="highlight highlight-Java"><pre>@KeyByString(<span class="pl-s"><span class="pl-pds">"</span>some_key<span class="pl-pds">"</span></span>)
+<span class="pl-smi">String</span> getValue(<span class="pl-smi">String</span> defValue);</pre></div>
+
+<p>But we can also use an annotation referencing a default found in the XML resources.</p>
+
+<div class="highlight highlight-Java"><pre>@KeyByString(<span class="pl-s"><span class="pl-pds">"</span>some_key<span class="pl-pds">"</span></span>)
+@DefaultValue(<span class="pl-smi">R</span><span class="pl-k">.</span>string<span class="pl-k">.</span>some_default)
+<span class="pl-smi">String</span> getValue();</pre></div>
+
+<p>For some types, such as <code>long</code>, which cannot be added to the resources an integer resource may be used instead.</p>
+
+<div class="highlight highlight-Java"><pre>@KeyByString(<span class="pl-s"><span class="pl-pds">"</span>long_key<span class="pl-pds">"</span></span>)
+@DefaultValue(<span class="pl-smi">R</span><span class="pl-k">.</span>integer<span class="pl-k">.</span>integer_default)
+<span class="pl-k">long</span> getValue();</pre></div>
+
+<h2>
+<a id="opening-different-types-of-preferences" class="anchor" href="#opening-different-types-of-preferences" aria-hidden="true"><span class="octicon octicon-link"></span></a>Opening different types of preferences</h2>
+
+<p>In all of the examples so far we have omitted any details about what preferences are opened and how.</p>
+
+<p>Without any annotation the default shared preferences will be used, but the <code>@DefaultSharedPreferences</code> annotation can be added to the interface definition for explicitness. Likewise, <code>@ActivityPreferences</code> or <code>@FilePreferences</code> can be used to respectively open preferences private to an activity or to open preferences using a file name.</p>
+
+<p>We can also specify the mode with which the preferences should be opened, although this option is not supported by all the types.</p>
+
+<div class="highlight highlight-Java"><pre>@ActivityPreferences(mode <span class="pl-k">=</span> <span class="pl-smi">PreferencesMode</span><span class="pl-c1"><span class="pl-k">.</span>MULTI_PROCESS</span>)
+<span class="pl-k">public</span> <span class="pl-k">interface</span> <span class="pl-en">WelcomeActivityPreferences</span> {
+
+    <span class="pl-c">// method definitions here...</span>
+}</pre></div>
+
+<h2>
+<a id="advanced" class="anchor" href="#advanced" aria-hidden="true"><span class="octicon octicon-link"></span></a>Advanced</h2>
+
+<h3>
+<a id="chaining-calls" class="anchor" href="#chaining-calls" aria-hidden="true"><span class="octicon octicon-link"></span></a>Chaining calls</h3>
+
+<p>With Android's <code>SharedPreferences.Editor</code> class it is possible to keep chaining put methods as each returns back the <code>SharedPreferences.Editor</code> instance. StoreBox allows the same functionality. All that needs to be done is to change the set method definitions to either return <code>SharedPreferences.Editor</code> or the interface type itself.</p>
+
+<div class="highlight highlight-Java"><pre><span class="pl-k">public</span> <span class="pl-k">interface</span> <span class="pl-en">ChainingExample</span> {
+
+    <span class="pl-k">@KeyByString</span>(<span class="pl-s"><span class="pl-pds">"</span>key1<span class="pl-pds">"</span></span>)
+    <span class="pl-smi">ChainingExample</span> <span class="pl-en">putValueOne</span>(<span class="pl-smi">String</span> <span class="pl-v">value</span>);
+
+    <span class="pl-k">@KeyByString</span>(<span class="pl-s"><span class="pl-pds">"</span>key2<span class="pl-pds">"</span></span>)
+    <span class="pl-smi">SharedPreferences</span>.<span class="pl-smi">Editor</span> <span class="pl-en">putValueTwo</span>(<span class="pl-smi">String</span> <span class="pl-v">value</span>);
+}</pre></div>
+
+<p>And we'll be able to chain calls</p>
+
+<div class="highlight highlight-Java"><pre>preferences<span class="pl-k">.</span>putValueOne(<span class="pl-s"><span class="pl-pds">"</span>hello<span class="pl-pds">"</span></span>)<span class="pl-k">.</span>putValueTwo(<span class="pl-s"><span class="pl-pds">"</span>world<span class="pl-pds">"</span></span>)<span class="pl-k">.</span>putStringSet(<span class="pl-c1">...</span>)<span class="pl-k">.</span>apply();</pre></div>
+
+<h3>
+<a id="forwarding-calls" class="anchor" href="#forwarding-calls" aria-hidden="true"><span class="octicon octicon-link"></span></a>Forwarding calls</h3>
+
+<p>If for some reason you would like to access methods from the <code>SharedPreferences</code> or <code>SharedPreferences.Editor</code>, you can do that by extending your interface from either of the above (or even both).</p>
+
+<div class="highlight highlight-Java"><pre><span class="pl-k">public</span> <span class="pl-k">interface</span> <span class="pl-en">ForwardingExample</span> <span class="pl-k">extends</span> <span class="pl-e">SharedPreferences</span>, <span class="pl-e">SharedPreferences</span>.<span class="pl-e">Editor</span> {
+
+    <span class="pl-c">// method definitions here</span>
+}</pre></div>
+
+<p>And you will just be able to call</p>
+
+<div class="highlight highlight-Java"><pre><span class="pl-smi">ForwardingExample</span> prefs <span class="pl-k">=</span> <span class="pl-c">// creation...</span>
+
+<span class="pl-smi">String</span> someString <span class="pl-k">=</span> prefs<span class="pl-k">.</span>getString(<span class="pl-s"><span class="pl-pds">"</span>key<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>default<span class="pl-pds">"</span></span>);
+prefs<span class="pl-k">.</span>putString(<span class="pl-s"><span class="pl-pds">"</span>key<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>value<span class="pl-pds">"</span></span>)<span class="pl-k">.</span>apply();</pre></div>
+
+<h3>
+<a id="more-control-over-how-values-get-saved" class="anchor" href="#more-control-over-how-values-get-saved" aria-hidden="true"><span class="octicon octicon-link"></span></a>More control over how values get saved</h3>
+
+<p>Changes to preferences can normally be saved on Android either through <code>apply()</code> or <code>commit()</code>. Which method gets used can be customised in StoreBox through the use of the <code>@SaveOption</code> annotation.</p>
+
+<p>Unlike any of the previous annotations <code>@SaveOption</code> can be used to annotate both the interface as well as individual set methods, however an annotation at method-level will take precedence over an interface annotation.</p>
+
+<div class="highlight highlight-Java"><pre>@SaveOption(<span class="pl-smi">SaveMode</span><span class="pl-c1"><span class="pl-k">.</span>APPLY</span>)
+<span class="pl-k">public</span> <span class="pl-k">interface</span> <span class="pl-en">SaveModeExample</span> {
+    <span class="pl-c">// key annotations omitted</span>
+
+    <span class="pl-k">void</span> <span class="pl-en">saveOne</span>(<span class="pl-smi">String</span> <span class="pl-v">value</span>); <span class="pl-c">// will save using apply()</span>
+
+    <span class="pl-k">@SaveOption</span>(<span class="pl-smi">SaveMode</span><span class="pl-c1"><span class="pl-k">.</span>COMMIT</span>)
+    <span class="pl-k">void</span> <span class="pl-en">saveTwo</span>(<span class="pl-smi">String</span> <span class="pl-v">value</span>); <span class="pl-c">// will save using commit()</span>
+}</pre></div>
+
+<h3>
+<a id="more-control-over-default-values" class="anchor" href="#more-control-over-default-values" aria-hidden="true"><span class="octicon octicon-link"></span></a>More control over default values</h3>
+
+<p>Supplying default values, either by using an argument or an annotation, has been covered earlier but there's further customisation possible.</p>
+
+<p>The <code>@DefaultValueOption</code> works in a similar way to the <code>@SaveOption</code> annotation in how it can be used, but it specifies what default value should be returned in the absence of a more explicit value.</p>
+
+<div class="highlight highlight-Java"><pre>@DefaulltValueOption(<span class="pl-smi">DefaultValueMode</span><span class="pl-c1"><span class="pl-k">.</span>EMPTY</span>)
+<span class="pl-k">public</span> <span class="pl-k">interface</span> <span class="pl-en">DefaultValueModeExample</span> {
+    <span class="pl-c">// key annotations omitted</span>
+
+    <span class="pl-smi">String</span> <span class="pl-en">getStringOne</span>(); <span class="pl-c">// will return ""</span>
+
+    <span class="pl-k">@DefaultValueOption</span>(<span class="pl-smi">DefaultValueMode</span><span class="pl-c1"><span class="pl-k">.</span>NULL</span>)
+    <span class="pl-smi">String</span> <span class="pl-en">getStringTwo</span>(); <span class="pl-c">// will return null</span>
+
+    <span class="pl-k">int</span> <span class="pl-en">getIntOne</span>(); <span class="pl-c">// will return 0</span>
+
+    <span class="pl-k">@DefaultValueOption</span>(<span class="pl-smi">DefaultValueMode</span><span class="pl-c1"><span class="pl-k">.</span>NULL</span>)
+    <span class="pl-k">int</span> <span class="pl-en">getIntTwo</span>(); <span class="pl-c">// will return 0 as primitive types can't hold a reference</span>
+}</pre></div>
+
+<h3>
+<a id="obtaining-a-more-customised-instance-at-run-time" class="anchor" href="#obtaining-a-more-customised-instance-at-run-time" aria-hidden="true"><span class="octicon octicon-link"></span></a>Obtaining a more customised instance at run-time</h3>
+
+<p>As previously described you can build an instance of your interface using <code>StoreBox.build()</code>, however if you'd like to override at run-time any annotations you can use <code>StoreBox.Builder</code> and apply different options.</p>
+
+<div class="highlight highlight-Java"><pre><span class="pl-smi">MyPreferences</span> prefs <span class="pl-k">=</span>
+        <span class="pl-k">new</span> <span class="pl-smi">StoreBox</span>.<span class="pl-smi">Builder</span>(context, <span class="pl-smi">MyPreferences</span><span class="pl-k">.</span>class)
+        .preferencesMode(<span class="pl-smi">PreferencesMode</span><span class="pl-c1"><span class="pl-k">.</span>MULTI_PROCESS</span>)
+        .build()</pre></div>
+
+<h3>
+<a id="defaults" class="anchor" href="#defaults" aria-hidden="true"><span class="octicon octicon-link"></span></a>Defaults</h3>
+
+<p>Given the minimum amount of details provided to the interface and method definitions through the use of StoreBox's annotations, the following defaults will get used:</p>
+
+<ul>
+<li>Preferences type: Default shared preferences</li>
+<li>Preferences mode: Private</li>
+<li>Save mode: Apply</li>
+<li>Default value mode: Empty</li>
+</ul>
+
+<h2>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span class="octicon octicon-link"></span></a>License</h2>
+
+<pre><code>Copyright 2015 Martin Bella
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+</code></pre>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/martino2k6/StoreBox">StoreBox</a> is maintained by <a href="https://github.com/martino2k6">martino2k6</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+            <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-33402302-4");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
+
