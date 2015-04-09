@@ -177,7 +177,7 @@ public final class StoreBox {
                 if (TextUtils.isEmpty(preferencesName)) {
                     throw new IllegalArgumentException(String.format(
                             Locale.ENGLISH,
-                            "Cannot use %1$s without setting a file name",
+                            "Cannot use %1$s with an empty file name",
                             PreferencesType.FILE.name()));
                 }
             }

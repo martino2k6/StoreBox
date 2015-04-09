@@ -39,6 +39,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
+import java.util.Locale;
 
 /**
  * This is where the magic happens...
@@ -142,8 +143,13 @@ class StoreBoxInvocationHandler implements InvocationHandler {
             }
             
             // fail fast, rather than ignoring the method invocation
-            throw new UnsupportedOperationException(
-                    "Failed to forward method " + method.getName());
+            throw new UnsupportedOperationException(String.format(
+                    Locale.ENGLISH,
+                    "Failed to invoke %1$s method, " +
+                            "perhaps the %2$s or %3$s annotation is missing?",
+                    method.getName(),
+                    KeyByString.class.getSimpleName(),
+                    KeyByResource.class.getSimpleName()));
         }
         
         /*
@@ -186,8 +192,10 @@ class StoreBoxInvocationHandler implements InvocationHandler {
                 editor.putString(key, (String) value);
                 
             } else {
-                throw new UnsupportedOperationException(
-                        type.getName() + " not supported");
+                throw new UnsupportedOperationException(String.format(
+                        Locale.ENGLISH,
+                        "Saving type %1$s is not supported",
+                        type.getName()));
             }
             
             // method-level strategy > class-level strategy
@@ -255,8 +263,10 @@ class StoreBoxInvocationHandler implements InvocationHandler {
                         method, String.class, typePrimitive, args));
                 
             } else {
-                throw new UnsupportedOperationException(
-                        type.getName() + " not supported");
+                throw new UnsupportedOperationException(String.format(
+                        Locale.ENGLISH,
+                        "Retrieving type %1$s is not supported",
+                        type.getName()));
             }
         }
     }
@@ -357,8 +367,11 @@ class StoreBoxInvocationHandler implements InvocationHandler {
             }
         } else {
             if (result.getClass() != type) {
-                throw new UnsupportedOperationException(
-                        "Return value and default value not of the same type");
+                throw new UnsupportedOperationException(String.format(
+                        Locale.ENGLISH,
+                        "Return type %1%s and default value type %2$s not the same",
+                        result.getClass().getName(),
+                        type.getName()));
             } else {
                 return type.cast(result);
             }
