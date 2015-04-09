@@ -1,5 +1,5 @@
 # StoreBox #
-**Android library for nicer SharedPreferences use.**
+**Android library for streamlining SharedPreferences.**
 
 When getting a value from any preferences, whether private Activity or default shared preferences, you would normally have to get a reference to a ```SharedPreferences``` instance, for example using
 ```Java
