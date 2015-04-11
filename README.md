@@ -5,32 +5,37 @@ When getting a value from any preferences, whether private Activity or default s
 ```Java
 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(someContext);
 ```
-Only after that we can start getting the values out, such as
+Only after that we can start getting/saving the values, such as
 ```Java
-String myValue = prefs.getString("someKey", "someDefaultValue");
+String username = prefs.getString("username", "");
+prefs.edit().putString("username", "androiduser").apply();
 ```
-This can get reasonably tedious if the preferences need to be accessed from multiple places, and the API always requires us to pass a key and a default value. This can get error prone quickly, and increases with the amount of keys and default values that need to be used. Putting commonly accessed preferences behind a wrapper is a reasonable solution, but still requires some boilerplate code.
+This can get tedious if the values need to be saved and retrieved from multiple places as the caller is always required to supply the key of the preference, know under what type it is saved, and know what default should be used. This can also become error prone as more keys get used. Putting commonly accessed preferences behind a wrapper is a reasonable solution, but still requires some boilerplate code.
 
 What if however we could define an interface like
 ```Java
 public interface MyPreferences {
     
-    @KeyByString("someKey")
-    String getSomeValue();
+    @KeyByString("username")
+    String getUsername();
+    
+    @KeyByString("username")
+    void setUsername(String value);
 }
 ```
-for everyone to use in order to save and get values?
+for everyone to use in order to save and get values? The caller doesn't need to worry about the key, neither needs to think about what type the key should use, and the process of retrieving/saving is hidden behind a method name with improved semantics.
 
-With StoreBox that becomes reality. Given the above interface definition you can easily create an instance of the interface using
+With StoreBox that becomes reality. Given the above interface definition you can easily create an instance using
 ```Java
 MyPeferences prefs = StoreBox.create(context, MyPeferences.class);
 ```
-and you will be able to retrieve the value just by calling the defined method
+and you will be able to retrieve/save the value just by calling the defined methods
 ```Java
-String myValue = prefs.getSomeValue();
+String username = prefs.getUsername();
+prefs.setUsername("androiduser");
 ```
 
-How about saving values? How about doing X or Y? Read on to find out more details about how StoreBox can be used and how you can add it to your Android project.
+Read on to find out more details about how StoreBox can be used and how you can add it to your Android project.
 
 ##Adding to a project##
 StoreBox can be used in Android projects using minimum SDK version 10 and newer (Android 2.3+).
