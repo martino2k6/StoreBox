@@ -27,7 +27,7 @@ for everyone to use in order to save and get values? The caller doesn't need to 
 
 With StoreBox that becomes reality. Given the above interface definition you can easily create an instance using
 ```Java
-MyPeferences prefs = StoreBox.create(context, MyPeferences.class);
+MyPreferences prefs = StoreBox.create(context, MyPreferences.class);
 ```
 and you will be able to retrieve/save the value just by calling the defined methods
 ```Java
