@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package net.orange_box.storebox.annotations.type;
+package net.orange_box.storebox.annotations.option;
 
-import net.orange_box.storebox.enums.PreferencesMode;
+import net.orange_box.storebox.enums.SaveMode;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -24,19 +24,16 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation which should be used at interface-level to define that the
- * preferences private to the Activity should be used.
- * 
- * When this annotation is used an {@link android.app.Activity} context needs
- * to be passed in when instantiating the interface using
- * {@link net.orange_box.storebox.StoreBox}.
- * 
- * @see net.orange_box.storebox.enums.PreferencesType#ACTIVITY
- * @see android.app.Activity#getPreferences(int)
+ * Annotation which should be used to define what {@link SaveMode} will be
+ * applied for get methods which don't specify a default value.
+ * <p>
+ * Annotation can be used at interface and method-level, however any
+ * method-level annotations will take precedence over interface-level
+ * annotations.
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface ActivityPreferences {
+@Target({ElementType.TYPE, ElementType.METHOD})
+public @interface SaveOption {
     
-    PreferencesMode mode() default PreferencesMode.MODE_PRIVATE;
+    SaveMode value();
 }

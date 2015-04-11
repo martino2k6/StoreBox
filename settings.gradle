@@ -1,1 +1,1 @@
-include ':lib', ':harness'
+include ':storebox-lib', ':storebox-harness'

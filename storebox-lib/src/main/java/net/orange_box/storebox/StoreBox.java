@@ -36,7 +36,7 @@ import java.util.Locale;
 /**
  * Creates a no-thrills instance of the supplied interface, by reading any
  * options provided through interface-level annotations.
- * 
+ * <p>
  * If you'd like to provide options dynamically at run-time, take a look at
  * {@link Builder}.
  */

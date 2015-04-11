@@ -14,19 +14,23 @@
  * limitations under the License.
  */
 
-package net.orange_box.storebox.enums;
+package net.orange_box.storebox.annotations.method;
 
-public enum DefaultValueMode {
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-    /**
-     * An empty value will be instantiated, for example {@code ""} for String.
-     *
-     * Default.
-     */
-    EMPTY,
+/**
+ * Annotation which should be used on set methods to declare the resource for
+ * the default value which should be returned when a preference with the
+ * requested key does not exist.
+ * <p>
+ * A parameter default takes precedence over this annotation.
+ */
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface DefaultValue {
 
-    /**
-     * A null value will be used for non-primitive types.
-     */
-    NULL
+    int value();
 }

@@ -1,0 +1,174 @@
+apply plugin: 'com.android.library'
+apply plugin: 'findbugs'
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.jfrog.bintray'
+
+def VERSION_CODE = 1
+def VERSION_NAME = '1.0.0'
+
+android {
+    compileSdkVersion 22
+    buildToolsVersion '22.0.1'
+
+    defaultConfig {
+        minSdkVersion 10
+        targetSdkVersion 22
+        
+        versionCode VERSION_CODE
+        versionName VERSION_NAME
+    }
+    
+    buildTypes {
+        debug {
+            //testCoverageEnabled true
+        }
+        
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+}
+
+// FindBugs
+
+findbugs {
+    sourceSets = []
+    ignoreFailures = true
+}
+
+task findbugs(type: FindBugs, dependsOn: assembleDebug) {
+    description 'Run findbugs'
+    group 'verification'
+
+    classes = fileTree('build/intermediates/classes/debug/')
+    source = fileTree('src/main/java')
+    classpath = files()
+
+    effort = 'max'
+    reportLevel = "medium"
+
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
+}
+
+check.doLast {
+    project.tasks.getByName("findbugs").execute()
+}
+
+// BinTray/Maven
+
+// https://github.com/danielemaddaluno/gradle-jcenter-publish
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties')
+        .newDataInputStream())
+
+version = VERSION_NAME
+group = 'net.orange-box.storebox'
+
+install {
+    repositories.mavenInstaller {
+        pom {
+            project {
+                packaging 'jar'
+                
+                name 'StroreBox Android Library'
+                description 'Android library for streamlining SharedPreferences.'
+                url 'http://martino2k6.github.io/StoreBox'
+
+                scm {
+                    url 'https://github.com/martino2k6/StoreBox'
+                    connection 'https://github.com/martino2k6/StoreBox.git'
+                    developerConnection 'https://github.com/martino2k6/StoreBox.git'
+                }
+
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id properties.getProperty('owner.id')
+                        name properties.getProperty('owner.name')
+                    }
+                }
+            }
+        }
+    }
+}
+
+task javadoc(type: Javadoc) {
+    source = android.sourceSets.main.java.sourceFiles
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from android.sourceSets.main.java.sourceFiles
+}
+
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
+
+// https://github.com/bintray/gradle-bintray-plugin
+bintray {
+    user = properties.getProperty('bintray.user')
+    key = properties.getProperty('bintray.apikey')
+
+    configurations = ['archives']
+    publish = true
+    
+    pkg {
+        repo = 'maven'
+        name = 'storebox'
+        desc = 'Android library for streamlining SharedPreferences.'
+        
+        websiteUrl = 'http://martino2k6.github.io/StoreBox'
+        issueTrackerUrl = 'https://github.com/martino2k6/StoreBox/issues'
+        vcsUrl = 'https://github.com/martino2k6/StoreBox.git'
+        
+        licenses = ['Apache-2.0']
+        labels = ['android', 'preferences', 'library', 'aar', 'jar']
+        publicDownloadNumbers = true
+
+        version {
+            name = VERSION_NAME
+            vcsTag = VERSION_NAME
+            
+            gpg {
+                sign = true
+                passphrase = properties.getProperty('bintray.gpg.password')
+            }
+
+//            mavenCentralSync {
+//                sync = true
+//                user = properties.getProperty('bintray.oss.user')
+//                password = properties.getProperty('bintray.oss.password')
+//                close = '1'
+//            }
+        }
+    }
+}
+
+// http://stackoverflow.com/a/19484146/1795559
+android.libraryVariants.all { variant ->
+    def task = project.tasks.create "jar${name.capitalize()}", Jar
+    task.dependsOn variant.javaCompile
+    task.from variant.javaCompile.destinationDir
+    artifacts.add('archives', task);
+}

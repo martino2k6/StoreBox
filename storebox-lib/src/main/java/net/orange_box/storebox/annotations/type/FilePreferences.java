@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package net.orange_box.storebox.annotations.option;
+package net.orange_box.storebox.annotations.type;
 
-import net.orange_box.storebox.enums.SaveMode;
+import net.orange_box.storebox.enums.PreferencesMode;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -24,16 +24,20 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation which should be used to define what {@link SaveMode} will be
- * applied for get methods which don't specify a default value.
+ * Annotation which should be used at interface-level to define that the
+ * preferences should be opened from a file name.
+ * <p>
+ * When this annotation is used a file name needs to be specified using
+ * {@link #value()}.
  *
- * Annotation can be used at interface and method-level, however any
- * method-level annotations will take precedence over interface-level
- * annotations.
+ * @see net.orange_box.storebox.enums.PreferencesType#FILE
+ * @see android.content.Context#getSharedPreferences(String, int)
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE, ElementType.METHOD})
-public @interface SaveOption {
+@Target(ElementType.TYPE)
+public @interface FilePreferences {
     
-    SaveMode value();
+    String value();
+    
+    PreferencesMode mode() default PreferencesMode.MODE_PRIVATE;
 }

@@ -26,7 +26,7 @@ import java.lang.annotation.Target;
 /**
  * Annotation which should be used to define what {@link DefaultValueMode}
  * will be applied for set methods which don't specify a default value.
- * 
+ * <p>
  * Annotation can be used at interface and method-level, however any
  * method-level annotations will take precedence over interface-level
  * annotations.

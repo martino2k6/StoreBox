@@ -25,19 +25,18 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation which should be used at interface-level to define that the
- * preferences should be opened from a file name.
+ * preferences private to the Activity should be used.
+ * <p>
+ * When this annotation is used an {@link android.app.Activity} context needs
+ * to be passed in when instantiating the interface using
+ * {@link net.orange_box.storebox.StoreBox}.
  * 
- * When this annotation is used a file name needs to be specified using
- * {@link #value()}.
- *
- * @see net.orange_box.storebox.enums.PreferencesType#FILE
- * @see android.content.Context#getSharedPreferences(String, int)
+ * @see net.orange_box.storebox.enums.PreferencesType#ACTIVITY
+ * @see android.app.Activity#getPreferences(int)
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface FilePreferences {
-    
-    String value();
+public @interface ActivityPreferences {
     
     PreferencesMode mode() default PreferencesMode.MODE_PRIVATE;
 }

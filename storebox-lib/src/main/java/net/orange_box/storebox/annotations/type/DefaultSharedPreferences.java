@@ -24,7 +24,7 @@ import java.lang.annotation.Target;
 /**
  * Annotation which should be used at interface-level to define that the
  * default shared preferences should be used.
- * 
+ * <p>
  * This is the default type used when no annotation has been specified for an
  * interface.
  * 
