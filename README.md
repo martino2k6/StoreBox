@@ -33,11 +33,21 @@ String myValue = prefs.getSomeValue();
 How about saving values? How about doing X or Y? Read on to find out more details about how StoreBox can be used and how you can add it to your Android project.
 
 ##Adding to a project##
-StoreBox supports API10 and newer (Android 2.3.3+).
+StoreBox can be used in Android projects using minimum SDK version 10 and newer (Android 2.3+).
+###JAR###
+[v1.0.0 JAR](https://oss.sonatype.org/service/local/repositories/releases/content/net/orange-box/storebox/storebox-lib/1.0.0/storebox-lib-1.0.0.jar)
 ###Gradle###
-TODO
+```
+compile 'net.orange-box.storebox:storebox-lib:1.0.0'
+```
 ###Maven###
-TODO
+```
+<dependency>
+  <groupId>net.orange-box.storebox</groupId>
+  <artifactId>storebox-lib</artifactId>
+  <version>1.0.0</version>
+</dependency>
+```
 
 ##Defining an interface and bringing it to life##
 Simply create a new interface class in your IDE or a text editor, give it an access modifier which suits its use, and name it as appropriate.

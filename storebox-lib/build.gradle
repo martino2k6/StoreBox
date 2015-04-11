@@ -143,7 +143,7 @@ bintray {
         vcsUrl = 'https://github.com/martino2k6/StoreBox.git'
         
         licenses = ['Apache-2.0']
-        labels = ['android', 'preferences', 'library', 'aar', 'jar']
+        labels = ['android', 'preferences', 'library', 'jar']
         publicDownloadNumbers = true
 
         version {
