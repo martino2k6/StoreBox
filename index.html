@@ -24,16 +24,16 @@
 
 <p>When getting a value from any preferences, whether private Activity or default shared preferences, you would normally have to get a reference to a <code>SharedPreferences</code> instance, for example using</p>
 
-<div class="highlight highlight-Java"><pre><span class="pl-smi">SharedPreferences</span> prefs <span class="pl-k">=</span> <span class="pl-smi">PreferenceManager</span><span class="pl-k">.</span>getDefaultSharedPreferences(someContext);</pre></div>
+<div class="highlight highlight-Java"><pre><span class="pl-smi">SharedPreferences</span> preferences <span class="pl-k">=</span> <span class="pl-smi">PreferenceManager</span><span class="pl-k">.</span>getDefaultSharedPreferences(context);</pre></div>
 
-<p>Only after that we can start getting/saving the values, such as</p>
+<p>And after that the values can be retrieved/saved.</p>
 
-<div class="highlight highlight-Java"><pre><span class="pl-smi">String</span> username <span class="pl-k">=</span> prefs<span class="pl-k">.</span>getString(<span class="pl-s"><span class="pl-pds">"</span>username<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span><span class="pl-pds">"</span></span>);
-prefs<span class="pl-k">.</span>edit()<span class="pl-k">.</span>putString(<span class="pl-s"><span class="pl-pds">"</span>username<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>androiduser<span class="pl-pds">"</span></span>)<span class="pl-k">.</span>apply();</pre></div>
+<div class="highlight highlight-Java"><pre><span class="pl-smi">String</span> username <span class="pl-k">=</span> preferences<span class="pl-k">.</span>getString(<span class="pl-s"><span class="pl-pds">"</span>username<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span><span class="pl-pds">"</span></span>);
+preferences<span class="pl-k">.</span>edit()<span class="pl-k">.</span>putString(<span class="pl-s"><span class="pl-pds">"</span>username<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>androiduser<span class="pl-pds">"</span></span>)<span class="pl-k">.</span>apply();</pre></div>
 
-<p>This can get tedious if the values need to be saved and retrieved from multiple places as the caller is always required to supply the key of the preference, know under what type it is saved, and know what default should be used. This can also become error prone as more keys get used. Putting commonly accessed preferences behind a wrapper is a reasonable solution, but still requires some boilerplate code.</p>
+<p>This can get tedious if the values need to be saved and retrieved from multiple places as the caller is always required to supply the key of the preference, know under what type it is saved, and know the appropriate default to be used for the invocation. With a bigger set of keys used throughout an application this approach can become increasingly error-prone. Putting commonly accessed preferences behind a wrapper is a solution which is commonly used, however there is an alternative.</p>
 
-<p>What if however we could define an interface like</p>
+<p>What if an interface could be defined like</p>
 
 <div class="highlight highlight-Java"><pre><span class="pl-k">public</span> <span class="pl-k">interface</span> <span class="pl-en">MyPreferences</span> {
 
@@ -44,18 +44,97 @@ prefs<span class="pl-k">.</span>edit()<span class="pl-k">.</span>putString(<span
     <span class="pl-k">void</span> <span class="pl-en">setUsername</span>(<span class="pl-smi">String</span> <span class="pl-v">value</span>);
 }</pre></div>
 
-<p>for everyone to use in order to save and get values? The caller doesn't need to worry about the key, neither needs to think about what type the key should use, and the process of retrieving/saving is hidden behind a method name with improved semantics.</p>
+<p>For everyone to use in order to save and get values? The caller doesn't need to worry about the keys, neither needs to think about what value type is saved under the key, and the process of retrieving/saving is hidden behind a method name with improved semantics.</p>
 
-<p>With StoreBox that becomes reality. Given the above interface definition you can easily create an instance using</p>
+<p>With StoreBox that becomes possible. Given the above interface definition you can easily create an instance using</p>
 
-<div class="highlight highlight-Java"><pre><span class="pl-smi">MyPreferences</span> prefs <span class="pl-k">=</span> <span class="pl-smi">StoreBox</span><span class="pl-k">.</span>create(context, <span class="pl-smi">MyPreferences</span><span class="pl-k">.</span>class);</pre></div>
+<div class="highlight highlight-Java"><pre><span class="pl-smi">MyPreferences</span> preferences <span class="pl-k">=</span> <span class="pl-smi">StoreBox</span><span class="pl-k">.</span>create(context, <span class="pl-smi">MyPreferences</span><span class="pl-k">.</span>class);</pre></div>
 
-<p>and you will be able to retrieve/save the value just by calling the defined methods</p>
+<p>and you will be able to retrieve and save the values just by calling the defined methods</p>
 
-<div class="highlight highlight-Java"><pre><span class="pl-smi">String</span> username <span class="pl-k">=</span> prefs<span class="pl-k">.</span>getUsername();
-prefs<span class="pl-k">.</span>setUsername(<span class="pl-s"><span class="pl-pds">"</span>androiduser<span class="pl-pds">"</span></span>);</pre></div>
+<div class="highlight highlight-Java"><pre><span class="pl-smi">String</span> username <span class="pl-k">=</span> preferences<span class="pl-k">.</span>getUsername();
+preferences<span class="pl-k">.</span>setUsername(<span class="pl-s"><span class="pl-pds">"</span>androiduser<span class="pl-pds">"</span></span>);</pre></div>
 
 <p>Read on to find out more details about how StoreBox can be used and how you can add it to your Android project.</p>
+
+<h2>
+<a id="defining-an-interface-and-bringing-it-to-life" class="anchor" href="#defining-an-interface-and-bringing-it-to-life" aria-hidden="true"><span class="octicon octicon-link"></span></a>Defining an interface and bringing it to life</h2>
+
+<p>Simply create a new interface class in your IDE or a text editor, give it an access modifier which suits its use, and name it as appropriate.</p>
+
+<div class="highlight highlight-Java"><pre><span class="pl-k">public</span> <span class="pl-k">interface</span> <span class="pl-en">MyPreferences</span> {
+
+}</pre></div>
+
+<p>Now you're ready to use <code>StoreBox.create()</code> to obtain an instance.</p>
+
+<div class="highlight highlight-Java"><pre><span class="pl-smi">MyPreferences</span> instance <span class="pl-k">=</span> <span class="pl-smi">StoreBox</span><span class="pl-k">.</span>create(context, <span class="pl-smi">MyPreferences</span><span class="pl-k">.</span>class);</pre></div>
+
+<h2>
+<a id="adding-get-and-set-methods" class="anchor" href="#adding-get-and-set-methods" aria-hidden="true"><span class="octicon octicon-link"></span></a>Adding get and set methods</h2>
+
+<p>If you would like to add a <strong>getter</strong> just add a method to the interface which returns a value and make sure to annotate it using <code>@KeyByString</code> or <code>@KeyByResource</code>. Please note that for now only values which the <code>SharedPreferences</code> accept can be used (except <code>Set&lt;String&gt;</code> for the moment).</p>
+
+<div class="highlight highlight-Java"><pre>@KeyByString(<span class="pl-s"><span class="pl-pds">"</span>key_nickname<span class="pl-pds">"</span></span>)
+<span class="pl-smi">String</span> getNickname();
+
+@KeyByResource(<span class="pl-smi">R</span><span class="pl-k">.</span>string<span class="pl-k">.</span>key_notifications)
+<span class="pl-k">boolean</span> shouldShowNotifications();</pre></div>
+
+<p>If you try to define a method that returns something like a <code>Date</code> object, which cannot be saved by Android, an exception will be thrown.</p>
+
+<div class="highlight highlight-Java"><pre>@KeyByString(<span class="pl-s"><span class="pl-pds">"</span>key_date_of_birth<span class="pl-pds">"</span></span>)
+<span class="pl-smi">Date</span> getDateOfBirth(); <span class="pl-c">// invalid</span></pre></div>
+
+<p>Adding a <strong>setter</strong> is just as easy. The same annotations will need to be used as for getter methods, but now our method will return nothing and will have to provide a parameter for supplying the value that should be saved.</p>
+
+<div class="highlight highlight-Java"><pre>@KeyByString(<span class="pl-s"><span class="pl-pds">"</span>key_nickname<span class="pl-pds">"</span></span>)
+<span class="pl-k">void</span> setNickname(<span class="pl-smi">String</span> value)
+
+@KeyByResource(<span class="pl-smi">R</span><span class="pl-k">.</span>string<span class="pl-k">.</span>key_notifications)
+<span class="pl-k">void</span> setNotifications(<span class="pl-k">boolean</span> value)</pre></div>
+
+<p>Just like with get methods only the common types are supported, and as such the example below will not work.</p>
+
+<div class="highlight highlight-Java"><pre>@KeyByString(<span class="pl-s"><span class="pl-pds">"</span>key_date_of_birth<span class="pl-pds">"</span></span>)
+<span class="pl-k">void</span> setDateOfBirth(<span class="pl-smi">Date</span> value); <span class="pl-c">// invalid</span></pre></div>
+
+<h2>
+<a id="specifying-defaults-for-get-methods" class="anchor" href="#specifying-defaults-for-get-methods" aria-hidden="true"><span class="octicon octicon-link"></span></a>Specifying defaults for get methods</h2>
+
+<p>This can be achieved in two ways, through an argument or by using an annotation.</p>
+
+<p>For the first option the following will work.</p>
+
+<div class="highlight highlight-Java"><pre>@KeyByString(<span class="pl-s"><span class="pl-pds">"</span>key_phone_number<span class="pl-pds">"</span></span>)
+<span class="pl-smi">String</span> getPhoneNumber(<span class="pl-smi">String</span> defValue);</pre></div>
+
+<p>And using an annotation referencing a default found in the XML resources.</p>
+
+<div class="highlight highlight-Java"><pre>@KeyByString(<span class="pl-s"><span class="pl-pds">"</span>key_phone_number<span class="pl-pds">"</span></span>)
+@DefaultValue(<span class="pl-smi">R</span><span class="pl-k">.</span>string<span class="pl-k">.</span>default_phone_number)
+<span class="pl-smi">String</span> getPhoneNumber();</pre></div>
+
+<p>For some types, such as <code>long</code>, which cannot be added to the resources an integer resource may be used instead.</p>
+
+<div class="highlight highlight-Java"><pre>@KeyByString(<span class="pl-s"><span class="pl-pds">"</span>key_refresh_interval<span class="pl-pds">"</span></span>)
+@DefaultValue(<span class="pl-smi">R</span><span class="pl-k">.</span>integer<span class="pl-k">.</span>default_refresh_interval)
+<span class="pl-k">long</span> getRefreshInterval();</pre></div>
+
+<h2>
+<a id="opening-different-types-of-preferences" class="anchor" href="#opening-different-types-of-preferences" aria-hidden="true"><span class="octicon octicon-link"></span></a>Opening different types of preferences</h2>
+
+<p>In all of the examples so far details about what preferences are opened and how have been omitted.</p>
+
+<p>Without any annotation the default shared preferences will be used, but the <code>@DefaultSharedPreferences</code> annotation can be added to the interface definition for explicitness. Likewise, <code>@ActivityPreferences</code> or <code>@FilePreferences</code> can be used to respectively open preferences private to an activity or to open preferences using a file name.</p>
+
+<p>The mode with which the preferences should be opened can also be specified, although this option is not supported by all the types.</p>
+
+<div class="highlight highlight-Java"><pre>@ActivityPreferences(mode <span class="pl-k">=</span> <span class="pl-smi">PreferencesMode</span><span class="pl-c1"><span class="pl-k">.</span>MULTI_PROCESS</span>)
+<span class="pl-k">public</span> <span class="pl-k">interface</span> <span class="pl-en">WelcomeActivityPreferences</span> {
+
+    <span class="pl-c">// method definitions here...</span>
+}</pre></div>
 
 <h2>
 <a id="adding-to-a-project" class="anchor" href="#adding-to-a-project" aria-hidden="true"><span class="octicon octicon-link"></span></a>Adding to a project</h2>
@@ -65,7 +144,8 @@ prefs<span class="pl-k">.</span>setUsername(<span class="pl-s"><span class="pl-p
 <h3>
 <a id="jar" class="anchor" href="#jar" aria-hidden="true"><span class="octicon octicon-link"></span></a>JAR</h3>
 
-<p><a href="https://oss.sonatype.org/service/local/repositories/releases/content/net/orange-box/storebox/storebox-lib/1.0.0/storebox-lib-1.0.0.jar">v1.0.0 JAR</a></p>
+<p><a href="https://oss.sonatype.org/service/local/repositories/releases/content/net/orange-box/storebox/storebox-lib/1.0.0/storebox-lib-1.0.0.jar">v1.0.0 JAR</a><br>
+<a href="https://oss.sonatype.org/service/local/repositories/releases/content/net/orange-box/storebox/storebox-lib/1.0.0/storebox-lib-1.0.0-javadoc.jar">v1.0.0 JavaDoc JAR</a></p>
 
 <h3>
 <a id="gradle" class="anchor" href="#gradle" aria-hidden="true"><span class="octicon octicon-link"></span></a>Gradle</h3>
@@ -84,124 +164,43 @@ prefs<span class="pl-k">.</span>setUsername(<span class="pl-s"><span class="pl-p
 </code></pre>
 
 <h2>
-<a id="defining-an-interface-and-bringing-it-to-life" class="anchor" href="#defining-an-interface-and-bringing-it-to-life" aria-hidden="true"><span class="octicon octicon-link"></span></a>Defining an interface and bringing it to life</h2>
-
-<p>Simply create a new interface class in your IDE or a text editor, give it an access modifier which suits its use, and name it as appropriate.</p>
-
-<div class="highlight highlight-Java"><pre><span class="pl-k">public</span> <span class="pl-k">interface</span> <span class="pl-en">MyPreferences</span> {
-
-}</pre></div>
-
-<p>Now you're ready to use <code>StoreBox.create()</code> to create an instance.</p>
-
-<div class="highlight highlight-Java"><pre><span class="pl-smi">MyPreferences</span> instance <span class="pl-k">=</span> <span class="pl-smi">StoreBox</span><span class="pl-k">.</span>create(context, <span class="pl-smi">MyPreferences</span><span class="pl-k">.</span>class);</pre></div>
-
-<h2>
-<a id="adding-get-and-set-methods" class="anchor" href="#adding-get-and-set-methods" aria-hidden="true"><span class="octicon octicon-link"></span></a>Adding get and set methods</h2>
-
-<p>If you would like to add a <strong>getter</strong> just add a method to the interface which returns a value and make sure to annotate it using <code>@KeyByString</code> or <code>@KeyByResource</code>. Please note that for now only values which the <code>SharedPreferences</code> accept can be used (except <code>Set&lt;String&gt;</code> for the moment).</p>
-
-<div class="highlight highlight-Java"><pre>@KeyByString(<span class="pl-s"><span class="pl-pds">"</span>my_string<span class="pl-pds">"</span></span>)
-<span class="pl-smi">String</span> getMyString();
-
-@KeyByResource(<span class="pl-smi">R</span><span class="pl-k">.</span>string<span class="pl-k">.</span>key_my_boolean)
-<span class="pl-k">boolean</span> getMyBoolean();</pre></div>
-
-<p>If you try to define a method that returns something like a <code>Date</code> object, which cannot be saved by Android, an exception will be thrown.</p>
-
-<div class="highlight highlight-Java"><pre>@KeyByString(<span class="pl-s"><span class="pl-pds">"</span>some_key<span class="pl-pds">"</span></span>)
-<span class="pl-smi">Date</span> willNotWork(); <span class="pl-c">// invalid</span></pre></div>
-
-<p>Adding a <strong>setter</strong> is just as easy. The same annotations will need to be used as for getter methods, but now our method will return a <code>Void</code> type and will have to provide a parameter for supplying the value that we we would like to save.</p>
-
-<div class="highlight highlight-Java"><pre>@KeyByString(<span class="pl-s"><span class="pl-pds">"</span>my_string<span class="pl-pds">"</span></span>)
-<span class="pl-k">void</span> setMyString(<span class="pl-smi">String</span> value)
-
-@KeyByResource(<span class="pl-smi">R</span><span class="pl-k">.</span>string<span class="pl-k">.</span>key_my_boolean)
-<span class="pl-k">void</span> setMyBoolean(<span class="pl-k">boolean</span> value)</pre></div>
-
-<p>Just like with get methods only the common types are supported, and as such the example below will not work.</p>
-
-<div class="highlight highlight-Java"><pre>@KeyByString(<span class="pl-s"><span class="pl-pds">"</span>some_key<span class="pl-pds">"</span></span>)
-<span class="pl-k">void</span> willNotWork(<span class="pl-smi">Intent</span> value); <span class="pl-c">// invalid</span></pre></div>
-
-<h2>
-<a id="specifying-defaults-for-get-methods" class="anchor" href="#specifying-defaults-for-get-methods" aria-hidden="true"><span class="octicon octicon-link"></span></a>Specifying defaults for get methods</h2>
-
-<p>This can be achieved in two ways, through an argument or by using an annotation.</p>
-
-<p>For the first option we can just do the following.</p>
-
-<div class="highlight highlight-Java"><pre>@KeyByString(<span class="pl-s"><span class="pl-pds">"</span>some_key<span class="pl-pds">"</span></span>)
-<span class="pl-smi">String</span> getValue(<span class="pl-smi">String</span> defValue);</pre></div>
-
-<p>But we can also use an annotation referencing a default found in the XML resources.</p>
-
-<div class="highlight highlight-Java"><pre>@KeyByString(<span class="pl-s"><span class="pl-pds">"</span>some_key<span class="pl-pds">"</span></span>)
-@DefaultValue(<span class="pl-smi">R</span><span class="pl-k">.</span>string<span class="pl-k">.</span>some_default)
-<span class="pl-smi">String</span> getValue();</pre></div>
-
-<p>For some types, such as <code>long</code>, which cannot be added to the resources an integer resource may be used instead.</p>
-
-<div class="highlight highlight-Java"><pre>@KeyByString(<span class="pl-s"><span class="pl-pds">"</span>long_key<span class="pl-pds">"</span></span>)
-@DefaultValue(<span class="pl-smi">R</span><span class="pl-k">.</span>integer<span class="pl-k">.</span>integer_default)
-<span class="pl-k">long</span> getValue();</pre></div>
-
-<h2>
-<a id="opening-different-types-of-preferences" class="anchor" href="#opening-different-types-of-preferences" aria-hidden="true"><span class="octicon octicon-link"></span></a>Opening different types of preferences</h2>
-
-<p>In all of the examples so far we have omitted any details about what preferences are opened and how.</p>
-
-<p>Without any annotation the default shared preferences will be used, but the <code>@DefaultSharedPreferences</code> annotation can be added to the interface definition for explicitness. Likewise, <code>@ActivityPreferences</code> or <code>@FilePreferences</code> can be used to respectively open preferences private to an activity or to open preferences using a file name.</p>
-
-<p>We can also specify the mode with which the preferences should be opened, although this option is not supported by all the types.</p>
-
-<div class="highlight highlight-Java"><pre>@ActivityPreferences(mode <span class="pl-k">=</span> <span class="pl-smi">PreferencesMode</span><span class="pl-c1"><span class="pl-k">.</span>MULTI_PROCESS</span>)
-<span class="pl-k">public</span> <span class="pl-k">interface</span> <span class="pl-en">WelcomeActivityPreferences</span> {
-
-    <span class="pl-c">// method definitions here...</span>
-}</pre></div>
-
-<h2>
 <a id="advanced" class="anchor" href="#advanced" aria-hidden="true"><span class="octicon octicon-link"></span></a>Advanced</h2>
 
 <h3>
 <a id="chaining-calls" class="anchor" href="#chaining-calls" aria-hidden="true"><span class="octicon octicon-link"></span></a>Chaining calls</h3>
 
-<p>With Android's <code>SharedPreferences.Editor</code> class it is possible to keep chaining put methods as each returns back the <code>SharedPreferences.Editor</code> instance. StoreBox allows the same functionality. All that needs to be done is to change the set method definitions to either return <code>SharedPreferences.Editor</code> or the interface type itself.</p>
+<p>With Android's <code>SharedPreferences.Editor</code> class it is possible to keep chaining put methods as each returns back the <code>SharedPreferences.Editor</code> instance. StoreBox allows the same functionality. All that needs to be done is to change the set method definitions to either return interface type itself or <code>SharedPreferences.Editor</code>.</p>
 
 <div class="highlight highlight-Java"><pre><span class="pl-k">public</span> <span class="pl-k">interface</span> <span class="pl-en">ChainingExample</span> {
 
-    <span class="pl-k">@KeyByString</span>(<span class="pl-s"><span class="pl-pds">"</span>key1<span class="pl-pds">"</span></span>)
-    <span class="pl-smi">ChainingExample</span> <span class="pl-en">putValueOne</span>(<span class="pl-smi">String</span> <span class="pl-v">value</span>);
+    <span class="pl-k">@KeyByString</span>(<span class="pl-s"><span class="pl-pds">"</span>key_username<span class="pl-pds">"</span></span>)
+    <span class="pl-smi">ChainingExample</span> <span class="pl-en">setUsername</span>(<span class="pl-smi">String</span> <span class="pl-v">value</span>);
 
-    <span class="pl-k">@KeyByString</span>(<span class="pl-s"><span class="pl-pds">"</span>key2<span class="pl-pds">"</span></span>)
-    <span class="pl-smi">SharedPreferences</span>.<span class="pl-smi">Editor</span> <span class="pl-en">putValueTwo</span>(<span class="pl-smi">String</span> <span class="pl-v">value</span>);
+    <span class="pl-k">@KeyByString</span>(<span class="pl-s"><span class="pl-pds">"</span>key_password<span class="pl-pds">"</span></span>)
+    <span class="pl-smi">ChainingExample</span> <span class="pl-en">setPassword</span>(<span class="pl-smi">String</span> <span class="pl-v">value</span>);
 }</pre></div>
 
-<p>And we'll be able to chain calls</p>
+<p>And calls can be chained as</p>
 
-<div class="highlight highlight-Java"><pre>preferences<span class="pl-k">.</span>putValueOne(<span class="pl-s"><span class="pl-pds">"</span>hello<span class="pl-pds">"</span></span>)<span class="pl-k">.</span>putValueTwo(<span class="pl-s"><span class="pl-pds">"</span>world<span class="pl-pds">"</span></span>)<span class="pl-k">.</span>putStringSet(<span class="pl-c1">...</span>)<span class="pl-k">.</span>apply();</pre></div>
+<div class="highlight highlight-Java"><pre>preferences<span class="pl-k">.</span>setUsername(<span class="pl-s"><span class="pl-pds">"</span>Joe<span class="pl-pds">"</span></span>)<span class="pl-k">.</span>setPassword(<span class="pl-s"><span class="pl-pds">"</span>jOe<span class="pl-pds">"</span></span>);</pre></div>
 
 <h3>
 <a id="forwarding-calls" class="anchor" href="#forwarding-calls" aria-hidden="true"><span class="octicon octicon-link"></span></a>Forwarding calls</h3>
 
-<p>If for some reason you would like to access methods from the <code>SharedPreferences</code> or <code>SharedPreferences.Editor</code>, you can do that by extending your interface from either of the above (or even both).</p>
+<p>If you would like to access methods from the <code>SharedPreferences</code> or <code>SharedPreferences.Editor</code>, you can do that by extending your interface from either of the above (or even both).</p>
 
 <div class="highlight highlight-Java"><pre><span class="pl-k">public</span> <span class="pl-k">interface</span> <span class="pl-en">ForwardingExample</span> <span class="pl-k">extends</span> <span class="pl-e">SharedPreferences</span>, <span class="pl-e">SharedPreferences</span>.<span class="pl-e">Editor</span> {
 
     <span class="pl-c">// method definitions here</span>
 }</pre></div>
 
-<p>And you will just be able to call</p>
+<p>And the methods from either of the extended interfaces will be callable.</p>
 
-<div class="highlight highlight-Java"><pre><span class="pl-smi">ForwardingExample</span> prefs <span class="pl-k">=</span> <span class="pl-c">// creation...</span>
-
-<span class="pl-smi">String</span> someString <span class="pl-k">=</span> prefs<span class="pl-k">.</span>getString(<span class="pl-s"><span class="pl-pds">"</span>key<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>default<span class="pl-pds">"</span></span>);
-prefs<span class="pl-k">.</span>putString(<span class="pl-s"><span class="pl-pds">"</span>key<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>value<span class="pl-pds">"</span></span>)<span class="pl-k">.</span>apply();</pre></div>
+<div class="highlight highlight-Java"><pre><span class="pl-smi">String</span> username <span class="pl-k">=</span> preferences<span class="pl-k">.</span>getString(<span class="pl-s"><span class="pl-pds">"</span>key_username<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span><span class="pl-pds">"</span></span>);
+preferences<span class="pl-k">.</span>putString(<span class="pl-s"><span class="pl-pds">"</span>key_username<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>Joe<span class="pl-pds">"</span></span>)<span class="pl-k">.</span>apply();</pre></div>
 
 <h3>
-<a id="more-control-over-how-values-get-saved" class="anchor" href="#more-control-over-how-values-get-saved" aria-hidden="true"><span class="octicon octicon-link"></span></a>More control over how values get saved</h3>
+<a id="save-modes" class="anchor" href="#save-modes" aria-hidden="true"><span class="octicon octicon-link"></span></a>Save modes</h3>
 
 <p>Changes to preferences can normally be saved on Android either through <code>apply()</code> or <code>commit()</code>. Which method gets used can be customised in StoreBox through the use of the <code>@SaveOption</code> annotation.</p>
 
@@ -211,14 +210,14 @@ prefs<span class="pl-k">.</span>putString(<span class="pl-s"><span class="pl-pds
 <span class="pl-k">public</span> <span class="pl-k">interface</span> <span class="pl-en">SaveModeExample</span> {
     <span class="pl-c">// key annotations omitted</span>
 
-    <span class="pl-k">void</span> <span class="pl-en">saveOne</span>(<span class="pl-smi">String</span> <span class="pl-v">value</span>); <span class="pl-c">// will save using apply()</span>
+    <span class="pl-k">void</span> <span class="pl-en">setUsername</span>(<span class="pl-smi">String</span> <span class="pl-v">value</span>); <span class="pl-c">// will save using apply()</span>
 
     <span class="pl-k">@SaveOption</span>(<span class="pl-smi">SaveMode</span><span class="pl-c1"><span class="pl-k">.</span>COMMIT</span>)
-    <span class="pl-k">void</span> <span class="pl-en">saveTwo</span>(<span class="pl-smi">String</span> <span class="pl-v">value</span>); <span class="pl-c">// will save using commit()</span>
+    <span class="pl-k">void</span> <span class="pl-en">setPassword</span>(<span class="pl-smi">String</span> <span class="pl-v">value</span>); <span class="pl-c">// will save using commit()</span>
 }</pre></div>
 
 <h3>
-<a id="more-control-over-default-values" class="anchor" href="#more-control-over-default-values" aria-hidden="true"><span class="octicon octicon-link"></span></a>More control over default values</h3>
+<a id="default-value-modes" class="anchor" href="#default-value-modes" aria-hidden="true"><span class="octicon octicon-link"></span></a>Default value modes</h3>
 
 <p>Supplying default values, either by using an argument or an annotation, has been covered earlier but there's further customisation possible.</p>
 
@@ -228,15 +227,15 @@ prefs<span class="pl-k">.</span>putString(<span class="pl-s"><span class="pl-pds
 <span class="pl-k">public</span> <span class="pl-k">interface</span> <span class="pl-en">DefaultValueModeExample</span> {
     <span class="pl-c">// key annotations omitted</span>
 
-    <span class="pl-smi">String</span> <span class="pl-en">getStringOne</span>(); <span class="pl-c">// will return ""</span>
+    <span class="pl-smi">String</span> <span class="pl-en">getUsername</span>(); <span class="pl-c">// will return ""</span>
 
     <span class="pl-k">@DefaultValueOption</span>(<span class="pl-smi">DefaultValueMode</span><span class="pl-c1"><span class="pl-k">.</span>NULL</span>)
-    <span class="pl-smi">String</span> <span class="pl-en">getStringTwo</span>(); <span class="pl-c">// will return null</span>
+    <span class="pl-smi">String</span> <span class="pl-en">getPassword</span>(); <span class="pl-c">// will return null</span>
 
-    <span class="pl-k">int</span> <span class="pl-en">getIntOne</span>(); <span class="pl-c">// will return 0</span>
+    <span class="pl-k">int</span> <span class="pl-en">getAppOpenedCount</span>(); <span class="pl-c">// will return 0</span>
 
     <span class="pl-k">@DefaultValueOption</span>(<span class="pl-smi">DefaultValueMode</span><span class="pl-c1"><span class="pl-k">.</span>NULL</span>)
-    <span class="pl-k">int</span> <span class="pl-en">getIntTwo</span>(); <span class="pl-c">// will return 0 as primitive types can't hold a reference</span>
+    <span class="pl-k">int</span> <span class="pl-en">getSettingsOpenedCount</span>(); <span class="pl-c">// will return 0 as primitive types can't hold a reference</span>
 }</pre></div>
 
 <h3>
@@ -244,7 +243,7 @@ prefs<span class="pl-k">.</span>putString(<span class="pl-s"><span class="pl-pds
 
 <p>As previously described you can build an instance of your interface using <code>StoreBox.build()</code>, however if you'd like to override at run-time any annotations you can use <code>StoreBox.Builder</code> and apply different options.</p>
 
-<div class="highlight highlight-Java"><pre><span class="pl-smi">MyPreferences</span> prefs <span class="pl-k">=</span>
+<div class="highlight highlight-Java"><pre><span class="pl-smi">MyPreferences</span> preferences <span class="pl-k">=</span>
         <span class="pl-k">new</span> <span class="pl-smi">StoreBox</span>.<span class="pl-smi">Builder</span>(context, <span class="pl-smi">MyPreferences</span><span class="pl-k">.</span>class)
         .preferencesMode(<span class="pl-smi">PreferencesMode</span><span class="pl-c1"><span class="pl-k">.</span>MULTI_PROCESS</span>)
         .build()</pre></div>
