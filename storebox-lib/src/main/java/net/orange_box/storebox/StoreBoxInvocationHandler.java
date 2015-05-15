@@ -27,12 +27,15 @@ import android.util.TypedValue;
 import net.orange_box.storebox.annotations.method.DefaultValue;
 import net.orange_box.storebox.annotations.method.KeyByResource;
 import net.orange_box.storebox.annotations.method.KeyByString;
+import net.orange_box.storebox.annotations.method.RemoveMethod;
 import net.orange_box.storebox.annotations.option.DefaultValueOption;
 import net.orange_box.storebox.annotations.option.SaveOption;
 import net.orange_box.storebox.enums.DefaultValueMode;
 import net.orange_box.storebox.enums.PreferencesMode;
 import net.orange_box.storebox.enums.PreferencesType;
 import net.orange_box.storebox.enums.SaveMode;
+import net.orange_box.storebox.utils.MethodUtils;
+import net.orange_box.storebox.utils.PreferenceUtils;
 import net.orange_box.storebox.utils.TypeUtil;
 
 import java.lang.reflect.InvocationHandler;
@@ -99,16 +102,25 @@ class StoreBoxInvocationHandler implements InvocationHandler {
             Object proxy, Method method, Object... args) throws Throwable {
         
         /*
-         * Find the key for the preference from the method's annotation, else
-         * we try to forward the method to the SharedPreferences or Editor
-         * implementations.
+         * Find the key for the preference from the method's annotation, or
+         * whether it's a remove method, else we try to forward the method to
+         * the SharedPreferences or Editor implementations.
          */
         final String key;
+        final boolean isRemove;
         if (method.isAnnotationPresent(KeyByString.class)) {
             key = method.getAnnotation(KeyByString.class).value();
+            
+            isRemove = method.isAnnotationPresent(RemoveMethod.class);
         } else if (method.isAnnotationPresent(KeyByResource.class)) {
             key = res.getString(
                     method.getAnnotation(KeyByResource.class).value());
+            
+            isRemove = method.isAnnotationPresent(RemoveMethod.class);
+        } else if (method.isAnnotationPresent(RemoveMethod.class)) {
+            isRemove = true;
+            
+            key = MethodUtils.getKeyForRemove(res, args);
         } else {
             // handle Object's equals/hashCode/toString
             if (method.equals(OBJECT_EQUALS)) {
@@ -152,12 +164,15 @@ class StoreBoxInvocationHandler implements InvocationHandler {
         }
         
         /*
-         * Let's find out based on the method return type whether it's a get or
-         * set operation. We could provide a further annotation for the method
-         * declarations, but we can also infer this reasonably easily.
+         * Find out based on the method return type whether it's a get or set
+         * operation. We could provide a further annotation for get/set methods,
+         * but we can infer this reasonably easily.
          */
         final Class<?> returnType = method.getReturnType();
-        if (    returnType == Void.TYPE
+        if (isRemove) {
+            editor.remove(key);
+        } else if (
+                returnType == Void.TYPE
                 || returnType == method.getDeclaringClass()
                 || returnType == SharedPreferences.Editor.class) {
             
@@ -195,36 +210,6 @@ class StoreBoxInvocationHandler implements InvocationHandler {
                         Locale.ENGLISH,
                         "Saving type %1$s is not supported",
                         type.getName()));
-            }
-            
-            // method-level strategy > class-level strategy
-            final SaveMode mode;
-            if (method.isAnnotationPresent(SaveOption.class)) {
-                mode = method.getAnnotation(SaveOption.class).value();
-            } else {
-                mode = saveMode;
-            }
-            
-            switch (mode) {
-                case APPLY:
-                    editor.apply();
-                    break;
-
-                case COMMIT:
-                    editor.commit();
-                    break;
-                
-                case NOME:
-                default:
-                    // NOP
-            }
-            
-            if (returnType == method.getDeclaringClass()) {
-                return proxy;
-            } else if (returnType == SharedPreferences.Editor.class) {
-                return editor;
-            } else {
-                return null;
             }
         } else {
             /*
@@ -267,6 +252,23 @@ class StoreBoxInvocationHandler implements InvocationHandler {
                         "Retrieving type %1$s is not supported",
                         type.getName()));
             }
+        }
+
+        // method-level strategy > class-level strategy
+        final SaveMode mode;
+        if (method.isAnnotationPresent(SaveOption.class)) {
+            mode = method.getAnnotation(SaveOption.class).value();
+        } else {
+            mode = saveMode;
+        }
+        PreferenceUtils.saveChanges(editor, mode);
+
+        if (returnType == method.getDeclaringClass()) {
+            return proxy;
+        } else if (returnType == SharedPreferences.Editor.class) {
+            return editor;
+        } else {
+            return null;
         }
     }
     

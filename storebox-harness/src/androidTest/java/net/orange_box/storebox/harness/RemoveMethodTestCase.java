@@ -23,46 +23,63 @@ import android.test.InstrumentationTestCase;
 import android.test.suitebuilder.annotation.SmallTest;
 
 import net.orange_box.storebox.StoreBox;
-import net.orange_box.storebox.harness.interfaces.ChainingMethodsInterface;
+import net.orange_box.storebox.harness.interfaces.RemoveMethodInterface;
 
-public class ChainingMethodsTestCase extends InstrumentationTestCase {
-
-    private ChainingMethodsInterface uut;
+public class RemoveMethodTestCase extends InstrumentationTestCase {
+    
+    private static final String KEY = "int";
+    private static final int VALUE = 1;
+    
+    private RemoveMethodInterface uut;
     private SharedPreferences prefs;
     
+    @SuppressLint("CommitPrefEdits")
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-
+        
         uut = StoreBox.create(
-                getInstrumentation().getTargetContext(),
-                ChainingMethodsInterface.class);
-
+                getInstrumentation().getTargetContext(), RemoveMethodInterface.class);
+        
         prefs = PreferenceManager.getDefaultSharedPreferences(
                 getInstrumentation().getTargetContext());
+        
+        prefs.edit().putInt(KEY, VALUE).commit();
     }
-
+    
     @SuppressLint("CommitPrefEdits")
     @Override
     protected void tearDown() throws Exception {
         uut = null;
-
+        
         // we are saving to the actual preferences so let's clear them
         prefs.edit().clear().commit();
         prefs = null;
-
+        
         super.tearDown();
     }
     
     @SmallTest
-    public void testChainingSetMethods() {
-        assertTrue(uut.setFirstValue("one") instanceof SharedPreferences.Editor);
-        assertSame(uut, uut.setSecondValue("two"));
+    public void testRemoveUsingStringKey() {
+        uut.removeUsingStringKey(KEY);
+        assertFalse(prefs.contains(KEY));
     }
-
+    
     @SmallTest
-    public void testChainingRemoveMethods() {
-        assertTrue(uut.removeFirstValue() instanceof SharedPreferences.Editor);
-        assertSame(uut, uut.removeSecondValue());
+    public void testRemoveUsingIntKey() {
+        uut.removeUsingIntKey(R.string.key_int);
+        assertFalse(prefs.contains(KEY));
+    }
+    
+    @SmallTest
+    public void testRemoveWithStringAnnotation() {
+        uut.removeWithStringAnnotation();
+        assertFalse(prefs.contains(KEY));
+    }
+    
+    @SmallTest
+    public void testRemoveWithResourceAnnotation() {
+        uut.removeWithResourceAnnotation();
+        assertFalse(prefs.contains(KEY));
     }
 }

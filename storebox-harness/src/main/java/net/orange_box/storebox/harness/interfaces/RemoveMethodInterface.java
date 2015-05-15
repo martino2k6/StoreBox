@@ -16,15 +16,24 @@
 
 package net.orange_box.storebox.harness.interfaces;
 
-import android.content.SharedPreferences;
-
+import net.orange_box.storebox.annotations.method.KeyByResource;
 import net.orange_box.storebox.annotations.method.KeyByString;
+import net.orange_box.storebox.annotations.method.RemoveMethod;
+import net.orange_box.storebox.harness.R;
 
-public interface ChainingSetMethodsInterface {
+public interface RemoveMethodInterface {
     
-    @KeyByString("first")
-    SharedPreferences.Editor setFirstValue(String value);
-
-    @KeyByString("second")
-    ChainingSetMethodsInterface setSecondValue(String value);
+    @RemoveMethod
+    void removeUsingStringKey(String key);
+    
+    @RemoveMethod
+    void removeUsingIntKey(int key);
+    
+    @KeyByString("int")
+    @RemoveMethod
+    void removeWithStringAnnotation();
+    
+    @KeyByResource(R.string.key_int)
+    @RemoveMethod
+    void removeWithResourceAnnotation();
 }
