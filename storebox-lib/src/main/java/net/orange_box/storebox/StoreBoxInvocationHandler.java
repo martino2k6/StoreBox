@@ -169,7 +169,7 @@ class StoreBoxInvocationHandler implements InvocationHandler {
              * variant.
              */
             final Object value = getValueArg(args);
-            final Class<?> type = value.getClass();
+            final Class<?> type = getValueParameterType(method);
             
             if (type == Boolean.class) {
                 
@@ -392,6 +392,16 @@ class StoreBoxInvocationHandler implements InvocationHandler {
         } else {
             throw new UnsupportedOperationException(
                     "Value argument not found");
+        }
+    }
+    
+    private static Class<?> getValueParameterType(Method method) {
+        final Class<?>[] types = method.getParameterTypes();
+        if (types != null && types.length > 0) {
+            return TypeUtil.wrapToBoxedType(types[0]);
+        } else {
+            throw new UnsupportedOperationException(
+                    "Value parameter type not found");
         }
     }
 }
