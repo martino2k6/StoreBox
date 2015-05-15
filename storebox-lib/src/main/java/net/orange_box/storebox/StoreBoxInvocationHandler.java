@@ -136,7 +136,6 @@ class StoreBoxInvocationHandler implements InvocationHandler {
                         method.getName(),
                         method.getParameterTypes());
                 
-                
                 return editorMethod.invoke(editor, args);
             } catch (NoSuchMethodException e) {
                 // NOP
