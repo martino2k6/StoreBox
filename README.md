@@ -117,18 +117,18 @@ public interface WelcomeActivityPreferences {
 ##Adding to a project##
 StoreBox can be used in Android projects using minimum SDK version 10 and newer (Android 2.3+).
 ###JAR###
-[v1.0.0 JAR](https://oss.sonatype.org/service/local/repositories/releases/content/net/orange-box/storebox/storebox-lib/1.0.0/storebox-lib-1.0.0.jar)  
-[v1.0.0 JavaDoc JAR](https://oss.sonatype.org/service/local/repositories/releases/content/net/orange-box/storebox/storebox-lib/1.0.0/storebox-lib-1.0.0-javadoc.jar)
+[v1.0.1 JAR](https://oss.sonatype.org/service/local/repositories/releases/content/net/orange-box/storebox/storebox-lib/1.0.1/storebox-lib-1.0.1.jar)  
+[v1.0.1 JavaDoc JAR](https://oss.sonatype.org/service/local/repositories/releases/content/net/orange-box/storebox/storebox-lib/1.0.1/storebox-lib-1.0.1-javadoc.jar)
 ###Gradle###
 ```
-compile 'net.orange-box.storebox:storebox-lib:1.0.0'
+compile 'net.orange-box.storebox:storebox-lib:1.0.1'
 ```
 ###Maven###
 ```
 <dependency>
   <groupId>net.orange-box.storebox</groupId>
   <artifactId>storebox-lib</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
 </dependency>
 ```
 
