@@ -133,8 +133,45 @@ compile 'net.orange-box.storebox:storebox-lib:1.0.1'
 ```
 
 ##Advanced##
+###Remove methods###
+In order to remove a value stored in the preferences under a key a method to perform the removal can be annotated with the `@RemoveMethod` annotation. The key can be supplied in two ways;
+
+The key can be provided thorough an argument in the method, using either a `String` or an `int` in the case of the key being specified in an XML resource.
+```Java
+public interface RemoveMethodExample {
+    
+    @RemoveMethod
+    void remove(String key);
+    
+    @RemoveMethod
+    void remove(int keyRes);
+}
+
+// usage
+preferences.remove("key_username");
+preferences.remove(R.string.key_password);
+```
+
+Or a value-specific remove method can be defined with the help of the `@KeyByString` or `@KeyByResource` annotations.
+```Java
+public interface RemoveMethodExample {
+    
+    @KeyByString("key_username")
+    @RemoveMethod
+    void removeUsername();
+    
+    @KeyByResource(R.string.key_password)
+    @RemoveMethod
+    void removePassword()
+}
+
+// usage
+preferences.removeUsername();
+preferences.removePassword();
+```
+
 ###Chaining calls###
-With Android's `SharedPreferences.Editor` class it is possible to keep chaining put methods as each returns back the `SharedPreferences.Editor` instance. StoreBox allows the same functionality. All that needs to be done is to change the set method definitions to either return interface type itself or `SharedPreferences.Editor`.
+With Android's `SharedPreferences.Editor` class it is possible to keep chaining put methods as each returns back the `SharedPreferences.Editor` instance. StoreBox allows the same functionality. All that needs to be done is to change the set/remove method definitions to either return interface type itself or `SharedPreferences.Editor`.
 ```Java
 public interface ChainingExample {
     
@@ -143,11 +180,14 @@ public interface ChainingExample {
     
     @KeyByString("key_password")
     ChainingExample setPassword(String value);
+    
+    @KeyByString("key_country")
+    ChainingExample removeCountry();
 }
 ```
 And calls can be chained as
 ```Java
-preferences.setUsername("Joe").setPassword("jOe");
+preferences.setUsername("Joe").setPassword("jOe").removeCountry();
 ```
 
 ###Forwarding calls###
@@ -167,7 +207,7 @@ preferences.putString("key_username", "Joe").apply();
 ###Save modes###
 Changes to preferences can normally be saved on Android either through `apply()` or `commit()`. Which method gets used can be customised in StoreBox through the use of the `@SaveOption` annotation.
 
-Unlike any of the previous annotations `@SaveOption` can be used to annotate both the interface as well as individual set methods, however an annotation at method-level will take precedence over an interface annotation.
+Unlike any of the previous annotations `@SaveOption` can be used to annotate both the interface as well as individual set/remove methods, however an annotation at method-level will take precedence over an interface annotation.
 ```Java
 @SaveOption(SaveMode.APPLY)
 public interface SaveModeExample {
@@ -177,6 +217,9 @@ public interface SaveModeExample {
     
     @SaveOption(SaveMode.COMMIT)
     void setPassword(String value); // will save using commit()
+    
+    @SaveOption(SaveMode.COMMIT)
+    void removeUsername(); // will persist using commit()
 }
 ```
 
