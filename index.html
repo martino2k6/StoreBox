@@ -144,13 +144,13 @@ preferences<span class="pl-k">.</span>setUsername(<span class="pl-s"><span class
 <h3>
 <a id="jar" class="anchor" href="#jar" aria-hidden="true"><span class="octicon octicon-link"></span></a>JAR</h3>
 
-<p><a href="https://oss.sonatype.org/service/local/repositories/releases/content/net/orange-box/storebox/storebox-lib/1.0.1/storebox-lib-1.0.1.jar">v1.0.1 JAR</a><br>
-<a href="https://oss.sonatype.org/service/local/repositories/releases/content/net/orange-box/storebox/storebox-lib/1.0.1/storebox-lib-1.0.1-javadoc.jar">v1.0.1 JavaDoc JAR</a></p>
+<p><a href="https://oss.sonatype.org/service/local/repositories/releases/content/net/orange-box/storebox/storebox-lib/1.1.0/storebox-lib-1.1.0.jar">v1.1.0 JAR</a><br>
+<a href="https://oss.sonatype.org/service/local/repositories/releases/content/net/orange-box/storebox/storebox-lib/1.1.0/storebox-lib-1.1.0-javadoc.jar">v1.1.0 JavaDoc JAR</a></p>
 
 <h3>
 <a id="gradle" class="anchor" href="#gradle" aria-hidden="true"><span class="octicon octicon-link"></span></a>Gradle</h3>
 
-<pre><code>compile 'net.orange-box.storebox:storebox-lib:1.0.1'
+<pre><code>compile 'net.orange-box.storebox:storebox-lib:1.1.0'
 </code></pre>
 
 <h3>
@@ -159,7 +159,7 @@ preferences<span class="pl-k">.</span>setUsername(<span class="pl-s"><span class
 <pre><code>&lt;dependency&gt;
   &lt;groupId&gt;net.orange-box.storebox&lt;/groupId&gt;
   &lt;artifactId&gt;storebox-lib&lt;/artifactId&gt;
-  &lt;version&gt;1.0.1&lt;/version&gt;
+  &lt;version&gt;1.1.0&lt;/version&gt;
 &lt;/dependency&gt;
 </code></pre>
 
@@ -167,9 +167,46 @@ preferences<span class="pl-k">.</span>setUsername(<span class="pl-s"><span class
 <a id="advanced" class="anchor" href="#advanced" aria-hidden="true"><span class="octicon octicon-link"></span></a>Advanced</h2>
 
 <h3>
+<a id="remove-methods" class="anchor" href="#remove-methods" aria-hidden="true"><span class="octicon octicon-link"></span></a>Remove methods</h3>
+
+<p>In order to remove a value stored in the preferences under a key a method to perform the removal can be annotated with the <code>@RemoveMethod</code> annotation. The key can be supplied in two ways;</p>
+
+<p>The key can be provided thorough an argument in the method, using either a <code>String</code> or an <code>int</code> in the case of the key being specified in an XML resource.</p>
+
+<div class="highlight highlight-Java"><pre><span class="pl-k">public</span> <span class="pl-k">interface</span> <span class="pl-en">RemoveMethodExample</span> {
+
+    <span class="pl-k">@RemoveMethod</span>
+    <span class="pl-k">void</span> <span class="pl-en">remove</span>(<span class="pl-smi">String</span> <span class="pl-v">key</span>);
+
+    <span class="pl-k">@RemoveMethod</span>
+    <span class="pl-k">void</span> <span class="pl-en">remove</span>(<span class="pl-k">int</span> <span class="pl-v">keyRes</span>);
+}
+
+<span class="pl-c">// usage</span>
+preferences<span class="pl-k">.</span>remove(<span class="pl-s"><span class="pl-pds">"</span>key_username<span class="pl-pds">"</span></span>);
+preferences<span class="pl-k">.</span>remove(<span class="pl-smi">R</span><span class="pl-k">.</span>string<span class="pl-k">.</span>key_password);</pre></div>
+
+<p>Or a value-specific remove method can be defined with the help of the <code>@KeyByString</code> or <code>@KeyByResource</code> annotations.</p>
+
+<div class="highlight highlight-Java"><pre><span class="pl-k">public</span> <span class="pl-k">interface</span> <span class="pl-en">RemoveMethodExample</span> {
+
+    <span class="pl-k">@KeyByString</span>(<span class="pl-s"><span class="pl-pds">"</span>key_username<span class="pl-pds">"</span></span>)
+    <span class="pl-k">@RemoveMethod</span>
+    <span class="pl-k">void</span> <span class="pl-en">removeUsername</span>();
+
+    <span class="pl-k">@KeyByResource</span>(<span class="pl-smi">R</span><span class="pl-k">.</span>string<span class="pl-k">.</span>key_password)
+    <span class="pl-k">@RemoveMethod</span>
+    <span class="pl-k">void</span> <span class="pl-en">removePassword</span>()
+}
+
+<span class="pl-c">// usage</span>
+preferences.<span class="pl-en">removeUsername</span>();
+preferences.<span class="pl-en">removePassword</span>();</pre></div>
+
+<h3>
 <a id="chaining-calls" class="anchor" href="#chaining-calls" aria-hidden="true"><span class="octicon octicon-link"></span></a>Chaining calls</h3>
 
-<p>With Android's <code>SharedPreferences.Editor</code> class it is possible to keep chaining put methods as each returns back the <code>SharedPreferences.Editor</code> instance. StoreBox allows the same functionality. All that needs to be done is to change the set method definitions to either return interface type itself or <code>SharedPreferences.Editor</code>.</p>
+<p>With Android's <code>SharedPreferences.Editor</code> class it is possible to keep chaining put methods as each returns back the <code>SharedPreferences.Editor</code> instance. StoreBox allows the same functionality. All that needs to be done is to change the set/remove method definitions to either return interface type itself or <code>SharedPreferences.Editor</code>.</p>
 
 <div class="highlight highlight-Java"><pre><span class="pl-k">public</span> <span class="pl-k">interface</span> <span class="pl-en">ChainingExample</span> {
 
@@ -178,11 +215,14 @@ preferences<span class="pl-k">.</span>setUsername(<span class="pl-s"><span class
 
     <span class="pl-k">@KeyByString</span>(<span class="pl-s"><span class="pl-pds">"</span>key_password<span class="pl-pds">"</span></span>)
     <span class="pl-smi">ChainingExample</span> <span class="pl-en">setPassword</span>(<span class="pl-smi">String</span> <span class="pl-v">value</span>);
+
+    <span class="pl-k">@KeyByString</span>(<span class="pl-s"><span class="pl-pds">"</span>key_country<span class="pl-pds">"</span></span>)
+    <span class="pl-smi">ChainingExample</span> <span class="pl-en">removeCountry</span>();
 }</pre></div>
 
 <p>And calls can be chained as</p>
 
-<div class="highlight highlight-Java"><pre>preferences<span class="pl-k">.</span>setUsername(<span class="pl-s"><span class="pl-pds">"</span>Joe<span class="pl-pds">"</span></span>)<span class="pl-k">.</span>setPassword(<span class="pl-s"><span class="pl-pds">"</span>jOe<span class="pl-pds">"</span></span>);</pre></div>
+<div class="highlight highlight-Java"><pre>preferences<span class="pl-k">.</span>setUsername(<span class="pl-s"><span class="pl-pds">"</span>Joe<span class="pl-pds">"</span></span>)<span class="pl-k">.</span>setPassword(<span class="pl-s"><span class="pl-pds">"</span>jOe<span class="pl-pds">"</span></span>)<span class="pl-k">.</span>removeCountry();</pre></div>
 
 <h3>
 <a id="forwarding-calls" class="anchor" href="#forwarding-calls" aria-hidden="true"><span class="octicon octicon-link"></span></a>Forwarding calls</h3>
@@ -204,7 +244,7 @@ preferences<span class="pl-k">.</span>putString(<span class="pl-s"><span class="
 
 <p>Changes to preferences can normally be saved on Android either through <code>apply()</code> or <code>commit()</code>. Which method gets used can be customised in StoreBox through the use of the <code>@SaveOption</code> annotation.</p>
 
-<p>Unlike any of the previous annotations <code>@SaveOption</code> can be used to annotate both the interface as well as individual set methods, however an annotation at method-level will take precedence over an interface annotation.</p>
+<p>Unlike any of the previous annotations <code>@SaveOption</code> can be used to annotate both the interface as well as individual set/remove methods, however an annotation at method-level will take precedence over an interface annotation.</p>
 
 <div class="highlight highlight-Java"><pre>@SaveOption(<span class="pl-smi">SaveMode</span><span class="pl-c1"><span class="pl-k">.</span>APPLY</span>)
 <span class="pl-k">public</span> <span class="pl-k">interface</span> <span class="pl-en">SaveModeExample</span> {
@@ -214,6 +254,9 @@ preferences<span class="pl-k">.</span>putString(<span class="pl-s"><span class="
 
     <span class="pl-k">@SaveOption</span>(<span class="pl-smi">SaveMode</span><span class="pl-c1"><span class="pl-k">.</span>COMMIT</span>)
     <span class="pl-k">void</span> <span class="pl-en">setPassword</span>(<span class="pl-smi">String</span> <span class="pl-v">value</span>); <span class="pl-c">// will save using commit()</span>
+
+    <span class="pl-k">@SaveOption</span>(<span class="pl-smi">SaveMode</span><span class="pl-c1"><span class="pl-k">.</span>COMMIT</span>)
+    <span class="pl-k">void</span> <span class="pl-en">removeUsername</span>(); <span class="pl-c">// will persist using commit()</span>
 }</pre></div>
 
 <h3>
