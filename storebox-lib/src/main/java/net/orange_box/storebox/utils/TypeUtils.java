@@ -19,7 +19,7 @@ package net.orange_box.storebox.utils;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class TypeUtil {
+public final class TypeUtils {
     
     private static final Map<Class<?>, Class<?>> PRIMITIVE_TO_BOXED_MAP;
     static {
@@ -62,5 +62,5 @@ public final class TypeUtil {
         }
     }
     
-    private TypeUtil() {}
+    private TypeUtils() {}
 }

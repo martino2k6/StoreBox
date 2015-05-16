@@ -18,12 +18,14 @@ package net.orange_box.storebox.utils;
 
 import android.content.res.Resources;
 
+import java.lang.reflect.Method;
+
 public final class MethodUtils {
     
     public static String getKeyForRemove(Resources res, Object... args) {
         if (args != null && args.length > 0) {
             final Object value = args[0];
-            final Class<?> type = TypeUtil.wrapToBoxedType(value.getClass());
+            final Class<?> type = TypeUtils.wrapToBoxedType(value.getClass());
             
             if (type == String.class) {
                 return (String) value;
@@ -36,6 +38,33 @@ public final class MethodUtils {
         } else {
             throw new UnsupportedOperationException(
                     "String or int key argument not found for remove method");
+        }
+    }
+
+    public static Object getValueArg(Object... args) {
+        if (args != null && args.length > 0) {
+            return args[0];
+        } else {
+            throw new UnsupportedOperationException(
+                    "Value argument not found");
+        }
+    }
+
+    public static Class<?> getValueParameterType(Method method) {
+        final Class<?>[] types = method.getParameterTypes();
+        if (types != null && types.length > 0) {
+            return TypeUtils.wrapToBoxedType(types[0]);
+        } else {
+            throw new UnsupportedOperationException(
+                    "Value parameter type not found");
+        }
+    }
+
+    public static Method getObjectMethod(String name, Class... types) {
+        try {
+            return Object.class.getMethod(name, types);
+        } catch (NoSuchMethodException e) {
+            throw new IllegalArgumentException(e);
         }
     }
     

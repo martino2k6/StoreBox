@@ -36,7 +36,7 @@ import net.orange_box.storebox.enums.PreferencesType;
 import net.orange_box.storebox.enums.SaveMode;
 import net.orange_box.storebox.utils.MethodUtils;
 import net.orange_box.storebox.utils.PreferenceUtils;
-import net.orange_box.storebox.utils.TypeUtil;
+import net.orange_box.storebox.utils.TypeUtils;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -51,11 +51,11 @@ import java.util.Locale;
 class StoreBoxInvocationHandler implements InvocationHandler {
 
     private static final Method OBJECT_EQUALS =
-            getObjectMethod("equals", Object.class);
+            MethodUtils.getObjectMethod("equals", Object.class);
     private static final Method OBJECT_HASHCODE =
-            getObjectMethod("hashCode");
+            MethodUtils.getObjectMethod("hashCode");
     private static final Method OBJECT_TOSTRING =
-            getObjectMethod("toString");
+            MethodUtils.getObjectMethod("toString");
     
     private final SharedPreferences prefs;
     private final SharedPreferences.Editor editor;
@@ -182,8 +182,8 @@ class StoreBoxInvocationHandler implements InvocationHandler {
              * Argument types are boxed for us, so we only need to check one
              * variant.
              */
-            final Object value = getValueArg(args);
-            final Class<?> type = getValueParameterType(method);
+            final Object value = MethodUtils.getValueArg(args);
+            final Class<?> type = MethodUtils.getValueParameterType(method);
             
             if (type == Boolean.class) {
                 
@@ -218,7 +218,7 @@ class StoreBoxInvocationHandler implements InvocationHandler {
              * We wrap any primitive types to their boxed equivalents, as this
              * makes type safety a bit nicer.
              */
-            final Class<?> type = TypeUtil.wrapToBoxedType(method.getReturnType());
+            final Class<?> type = TypeUtils.wrapToBoxedType(method.getReturnType());
             final boolean typePrimitive = method.getReturnType().isPrimitive();
             
             if (type == Boolean.class) {
@@ -362,7 +362,7 @@ class StoreBoxInvocationHandler implements InvocationHandler {
             }
             
             if (instantiate) {
-                return TypeUtil.createDefaultInstanceFor(type);
+                return TypeUtils.createDefaultInstanceFor(type);
             } else {
                 return null;
             }
@@ -376,33 +376,6 @@ class StoreBoxInvocationHandler implements InvocationHandler {
             } else {
                 return type.cast(result);
             }
-        }
-    }
-
-    private static Method getObjectMethod(String name, Class... types) {
-        try {
-            return Object.class.getMethod(name, types);
-        } catch (NoSuchMethodException e) {
-            throw new IllegalArgumentException(e);
-        }
-    }
-
-    private static Object getValueArg(Object... args) {
-        if (args != null && args.length > 0) {
-            return args[0];
-        } else {
-            throw new UnsupportedOperationException(
-                    "Value argument not found");
-        }
-    }
-    
-    private static Class<?> getValueParameterType(Method method) {
-        final Class<?>[] types = method.getParameterTypes();
-        if (types != null && types.length > 0) {
-            return TypeUtil.wrapToBoxedType(types[0]);
-        } else {
-            throw new UnsupportedOperationException(
-                    "Value parameter type not found");
         }
     }
 }
