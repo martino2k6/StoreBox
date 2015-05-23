@@ -67,7 +67,6 @@ public class ValueTypesTestCase extends InstrumentationTestCase {
 
     @SmallTest
     public void testInt() {
-        uut.setFloat(1.0F);
         uut.setInt(1);
         assertEquals(1, uut.getInt());
     }
