@@ -370,7 +370,7 @@ class StoreBoxInvocationHandler implements InvocationHandler {
             if (result.getClass() != type) {
                 throw new UnsupportedOperationException(String.format(
                         Locale.ENGLISH,
-                        "Return type %1%s and default value type %2$s not the same",
+                        "Return type %1$s and default value type %2$s not the same",
                         result.getClass().getName(),
                         type.getName()));
             } else {
