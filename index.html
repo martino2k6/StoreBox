@@ -19,45 +19,36 @@
     </section>
 
     <section class="main-content">
-      <p><a href="http://android-arsenal.com/details/1/1737"><img src="https://img.shields.io/badge/Android%20Arsenal-StoreBox-brightgreen.svg?style=flat" alt="Android Arsenal"></a></p>
-
-<h2>
+      <h2>
 <a id="introduction" class="anchor" href="#introduction" aria-hidden="true"><span class="octicon octicon-link"></span></a>Introduction</h2>
 
-<p>When getting a value from any preferences, whether private Activity or default shared preferences, you would normally have to get a reference to a <code>SharedPreferences</code> instance, for example using</p>
+<p>StoreBox is an annotation-based library for interacting with Android's SharedPreferences, with the aim take out the the <em>how</em> and <em>where</em> parts of retrieving/storing values and instead focus on the more important <em>what</em> part.</p>
 
-<div class="highlight highlight-Java"><pre><span class="pl-smi">SharedPreferences</span> preferences <span class="pl-k">=</span> <span class="pl-smi">PreferenceManager</span><span class="pl-k">.</span>getDefaultSharedPreferences(context);</pre></div>
+<p>Normally when retrieving or storing values we need to know two pieces of information during each call: the key and the type.</p>
 
-<p>And after that the values can be retrieved/saved.</p>
+<div class="highlight highlight-Java"><pre><span class="pl-smi">String</span> username <span class="pl-k">=</span> preferences<span class="pl-k">.</span>getString(<span class="pl-s"><span class="pl-pds">"</span>key_username<span class="pl-pds">"</span></span>, <span class="pl-c1">null</span>);
+preferences<span class="pl-k">.</span>edit()<span class="pl-k">.</span>putString(<span class="pl-s"><span class="pl-pds">"</span>key_date_of_birth<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>30/09/2004<span class="pl-pds">"</span></span>)<span class="pl-k">.</span>apply(); <span class="pl-c">// should this be a String or a long?</span></pre></div>
 
-<div class="highlight highlight-Java"><pre><span class="pl-smi">String</span> username <span class="pl-k">=</span> preferences<span class="pl-k">.</span>getString(<span class="pl-s"><span class="pl-pds">"</span>username<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span><span class="pl-pds">"</span></span>);
-preferences<span class="pl-k">.</span>edit()<span class="pl-k">.</span>putString(<span class="pl-s"><span class="pl-pds">"</span>username<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>androiduser<span class="pl-pds">"</span></span>)<span class="pl-k">.</span>apply();</pre></div>
+<p>With StoreBox the operations above can be changed into pre-defined methods with improved semantics.</p>
 
-<p>This can get tedious if the values need to be saved and retrieved from multiple places as the caller is always required to supply the key of the preference, know under what type it is saved, and know the appropriate default to be used for the invocation. With a bigger set of keys used throughout an application this approach can become increasingly error-prone. Putting commonly accessed preferences behind a wrapper is a solution which is commonly used, however there is an alternative.</p>
+<div class="highlight highlight-Java"><pre><span class="pl-c">// definition</span>
+<span class="pl-k">public</span> <span class="pl-k">interface</span> <span class="pl-en">MyPreferences</span> {
 
-<p>What if an interface could be defined like</p>
-
-<div class="highlight highlight-Java"><pre><span class="pl-k">public</span> <span class="pl-k">interface</span> <span class="pl-en">MyPreferences</span> {
-
-    <span class="pl-k">@KeyByString</span>(<span class="pl-s"><span class="pl-pds">"</span>username<span class="pl-pds">"</span></span>)
+    <span class="pl-k">@KeyByString</span>(<span class="pl-s"><span class="pl-pds">"</span>key_username<span class="pl-pds">"</span></span>)
     <span class="pl-smi">String</span> <span class="pl-en">getUsername</span>();
 
-    <span class="pl-k">@KeyByString</span>(<span class="pl-s"><span class="pl-pds">"</span>username<span class="pl-pds">"</span></span>)
-    <span class="pl-k">void</span> <span class="pl-en">setUsername</span>(<span class="pl-smi">String</span> <span class="pl-v">value</span>);
-}</pre></div>
+    <span class="pl-k">@KeyByString</span>(<span class="pl-s"><span class="pl-pds">"</span>key_date_of_birth<span class="pl-pds">"</span></span>)
+    <span class="pl-k">void</span> <span class="pl-en">setDateOfBirth</span>(<span class="pl-smi">String</span> <span class="pl-v">value</span>);
+}
 
-<p>For everyone to use in order to save and get values? The caller doesn't need to worry about the keys, neither needs to think about what value type is saved under the key, and the process of retrieving/saving is hidden behind a method name with improved semantics.</p>
+<span class="pl-c">// usage</span>
+<span class="pl-smi">MyPreferences</span> preferences <span class="pl-k">=</span> <span class="pl-smi">StoreBox</span><span class="pl-k">.</span>create(context, <span class="pl-smi">MyPreferences</span><span class="pl-k">.</span>class);
+<span class="pl-smi">String</span> username <span class="pl-k">=</span> preferences<span class="pl-k">.</span>getUsername();
+preferences<span class="pl-k">.</span>setDateOfBirth(<span class="pl-s"><span class="pl-pds">"</span>30/09/2004<span class="pl-pds">"</span></span>);</pre></div>
 
-<p>With StoreBox that becomes possible. Given the above interface definition you can easily create an instance using</p>
+<p>The caller now doesn't need to worry about the key, neither about what type the values are stored under. The only important part that needs to be taken into consideration is <em>what</em> is done with the values, whether that is storing them for later, showing them to the user in the UI, or just changing application behaviour.</p>
 
-<div class="highlight highlight-Java"><pre><span class="pl-smi">MyPreferences</span> preferences <span class="pl-k">=</span> <span class="pl-smi">StoreBox</span><span class="pl-k">.</span>create(context, <span class="pl-smi">MyPreferences</span><span class="pl-k">.</span>class);</pre></div>
-
-<p>and you will be able to retrieve and save the values just by calling the defined methods</p>
-
-<div class="highlight highlight-Java"><pre><span class="pl-smi">String</span> username <span class="pl-k">=</span> preferences<span class="pl-k">.</span>getUsername();
-preferences<span class="pl-k">.</span>setUsername(<span class="pl-s"><span class="pl-pds">"</span>androiduser<span class="pl-pds">"</span></span>);</pre></div>
-
-<p>Read on to find out more details about how StoreBox can be used and how you can add it to your Android project.</p>
+<p>Read on to find out more details about how StoreBox can be used and how it can be added to an Android project.</p>
 
 <h2>
 <a id="defining-an-interface-and-bringing-it-to-life" class="anchor" href="#defining-an-interface-and-bringing-it-to-life" aria-hidden="true"><span class="octicon octicon-link"></span></a>Defining an interface and bringing it to life</h2>
