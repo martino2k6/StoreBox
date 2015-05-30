@@ -44,18 +44,13 @@ MyPreferences instance = StoreBox.create(context, MyPreferences.class);
 ```
 
 ##Adding get and set methods##
-If you would like to add a **getter** just add a method to the interface which returns a value and make sure to annotate it using `@KeyByString` or `@KeyByResource`. Please note that for now only values which the `SharedPreferences` accept can be used (except `Set<String>` for the moment).
+If you would like to add a **getter** just add a method to the interface which returns a value and make sure to annotate it using `@KeyByString` or `@KeyByResource`.
 ```Java
 @KeyByString("key_nickname")
 String getNickname();
 
 @KeyByResource(R.string.key_notifications)
 boolean shouldShowNotifications();
-```
-If you try to define a method that returns something like a `Date` object, which cannot be saved by Android, an exception will be thrown.
-```Java
-@KeyByString("key_date_of_birth")
-Date getDateOfBirth(); // invalid
 ```
 
 Adding a **setter** is just as easy. The same annotations will need to be used as for getter methods, but now our method will return nothing and will have to provide a parameter for supplying the value that should be saved.
@@ -65,11 +60,6 @@ void setNickname(String value)
 
 @KeyByResource(R.string.key_notifications)
 void setNotifications(boolean value)
-```
-Just like with get methods only the common types are supported, and as such the example below will not work.
-```Java
-@KeyByString("key_date_of_birth")
-void setDateOfBirth(Date value); // invalid
 ```
 
 ##Specifying defaults for get methods##
@@ -93,6 +83,35 @@ For some types, such as `long`, which cannot be added to the resources an intege
 @DefaultValue(R.integer.default_refresh_interval)
 long getRefreshInterval();
 ```
+
+##Storing and retrieving custom types##
+Saving custom types, which are not understood by Android's SharedPreferences, can be supported through the use of type adapters. A type adapter implementation can be provided by extending from one of the following classes:
+* `BaseBooleanTypeAdapter` for storing as a `Boolean`
+* `BaseFloatTypeAdapter` for storing as a `Float` and so on...
+* `BaseIntegerTypeAdapter`
+* `BaseLongTypeAdapter`
+* `BaseStringTypeAdapter`
+* `BaseStringSetTypeAdapter` (only supported on API11 and newer)
+
+Telling StoreBox which type adapter should be used can be done by adding the `@TypeAdapter` annotation to the get and set methods.
+```Java
+@KeyByString("key_region")
+@TypeAdapter(RegionTypeAdapter.class)
+Region getRegion();
+
+@KeyByString("key_region")
+@TypeAdapter(RegionTypeAdapter.class)
+void setRegion(Region value);
+```
+
+Which type adapter needs to be extended depends on the use case. Take a look at the [`DateTypeAdapter`](https://github.com/martino2k6/StoreBox/tree/master/storebox-lib/src/main/java/net/orange_box/storebox/adapters/extra/DateTypeAdapter.class), [`UriTypeAdapter`]([`DateTypeAdapter`](https://github.com/martino2k6/StoreBox/tree/master/storebox-lib/src/main/java/net/orange_box/storebox/adapters/extra/UriTypeAdapter.class), and [`CustomClassListTypeAdapter`]([`DateTypeAdapter`](https://github.com/martino2k6/StoreBox/tree/master/storebox-harness/src/main/java/net/orange_box/storebox/harness/types/adapters/CustomClassListTypeAdapter.class) for some examples. It is worth noting that in the last example Gson is being used for serialising the type, as opposed to writing a custom implementation. Gson is not used internally by StoreBox, as such if you wish to use Gson for a type adapter you will need to add it to your project as a dependency.
+
+The following types will work out of the box, so type adapters don't need to be provided for them:
+* `Date`
+* `Enum`
+* `Uri`
+
+*Disclaimer: APIs around type adapters may change in the future, as I will keep looking for a less verbose way of achieving the same goal without requiring the use of Gson.*
 
 ##Opening different types of preferences##
 In all of the examples so far details about what preferences are opened and how have been omitted.

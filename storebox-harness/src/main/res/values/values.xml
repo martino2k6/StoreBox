@@ -5,9 +5,10 @@
     <string name="key_int">int</string>
     <string name="key_long">long</string>
     <string name="key_string">string</string>
-    
-    <string name="default_string">default</string>
+    <string name="key_string_set">string_set</string>
+
     <bool name="default_boolean">true</bool>
     <item name="default_float" format="float" type="dimen">0.5</item>
     <integer name="default_int">1</integer>
+    <string name="default_string">default</string>
 </resources>

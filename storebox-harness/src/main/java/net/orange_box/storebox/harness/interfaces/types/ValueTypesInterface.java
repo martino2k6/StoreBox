@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-package net.orange_box.storebox.harness.interfaces;
+package net.orange_box.storebox.harness.interfaces.types;
 
 import net.orange_box.storebox.annotations.method.KeyByResource;
 import net.orange_box.storebox.harness.R;
+
+import java.util.Set;
 
 public interface ValueTypesInterface {
     
@@ -54,4 +56,11 @@ public interface ValueTypesInterface {
 
     @KeyByResource(R.string.key_string)
     void setString(String value);
+
+
+    @KeyByResource(R.string.key_string_set)
+    Set<String> getStringSet();
+
+    @KeyByResource(R.string.key_string_set)
+    void setStringSet(Set<String> value);
 }

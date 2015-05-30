@@ -16,8 +16,25 @@
 
 package net.orange_box.storebox.utils;
 
+import android.net.Uri;
+
+import net.orange_box.storebox.adapters.extra.DateTypeAdapter;
+import net.orange_box.storebox.adapters.extra.EnumTypeAdapter;
+import net.orange_box.storebox.adapters.StoreBoxTypeAdapter;
+import net.orange_box.storebox.adapters.standard.BooleanTypeAdapter;
+import net.orange_box.storebox.adapters.standard.FloatTypeAdapter;
+import net.orange_box.storebox.adapters.standard.IntegerTypeAdapter;
+import net.orange_box.storebox.adapters.standard.LongTypeAdapter;
+import net.orange_box.storebox.adapters.standard.StringSetTypeAdapter;
+import net.orange_box.storebox.adapters.standard.StringTypeAdapter;
+import net.orange_box.storebox.adapters.extra.UriTypeAdapter;
+import net.orange_box.storebox.annotations.method.TypeAdapter;
+
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 public final class TypeUtils {
     
@@ -31,11 +48,23 @@ public final class TypeUtils {
         
         PRIMITIVE_TO_BOXED_MAP = map;
     }
-
-    private static boolean DEFAULT_BOOLEAN;
-    private static float DEFAULT_FLOAT;
-    private static int DEFAULT_INT;
-    private static long DEFAULT_LONG;
+    
+    private static final Map<Class<?>, StoreBoxTypeAdapter> ADAPTERS_MAP;
+    static {
+        final Map<Class<?>, StoreBoxTypeAdapter> map = new HashMap<>(8);
+        // standard
+        map.put(Boolean.class, new BooleanTypeAdapter());
+        map.put(Float.class, new FloatTypeAdapter());
+        map.put(Integer.class, new IntegerTypeAdapter());
+        map.put(Long.class, new LongTypeAdapter());
+        map.put(String.class, new StringTypeAdapter());
+        map.put(Set.class, new StringSetTypeAdapter());
+        // extra
+        map.put(Date.class, new DateTypeAdapter());
+        map.put(Uri.class, new UriTypeAdapter());
+        
+        ADAPTERS_MAP = map;
+    }
     
     public static Class<?> wrapToBoxedType(Class<?> type) {
         if (type.isPrimitive() && PRIMITIVE_TO_BOXED_MAP.containsKey(type)) {
@@ -45,20 +74,41 @@ public final class TypeUtils {
         }
     }
     
-    public static <T> T createDefaultInstanceFor(Class<T> type) {
-        if (type == Boolean.class) {
-            return type.cast(DEFAULT_BOOLEAN);
-        } else if (type == Float.class) {
-            return type.cast(DEFAULT_FLOAT);
-        } else if (type == Integer.class) {
-            return type.cast(DEFAULT_INT);
-        } else if (type == Long.class) {
-            return type.cast(DEFAULT_LONG);
-        } else if (type == String.class) {
-            return type.cast("");
-        } else {
-            throw new UnsupportedOperationException(
-                    type.getName() + " not supported");
+    @SuppressWarnings("unchecked")
+    public static StoreBoxTypeAdapter getTypeAdapter(
+            Class<?> type,
+            TypeAdapter annotation) {
+        
+        if (ADAPTERS_MAP.containsKey(type)) {
+            return ADAPTERS_MAP.get(type);
+        } else if (type.isEnum()) {
+            // enums have a special type adapter
+            return new EnumTypeAdapter((Class<Enum>) type);
+        }
+        
+        if (annotation == null) {
+            throw new RuntimeException(String.format(
+                    Locale.ENGLISH,
+                    "Failed to find type adapter for %1$s",
+                    type.getName()));
+        }
+        
+        try {
+            return annotation.value().newInstance();
+        } catch (InstantiationException e) {
+            throw new RuntimeException(String.format(
+                    Locale.ENGLISH,
+                    "Failed to instantiate %1$s, perhaps the no-arguments " +
+                            "constructor is missing?",
+                    annotation.value().getSimpleName()),
+                    e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(String.format(
+                    Locale.ENGLISH,
+                    "Failed to instantiate %1$s, perhaps the no-arguments " +
+                            "constructor is not public?",
+                    annotation.value().getSimpleName()), 
+                    e);
         }
     }
     

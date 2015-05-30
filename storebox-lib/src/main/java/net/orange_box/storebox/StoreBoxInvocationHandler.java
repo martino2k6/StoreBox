@@ -24,10 +24,12 @@ import android.content.res.Resources;
 import android.preference.PreferenceManager;
 import android.util.TypedValue;
 
+import net.orange_box.storebox.adapters.StoreBoxTypeAdapter;
 import net.orange_box.storebox.annotations.method.DefaultValue;
 import net.orange_box.storebox.annotations.method.KeyByResource;
 import net.orange_box.storebox.annotations.method.KeyByString;
 import net.orange_box.storebox.annotations.method.RemoveMethod;
+import net.orange_box.storebox.annotations.method.TypeAdapter;
 import net.orange_box.storebox.annotations.option.SaveOption;
 import net.orange_box.storebox.enums.PreferencesMode;
 import net.orange_box.storebox.enums.PreferencesType;
@@ -175,78 +177,41 @@ class StoreBoxInvocationHandler implements InvocationHandler {
              * Set.
              * 
              * Argument types are boxed for us, so we only need to check one
-             * variant.
+             * variant and we also need to find out what type to store the
+             * value under,
              */
-            final Object value = MethodUtils.getValueArg(args);
-            final Class<?> type = MethodUtils.getValueParameterType(method);
+            final StoreBoxTypeAdapter adapter = TypeUtils.getTypeAdapter(
+                    MethodUtils.getValueParameterType(method),
+                    method.getAnnotation(TypeAdapter.class));
+            final Object value = adapter.adaptForPreferences(
+                    MethodUtils.getValueArg(args));
             
-            if (type == Boolean.class) {
-                
-                editor.putBoolean(key, (Boolean) value);
-                
-            } else if (type == Float.class) {
-                
-                editor.putFloat(key, (Float) value);
-                
-            } else if (type == Integer.class) {
-                
-                editor.putInt(key, (Integer) value);
-                
-            } else if (type == Long.class) {
-                
-                editor.putLong(key, (Long) value);
-                
-            } else if (type == String.class) {
-                
-                editor.putString(key, (String) value);
-                
-            } else {
-                throw new UnsupportedOperationException(String.format(
-                        Locale.ENGLISH,
-                        "Saving type %1$s is not supported",
-                        type.getName()));
-            }
+            PreferenceUtils.putValue(
+                    editor, key, adapter.getStoreType(), value);
         } else {
             /*
              * Get.
              * 
-             * We wrap any primitive types to their boxed equivalents, as this
-             * makes later handling easier.
+             * We wrap any primitive types to their boxed equivalents as this
+             * makes further operations a bit nicer.
              */
-            final Class<?> type =
-                    TypeUtils.wrapToBoxedType(method.getReturnType());
+            final StoreBoxTypeAdapter adapter = TypeUtils.getTypeAdapter(
+                    TypeUtils.wrapToBoxedType(method.getReturnType()),
+                    method.getAnnotation(TypeAdapter.class));
             
-            if (type == Boolean.class) {
-
-                return prefs.getBoolean(key, getDefaultValueArg(
-                        method, Boolean.class, args));
-                
-            } else if (type == Float.class) {
-                
-                return prefs.getFloat(key, getDefaultValueArg(
-                        method, Float.class, args));
-                
-            } else if (type == Integer.class) {
-                
-                return prefs.getInt(key, getDefaultValueArg(
-                        method, Integer.class, args));
-                
-            } else if (type == Long.class) {
-                
-                return prefs.getLong(key, getDefaultValueArg(
-                        method, Long.class, args));
-                
-            } else if (type == String.class) {
-                
-                return prefs.getString(key, getDefaultValueArg(
-                        method, String.class, args));
-                
-            } else {
-                throw new UnsupportedOperationException(String.format(
-                        Locale.ENGLISH,
-                        "Retrieving type %1$s is not supported",
-                        type.getName()));
-            }
+            final Object defValue = getDefaultValueArg(
+                    method,
+                    args);
+            
+            final Object value = PreferenceUtils.getValue(
+                    prefs,
+                    key,
+                    adapter.getStoreType(),
+                    (defValue == null)
+                            ? adapter.getDefaultValue()
+                            : adapter.adaptForPreferences(defValue));
+            
+            return adapter.adaptFromPreferences(value);
         }
 
         // method-level strategy > class-level strategy
@@ -258,6 +223,7 @@ class StoreBoxInvocationHandler implements InvocationHandler {
         }
         PreferenceUtils.saveChanges(editor, mode);
 
+        // allow chaining if appropriate
         if (returnType == method.getDeclaringClass()) {
             return proxy;
         } else if (returnType == SharedPreferences.Editor.class) {
@@ -291,12 +257,12 @@ class StoreBoxInvocationHandler implements InvocationHandler {
         return hashCode;
     }
     
-    private <T> T getDefaultValueArg(
+    private Object getDefaultValueArg(
             Method method,
-            Class<T> type,
             Object... args) {
         
         Object result = null;
+        final Class<?> type = TypeUtils.wrapToBoxedType(method.getReturnType());
         
         // parameter default > method-level default
         if (args != null && args.length > 0) {
@@ -325,22 +291,22 @@ class StoreBoxInvocationHandler implements InvocationHandler {
                 }
             } else {
                 throw new UnsupportedOperationException(
-                        type.getName() + " not supported");
+                        type.getName() + " not supported as a resource default");
             }
         }
         
         // default was not provided so let's see how we should create it
         if (result == null) {
-            return TypeUtils.createDefaultInstanceFor(type);
+            return null;
         } else {
-            if (result.getClass() != type) {
+            if (!type.isAssignableFrom(result.getClass())) {
                 throw new UnsupportedOperationException(String.format(
                         Locale.ENGLISH,
                         "Return type %1$s and default value type %2$s not the same",
                         result.getClass().getName(),
                         type.getName()));
             } else {
-                return type.cast(result);
+                return result;
             }
         }
     }
