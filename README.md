@@ -2,41 +2,34 @@
 **Android library for streamlining SharedPreferences.**  
 [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-StoreBox-brightgreen.svg?style=flat)](http://android-arsenal.com/details/1/1737)
 
-When getting a value from any preferences, whether private Activity or default shared preferences, you would normally have to get a reference to a ```SharedPreferences``` instance, for example using
-```Java
-SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-```
-And after that the values can be retrieved/saved.
-```Java
-String username = preferences.getString("username", "");
-preferences.edit().putString("username", "androiduser").apply();
-```
-This can get tedious if the values need to be saved and retrieved from multiple places as the caller is always required to supply the key of the preference, know under what type it is saved, and know the appropriate default to be used for the invocation. With a bigger set of keys used throughout an application this approach can become increasingly error-prone. Putting commonly accessed preferences behind a wrapper is a solution which is commonly used, however there is an alternative.
+StoreBox is an annotation-based library for interacting with Android's SharedPreferences, with the aim take out the the *how* and *where* parts of retrieving/storing values and instead focus on the more important *what* part.
 
-What if an interface could be defined like
+Normally when retrieving or storing values we need to know two pieces of information during each call: the key and the type.
 ```Java
+String username = preferences.getString("key_username", null);
+preferences.edit().putString("key_date_of_birth", "30/09/2004").apply(); // should this be a String or a long?
+```
+
+With StoreBox the operations above can be changed into pre-defined methods with improved semantics.
+```Java
+// definition
 public interface MyPreferences {
     
-    @KeyByString("username")
+    @KeyByString("key_username")
     String getUsername();
     
-    @KeyByString("username")
-    void setUsername(String value);
+    @KeyByString("key_date_of_birth")
+    void setDateOfBirth(String value);
 }
-```
-For everyone to use in order to save and get values? The caller doesn't need to worry about the keys, neither needs to think about what value type is saved under the key, and the process of retrieving/saving is hidden behind a method name with improved semantics.
 
-With StoreBox that becomes possible. Given the above interface definition you can easily create an instance using
-```Java
+// usage
 MyPreferences preferences = StoreBox.create(context, MyPreferences.class);
-```
-and you will be able to retrieve and save the values just by calling the defined methods
-```Java
 String username = preferences.getUsername();
-preferences.setUsername("androiduser");
+preferences.setDateOfBirth("30/09/2004");
 ```
+The caller now doesn't need to worry about the key, neither about what type the values are stored under. The only important part that needs to be taken into consideration is *what* is done with the values, whether that is storing them for later, showing them to the user in the UI, or just changing application behaviour.
 
-Read on to find out more details about how StoreBox can be used and how you can add it to your Android project.
+Read on to find out more details about how StoreBox can be used and how it can be added to an Android project.
 
 ##Defining an interface and bringing it to life##
 Simply create a new interface class in your IDE or a text editor, give it an access modifier which suits its use, and name it as appropriate.
