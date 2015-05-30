@@ -28,9 +28,7 @@ import net.orange_box.storebox.annotations.method.DefaultValue;
 import net.orange_box.storebox.annotations.method.KeyByResource;
 import net.orange_box.storebox.annotations.method.KeyByString;
 import net.orange_box.storebox.annotations.method.RemoveMethod;
-import net.orange_box.storebox.annotations.option.DefaultValueOption;
 import net.orange_box.storebox.annotations.option.SaveOption;
-import net.orange_box.storebox.enums.DefaultValueMode;
 import net.orange_box.storebox.enums.PreferencesMode;
 import net.orange_box.storebox.enums.PreferencesType;
 import net.orange_box.storebox.enums.SaveMode;
@@ -62,7 +60,6 @@ class StoreBoxInvocationHandler implements InvocationHandler {
     private final Resources res;
     
     private final SaveMode saveMode;
-    private final DefaultValueMode defaultValueMode;
     
     private int hashCode;
     
@@ -71,8 +68,7 @@ class StoreBoxInvocationHandler implements InvocationHandler {
             PreferencesType preferencesType,
             String openNameValue,
             PreferencesMode preferencesMode,
-            SaveMode saveMode,
-            DefaultValueMode defaultValueMode) {
+            SaveMode saveMode) {
         
         switch (preferencesType) {
             case ACTIVITY:
@@ -94,7 +90,6 @@ class StoreBoxInvocationHandler implements InvocationHandler {
         res = context.getResources();
         
         this.saveMode = saveMode;
-        this.defaultValueMode = defaultValueMode;
     }
     
     @Override
@@ -216,35 +211,35 @@ class StoreBoxInvocationHandler implements InvocationHandler {
              * Get.
              * 
              * We wrap any primitive types to their boxed equivalents, as this
-             * makes type safety a bit nicer.
+             * makes later handling easier.
              */
-            final Class<?> type = TypeUtils.wrapToBoxedType(method.getReturnType());
-            final boolean typePrimitive = method.getReturnType().isPrimitive();
+            final Class<?> type =
+                    TypeUtils.wrapToBoxedType(method.getReturnType());
             
             if (type == Boolean.class) {
 
                 return prefs.getBoolean(key, getDefaultValueArg(
-                        method, Boolean.class, typePrimitive, args));
+                        method, Boolean.class, args));
                 
             } else if (type == Float.class) {
                 
                 return prefs.getFloat(key, getDefaultValueArg(
-                        method, Float.class, typePrimitive, args));
+                        method, Float.class, args));
                 
             } else if (type == Integer.class) {
                 
                 return prefs.getInt(key, getDefaultValueArg(
-                        method, Integer.class, typePrimitive, args));
+                        method, Integer.class, args));
                 
             } else if (type == Long.class) {
                 
                 return prefs.getLong(key, getDefaultValueArg(
-                        method, Long.class, typePrimitive, args));
+                        method, Long.class, args));
                 
             } else if (type == String.class) {
                 
                 return prefs.getString(key, getDefaultValueArg(
-                        method, String.class, typePrimitive, args));
+                        method, String.class, args));
                 
             } else {
                 throw new UnsupportedOperationException(String.format(
@@ -290,7 +285,7 @@ class StoreBoxInvocationHandler implements InvocationHandler {
     private int internalHashCode() {
         if (hashCode == 0) {
             hashCode = Arrays.hashCode(new Object[] {
-                    prefs, editor, res, saveMode, defaultValueMode});
+                    prefs, editor, res, saveMode});
         }
         
         return hashCode;
@@ -299,7 +294,6 @@ class StoreBoxInvocationHandler implements InvocationHandler {
     private <T> T getDefaultValueArg(
             Method method,
             Class<T> type,
-            boolean typePrimitive,
             Object... args) {
         
         Object result = null;
@@ -337,35 +331,7 @@ class StoreBoxInvocationHandler implements InvocationHandler {
         
         // default was not provided so let's see how we should create it
         if (result == null) {
-            final boolean instantiate;
-            if (typePrimitive) {
-                instantiate = true;
-            } else {
-                // method-level option > class-level option
-                final DefaultValueMode mode;
-                if (method.isAnnotationPresent(DefaultValueOption.class)) {
-                    mode = method.getAnnotation(DefaultValueOption.class)
-                            .value();
-                } else {
-                    mode = defaultValueMode;
-                }
-                
-                switch (mode) {
-                    case EMPTY:
-                        instantiate = true;
-                        break;
-                    
-                    case NULL:
-                    default:
-                        instantiate = false;
-                }
-            }
-            
-            if (instantiate) {
-                return TypeUtils.createDefaultInstanceFor(type);
-            } else {
-                return null;
-            }
+            return TypeUtils.createDefaultInstanceFor(type);
         } else {
             if (result.getClass() != type) {
                 throw new UnsupportedOperationException(String.format(

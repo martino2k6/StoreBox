@@ -217,27 +217,6 @@ public interface SaveModeExample {
 }
 ```
 
-###Default value modes###
-Supplying default values, either by using an argument or an annotation, has been covered earlier but there's further customisation possible.
-
-The `@DefaultValueOption` works in a similar way to the `@SaveOption` annotation in how it can be used, but it specifies what default value should be returned in the absence of a more explicit value.
-```Java
-@DefaulltValueOption(DefaultValueMode.EMPTY)
-public interface DefaultValueModeExample {
-    // key annotations omitted
-    
-    String getUsername(); // will return ""
-    
-    @DefaultValueOption(DefaultValueMode.NULL)
-    String getPassword(); // will return null
-    
-    int getAppOpenedCount(); // will return 0
-    
-    @DefaultValueOption(DefaultValueMode.NULL)
-    int getSettingsOpenedCount(); // will return 0 as primitive types can't hold a reference
-}
-```
-
 ###Obtaining a more customised instance at run-time###
 As previously described you can build an instance of your interface using `StoreBox.build()`, however if you'd like to override at run-time any annotations you can use `StoreBox.Builder` and apply different options.
 ```Java

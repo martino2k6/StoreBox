@@ -20,12 +20,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.text.TextUtils;
 
-import net.orange_box.storebox.annotations.option.DefaultValueOption;
 import net.orange_box.storebox.annotations.option.SaveOption;
 import net.orange_box.storebox.annotations.type.ActivityPreferences;
 import net.orange_box.storebox.annotations.type.DefaultSharedPreferences;
 import net.orange_box.storebox.annotations.type.FilePreferences;
-import net.orange_box.storebox.enums.DefaultValueMode;
 import net.orange_box.storebox.enums.PreferencesMode;
 import net.orange_box.storebox.enums.PreferencesType;
 import net.orange_box.storebox.enums.SaveMode;
@@ -69,7 +67,6 @@ public final class StoreBox {
         private String preferencesName = "";
         private PreferencesMode preferencesMode = PreferencesMode.MODE_PRIVATE;
         private SaveMode saveMode = SaveMode.APPLY;
-        private DefaultValueMode defaultValueMode = DefaultValueMode.EMPTY;
 
         public Builder(Context context, Class<T> cls) {
             this.context = context;
@@ -101,11 +98,6 @@ public final class StoreBox {
             return this;
         }
 
-        public Builder defaultValueMode(DefaultValueMode value) {
-            defaultValueMode = value;
-            return this;
-        }
-
         /**
          * @return new instance of class {@code cls} using {@code context}
          */
@@ -121,8 +113,7 @@ public final class StoreBox {
                             preferencesType,
                             preferencesName,
                             preferencesMode,
-                            saveMode,
-                            defaultValueMode));
+                            saveMode));
         }
         
         private void readAnnotations() {
@@ -145,11 +136,6 @@ public final class StoreBox {
             // save option 
             if (cls.isAnnotationPresent(SaveOption.class)) {
                 saveMode(cls.getAnnotation(SaveOption.class).value());
-            }
-            // default value option
-            if (cls.isAnnotationPresent(DefaultValueOption.class)) {
-                defaultValueMode(cls.getAnnotation(
-                        DefaultValueOption.class).value());
             }
         }
         
