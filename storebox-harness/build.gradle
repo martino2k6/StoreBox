@@ -10,8 +10,8 @@ android {
         minSdkVersion 10
         targetSdkVersion 22
 
-        versionCode 3
-        versionName '1.1.0'
+        versionCode 4
+        versionName '1.1.1'
 
         testInstrumentationRunner 'net.orange_box.storebox.harness.CustomInstrumentationTestRunner'
     }
