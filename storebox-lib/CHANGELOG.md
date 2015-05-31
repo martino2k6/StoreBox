@@ -1,3 +1,7 @@
+##1.2.0 (2015-05-31)
+- added support for custom types #3
+- removed default value modes
+
 ##1.1.0 (2015-05-16)
 - added support for remove methods #8
 

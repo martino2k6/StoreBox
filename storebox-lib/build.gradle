@@ -3,8 +3,8 @@ apply plugin: 'findbugs'
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
-def VERSION_CODE = 3
-def VERSION_NAME = '1.1.0'
+def VERSION_CODE = 4
+def VERSION_NAME = '1.2.0'
 
 android {
     compileSdkVersion 22
