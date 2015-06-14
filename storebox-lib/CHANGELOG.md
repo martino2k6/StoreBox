@@ -1,3 +1,7 @@
+##1.2.1 (2015-06-15)
+- added support to set nulls for Date values
+- fixed NPE when using Date values
+
 ##1.2.0 (2015-05-31)
 - added support for custom types #3
 - removed default value modes
