@@ -16,19 +16,40 @@
 
 package net.orange_box.storebox.adapters.extra;
 
+import android.support.annotation.Nullable;
+
 import net.orange_box.storebox.adapters.base.BaseLongTypeAdapter;
 
 import java.util.Date;
 
+/**
+ * A {@link net.orange_box.storebox.adapters.StoreBoxTypeAdapter} for
+ * {@link Date} objects which uses {@link Long#MIN_VALUE} to represent
+ * an absent/null preference value internally.
+ */
 public class DateTypeAdapter extends BaseLongTypeAdapter<Date> {
-    
+
     @Override
-    public Long adaptForPreferences(Date value) {
-        return value.getTime();
+    public Long getDefaultValue() {
+        return Long.MIN_VALUE;
     }
 
     @Override
+    public Long adaptForPreferences(@Nullable Date value) {
+        if (value == null) {
+            return Long.MIN_VALUE;
+        }
+        
+        return value.getTime();
+    }
+
+    @Nullable
+    @Override
     public Date adaptFromPreferences(Long value) {
+        if (value == Long.MIN_VALUE) {
+            return null;
+        }
+        
         return new Date(value);
     }
 }
