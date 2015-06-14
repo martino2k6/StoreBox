@@ -25,6 +25,7 @@ import net.orange_box.storebox.harness.types.CustomEnum;
 import net.orange_box.storebox.harness.types.adapters.CustomClassListTypeAdapter;
 import net.orange_box.storebox.harness.types.adapters.CustomClassTypeAdapter;
 
+import java.util.Date;
 import java.util.List;
 
 public interface CustomTypesInterface {
@@ -37,6 +38,16 @@ public interface CustomTypesInterface {
     
     @KeyByString("key_custom_enum")
     void setCustomEnum(CustomEnum value);
+
+
+    @KeyByString("key_date")
+    Date getDate();
+    
+    @KeyByString("key_date")
+    Date getDate(Date defValue);
+
+    @KeyByString("key_date")
+    void setDate(Date value);
 
 
     @KeyByString("key_uri")

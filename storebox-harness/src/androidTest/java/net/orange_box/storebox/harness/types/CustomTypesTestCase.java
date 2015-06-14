@@ -29,6 +29,7 @@ import net.orange_box.storebox.harness.interfaces.types.CustomTypesInterface;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 public class CustomTypesTestCase extends InstrumentationTestCase {
@@ -79,6 +80,29 @@ public class CustomTypesTestCase extends InstrumentationTestCase {
         uut.setCustomEnum(null);
         
         assertNull(uut.getCustomEnum());
+    }
+    
+    @SmallTest
+    public void testDateDefaults() {
+        assertNull(uut.getDate());
+        assertEquals(new Date(0), uut.getDate(new Date(0)));
+    }
+    
+    @SmallTest
+    public void testDate() {
+        final Date date = new Date();
+        
+        uut.setDate(date);
+        assertEquals(date, uut.getDate());
+        assertEquals(date, uut.getDate(new Date(0)));
+    }
+    
+    @SmallTest
+    public void testDateNull() {
+        uut.setDate(new Date());
+        uut.setDate(null);
+        
+        assertNull(uut.getDate());
     }
     
     @SmallTest
