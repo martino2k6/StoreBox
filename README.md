@@ -31,6 +31,24 @@ The caller now doesn't need to worry about the key, neither about what type the 
 
 Read on to find out more details about how StoreBox can be used and how it can be added to an Android project.
 
+##Adding to a project##
+StoreBox can be used in Android projects using minimum SDK version 10 and newer (Android 2.3+).
+###JAR###
+[v1.2.0 JAR](https://oss.sonatype.org/service/local/repositories/releases/content/net/orange-box/storebox/storebox-lib/1.2.0/storebox-lib-1.2.0.jar)  
+[v1.2.0 JavaDoc JAR](https://oss.sonatype.org/service/local/repositories/releases/content/net/orange-box/storebox/storebox-lib/1.2.0/storebox-lib-1.2.0-javadoc.jar)
+###Gradle###
+```
+compile 'net.orange-box.storebox:storebox-lib:1.2.0'
+```
+###Maven###
+```
+<dependency>
+  <groupId>net.orange-box.storebox</groupId>
+  <artifactId>storebox-lib</artifactId>
+  <version>1.2.0</version>
+</dependency>
+```
+
 ##Defining an interface and bringing it to life##
 Simply create a new interface class in your IDE or a text editor, give it an access modifier which suits its use, and name it as appropriate.
 ```Java
@@ -125,24 +143,6 @@ public interface WelcomeActivityPreferences {
     
     // method definitions here...
 }
-```
-
-##Adding to a project##
-StoreBox can be used in Android projects using minimum SDK version 10 and newer (Android 2.3+).
-###JAR###
-[v1.2.0 JAR](https://oss.sonatype.org/service/local/repositories/releases/content/net/orange-box/storebox/storebox-lib/1.2.0/storebox-lib-1.2.0.jar)  
-[v1.2.0 JavaDoc JAR](https://oss.sonatype.org/service/local/repositories/releases/content/net/orange-box/storebox/storebox-lib/1.2.0/storebox-lib-1.2.0-javadoc.jar)
-###Gradle###
-```
-compile 'net.orange-box.storebox:storebox-lib:1.2.0'
-```
-###Maven###
-```
-<dependency>
-  <groupId>net.orange-box.storebox</groupId>
-  <artifactId>storebox-lib</artifactId>
-  <version>1.2.0</version>
-</dependency>
 ```
 
 ##Advanced##
