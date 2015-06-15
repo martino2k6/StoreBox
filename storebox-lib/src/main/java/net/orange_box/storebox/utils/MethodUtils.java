@@ -18,9 +18,22 @@ package net.orange_box.storebox.utils;
 
 import android.content.res.Resources;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 public final class MethodUtils {
+    
+    @SafeVarargs
+    public static <T extends Class<? extends Annotation>> boolean areAnyAnnotationsPresent(
+            Method method, T... types) {
+
+        for (final T type : types) {
+            if (method.isAnnotationPresent(type)) {
+                return true;
+            }
+        }
+        return false;
+    }
     
     public static String getKeyForRemove(Resources res, Object... args) {
         if (args != null && args.length > 0) {

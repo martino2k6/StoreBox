@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class TypeUtils {
     
@@ -51,7 +52,9 @@ public final class TypeUtils {
     
     private static final Map<Class<?>, StoreBoxTypeAdapter> ADAPTERS_MAP;
     static {
-        final Map<Class<?>, StoreBoxTypeAdapter> map = new HashMap<>(8);
+        final Map<Class<?>, StoreBoxTypeAdapter> map =
+                new ConcurrentHashMap<>(8);
+        
         // standard
         map.put(Boolean.class, new BooleanTypeAdapter());
         map.put(Float.class, new FloatTypeAdapter());
@@ -59,6 +62,7 @@ public final class TypeUtils {
         map.put(Long.class, new LongTypeAdapter());
         map.put(String.class, new StringTypeAdapter());
         map.put(Set.class, new StringSetTypeAdapter());
+        
         // extra
         map.put(Date.class, new DateTypeAdapter());
         map.put(Uri.class, new UriTypeAdapter());
@@ -79,36 +83,41 @@ public final class TypeUtils {
             Class<?> type,
             TypeAdapter annotation) {
         
-        if (ADAPTERS_MAP.containsKey(type)) {
-            return ADAPTERS_MAP.get(type);
-        } else if (type.isEnum()) {
-            // enums have a special type adapter
-            return new EnumTypeAdapter((Class<Enum>) type);
-        }
-        
-        if (annotation == null) {
+        if (annotation != null) {
+            try {
+                return annotation.value().newInstance();
+            } catch (InstantiationException e) {
+                throw new RuntimeException(String.format(
+                        Locale.ENGLISH,
+                        "Failed to instantiate %1$s, perhaps the no-arguments " +
+                                "constructor is missing?",
+                        annotation.value().getSimpleName()),
+                        e);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(String.format(
+                        Locale.ENGLISH,
+                        "Failed to instantiate %1$s, perhaps the no-arguments " +
+                                "constructor is not public?",
+                        annotation.value().getSimpleName()),
+                        e);
+            }
+        } else {
+            StoreBoxTypeAdapter adapter = ADAPTERS_MAP.get(type);
+            
+            if (adapter == null && type.isEnum()) {
+                // enums have a special type adapter
+                adapter = new EnumTypeAdapter((Class<Enum>) type);
+                ADAPTERS_MAP.put(type, adapter);
+            }
+            
+            if (adapter != null) {
+                return adapter;
+            }
+
             throw new RuntimeException(String.format(
                     Locale.ENGLISH,
                     "Failed to find type adapter for %1$s",
                     type.getName()));
-        }
-        
-        try {
-            return annotation.value().newInstance();
-        } catch (InstantiationException e) {
-            throw new RuntimeException(String.format(
-                    Locale.ENGLISH,
-                    "Failed to instantiate %1$s, perhaps the no-arguments " +
-                            "constructor is missing?",
-                    annotation.value().getSimpleName()),
-                    e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(String.format(
-                    Locale.ENGLISH,
-                    "Failed to instantiate %1$s, perhaps the no-arguments " +
-                            "constructor is not public?",
-                    annotation.value().getSimpleName()), 
-                    e);
         }
     }
     

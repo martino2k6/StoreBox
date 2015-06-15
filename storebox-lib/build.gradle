@@ -34,6 +34,7 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
     compile 'com.android.support:support-annotations:20.0.0'
+    compile 'net.jodah:typetools:0.4.1'
 }
 
 // FindBugs

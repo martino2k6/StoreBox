@@ -30,10 +30,14 @@ import net.orange_box.storebox.annotations.method.KeyByResource;
 import net.orange_box.storebox.annotations.method.KeyByString;
 import net.orange_box.storebox.annotations.method.RemoveMethod;
 import net.orange_box.storebox.annotations.method.TypeAdapter;
+import net.orange_box.storebox.annotations.method.ChangeListenerRegisterMethod;
+import net.orange_box.storebox.annotations.method.ChangeListenerUnregisterMethod;
 import net.orange_box.storebox.annotations.option.SaveOption;
 import net.orange_box.storebox.enums.PreferencesMode;
 import net.orange_box.storebox.enums.PreferencesType;
 import net.orange_box.storebox.enums.SaveMode;
+import net.orange_box.storebox.handlers.ChangeListenerMethodHandler;
+import net.orange_box.storebox.handlers.MethodHandler;
 import net.orange_box.storebox.utils.MethodUtils;
 import net.orange_box.storebox.utils.PreferenceUtils;
 import net.orange_box.storebox.utils.TypeUtils;
@@ -62,6 +66,8 @@ class StoreBoxInvocationHandler implements InvocationHandler {
     private final Resources res;
     
     private final SaveMode saveMode;
+    
+    private final MethodHandler mChangesHandler;
     
     private int hashCode;
     
@@ -92,6 +98,8 @@ class StoreBoxInvocationHandler implements InvocationHandler {
         res = context.getResources();
         
         this.saveMode = saveMode;
+
+        mChangesHandler = new ChangeListenerMethodHandler(prefs);
     }
     
     @Override
@@ -105,19 +113,29 @@ class StoreBoxInvocationHandler implements InvocationHandler {
          */
         final String key;
         final boolean isRemove;
+        final boolean isChange;
         if (method.isAnnotationPresent(KeyByString.class)) {
             key = method.getAnnotation(KeyByString.class).value();
             
             isRemove = method.isAnnotationPresent(RemoveMethod.class);
+            isChange = MethodUtils.areAnyAnnotationsPresent(
+                    method,
+                    ChangeListenerRegisterMethod.class,
+                    ChangeListenerUnregisterMethod.class);
         } else if (method.isAnnotationPresent(KeyByResource.class)) {
             key = res.getString(
                     method.getAnnotation(KeyByResource.class).value());
             
             isRemove = method.isAnnotationPresent(RemoveMethod.class);
+            isChange = MethodUtils.areAnyAnnotationsPresent(
+                    method,
+                    ChangeListenerRegisterMethod.class,
+                    ChangeListenerUnregisterMethod.class);
         } else if (method.isAnnotationPresent(RemoveMethod.class)) {
-            isRemove = true;
-            
             key = MethodUtils.getKeyForRemove(res, args);
+            
+            isRemove = true;
+            isChange = false;
         } else {
             // handle Object's equals/hashCode/toString
             if (method.equals(OBJECT_EQUALS)) {
@@ -168,6 +186,8 @@ class StoreBoxInvocationHandler implements InvocationHandler {
         final Class<?> returnType = method.getReturnType();
         if (isRemove) {
             editor.remove(key);
+        } else if (isChange) {
+            return mChangesHandler.handleInvocation(key, proxy, method, args);
         } else if (
                 returnType == Void.TYPE
                 || returnType == method.getDeclaringClass()
