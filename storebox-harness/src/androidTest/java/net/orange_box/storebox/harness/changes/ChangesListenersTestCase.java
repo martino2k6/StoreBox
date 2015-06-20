@@ -185,4 +185,26 @@ public class ChangesListenersTestCase extends
 
         assertFalse(called.get());
     }
+    
+    @SmallTest
+    public void testListenerGarbageCollected() throws Exception {
+        final AtomicBoolean called = new AtomicBoolean();
+
+        uut.registerIntChangeListener(new OnValueChangedListener<Integer>() {
+            @Override
+            public void onChanged(Integer newValue) {
+                called.set(true);
+            }
+        });
+        // nasty, but it does force collection of soft references...
+        // TODO is there a better way to do this?
+        try {
+            Object[] ignored = new Object[(int) Runtime.getRuntime().maxMemory()];
+        } catch (OutOfMemoryError e) {
+            // NOP
+        }
+        uut.setInt(1);
+
+        assertFalse(called.get());
+    }
 }

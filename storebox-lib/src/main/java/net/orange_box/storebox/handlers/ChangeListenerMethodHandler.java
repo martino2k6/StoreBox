@@ -17,22 +17,29 @@
 package net.orange_box.storebox.handlers;
 
 import android.content.SharedPreferences;
+import android.support.annotation.Nullable;
 
 import net.jodah.typetools.TypeResolver;
 import net.orange_box.storebox.adapters.StoreBoxTypeAdapter;
-import net.orange_box.storebox.annotations.method.TypeAdapter;
 import net.orange_box.storebox.annotations.method.ChangeListenerRegisterMethod;
 import net.orange_box.storebox.annotations.method.ChangeListenerUnregisterMethod;
+import net.orange_box.storebox.annotations.method.TypeAdapter;
 import net.orange_box.storebox.listeners.OnValueChangedListener;
 import net.orange_box.storebox.utils.PreferenceUtils;
 import net.orange_box.storebox.utils.TypeUtils;
 
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * TODO should use a ReferenceQueue for cleaning up
+ */
 public class ChangeListenerMethodHandler implements
         MethodHandler,
         SharedPreferences.OnSharedPreferenceChangeListener {
@@ -42,8 +49,8 @@ public class ChangeListenerMethodHandler implements
     
     public ChangeListenerMethodHandler(SharedPreferences prefs) {
         this.prefs = prefs;
-        
-        listeners = new HashMap<>();
+
+        listeners = new ConcurrentHashMap<>();
         
         prefs.registerOnSharedPreferenceChangeListener(this);
     }
@@ -56,7 +63,19 @@ public class ChangeListenerMethodHandler implements
             Object... args)
             throws Throwable {
         
-        final ListenerInfo value = new ListenerInfo(
+        if (args.length == 0) {
+            throw new IllegalArgumentException(
+                    "Cannot have empty argument for register/unregister" +
+                            " listener method");
+        } else if (!(args[0] instanceof OnValueChangedListener)) {
+            throw new IllegalArgumentException(String.format(
+                    Locale.ENGLISH,
+                    "Argument for register/unregister listener method must be" +
+                            " of %s type",
+                    OnValueChangedListener.class.getSimpleName()));
+        }
+        
+        final ListenerInfo listenerInfo = new ListenerInfo(
                 (OnValueChangedListener) args[0],
                 TypeUtils.getTypeAdapter(
                         TypeResolver.resolveRawArguments(
@@ -68,10 +87,10 @@ public class ChangeListenerMethodHandler implements
                 ChangeListenerRegisterMethod.class)) {
             
             if (listeners.containsKey(key)) {
-                listeners.get(key).add(value);
+                listeners.get(key).add(listenerInfo);
             } else {
                 final Set<ListenerInfo> set = new HashSet<>();
-                set.add(value);
+                set.add(listenerInfo);
                 
                 listeners.put(key, set);
             }
@@ -79,7 +98,7 @@ public class ChangeListenerMethodHandler implements
                 ChangeListenerUnregisterMethod.class)) {
             
             if (listeners.containsKey(key)) {
-                listeners.get(key).remove(value);
+                listeners.get(key).remove(listenerInfo);
             }
         }
         
@@ -93,36 +112,49 @@ public class ChangeListenerMethodHandler implements
         
         final Set<ListenerInfo> listeners = this.listeners.get(key);
         if (listeners != null) {
-            for (final ListenerInfo listener : listeners) {
+            final Iterator<ListenerInfo> it = listeners.iterator();
+            while (it.hasNext()) {
+                final ListenerInfo listenerInfo = it.next();
+                final StoreBoxTypeAdapter adapter = listenerInfo.getAdapter();
+
                 final Object newValue = PreferenceUtils.getValue(
                         prefs,
                         key,
-                        listener.getAdapter().getStoreType(),
-                        listener.getAdapter().getDefaultValue());
-                
-                listener.getListener().onChanged(
-                        listener.getAdapter().adaptFromPreferences(newValue));
+                        adapter.getStoreType(),
+                        adapter.getDefaultValue());
+
+                final OnValueChangedListener listener =
+                        listenerInfo.getListener();
+
+                if (listener != null) {
+                    listener.onChanged(adapter.adaptFromPreferences(newValue));
+                } else {
+                    it.remove();
+                }
             }
         }
     }
     
-    private static class ListenerInfo {
+    private class ListenerInfo {
         
-        private final OnValueChangedListener listener;
+        private final WeakReference<OnValueChangedListener> listener;
         private final StoreBoxTypeAdapter adapter;
         
-        private int hashCode;
+        private final int hashCode;
         
         public ListenerInfo(
                 OnValueChangedListener listener,
                 StoreBoxTypeAdapter adapter) {
             
-            this.listener = listener;
+            this.listener = new WeakReference<>(listener);
             this.adapter = adapter;
+            
+            hashCode = listener.hashCode();
         }
         
+        @Nullable
         public OnValueChangedListener getListener() {
-            return listener;
+            return listener.get();
         }
         
         public StoreBoxTypeAdapter getAdapter() {
@@ -138,15 +170,14 @@ public class ChangeListenerMethodHandler implements
             }
             
             final ListenerInfo other = (ListenerInfo) o;
-            return listener.equals(other.listener);
+            
+            return (getListener() == null)
+                    ? (other.getListener() == null)
+                    : getListener().equals(other.getListener());
         }
         
         @Override
         public int hashCode() {
-            if (hashCode == 0) {
-                hashCode = listener.hashCode();
-            }
-            
             return hashCode;
         }
     }
