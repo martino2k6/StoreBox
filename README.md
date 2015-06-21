@@ -34,18 +34,18 @@ Read on to find out more details about how StoreBox can be used and how it can b
 ##Adding to a project##
 StoreBox can be used in Android projects using minimum SDK version 10 and newer (Android 2.3+).
 ###JAR###
-[v1.2.1 JAR](https://oss.sonatype.org/service/local/repositories/releases/content/net/orange-box/storebox/storebox-lib/1.2.1/storebox-lib-1.2.1.jar)  
-[v1.2.1 JavaDoc JAR](https://oss.sonatype.org/service/local/repositories/releases/content/net/orange-box/storebox/storebox-lib/1.2.1/storebox-lib-1.2.1-javadoc.jar)
+[v1.3.0 JAR](https://oss.sonatype.org/service/local/repositories/releases/content/net/orange-box/storebox/storebox-lib/1.3.0/storebox-lib-1.3.0.jar)  
+[v1.3.0 JavaDoc JAR](https://oss.sonatype.org/service/local/repositories/releases/content/net/orange-box/storebox/storebox-lib/1.3.0/storebox-lib-1.3.0-javadoc.jar)
 ###Gradle###
 ```
-compile 'net.orange-box.storebox:storebox-lib:1.2.1'
+compile 'net.orange-box.storebox:storebox-lib:1.3.0'
 ```
 ###Maven###
 ```
 <dependency>
   <groupId>net.orange-box.storebox</groupId>
   <artifactId>storebox-lib</artifactId>
-  <version>1.2.1</version>
+  <version>1.3.0</version>
 </dependency>
 ```
 

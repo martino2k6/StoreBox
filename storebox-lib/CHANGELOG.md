@@ -1,3 +1,7 @@
+##1.3.0 (2015-06-21)
+- added support for preference change listeners #9
+- added support for double/Double types #10
+
 ##1.2.1 (2015-06-15)
 - added support to set nulls for Date values
 - fixed NPE when using Date values
