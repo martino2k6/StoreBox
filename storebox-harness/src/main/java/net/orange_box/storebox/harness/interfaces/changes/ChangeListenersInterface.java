@@ -32,13 +32,23 @@ public interface ChangeListenersInterface {
     @KeyByString("key_int")
     @ChangeListenerRegisterMethod
     void registerIntChangeListener(
-            OnValueChangedListener<Integer> newValue);
+            OnValueChangedListener<Integer> listener);
+
+    @KeyByString("key_int")
+    @ChangeListenerRegisterMethod
+    void registerIntChangeListenerVarArgs(
+            OnValueChangedListener<Integer>... listeners);
 
     @KeyByString("key_int")
     @ChangeListenerUnregisterMethod
     void unregisterIntChangeListener(
-            OnValueChangedListener<Integer> newValue);
+            OnValueChangedListener<Integer> listener);
 
+    @KeyByString("key_int")
+    @ChangeListenerUnregisterMethod
+    void unregisterIntChangeListenerVarArgs(
+            OnValueChangedListener<Integer>... listeners);
+    
 
     @KeyByString("key_custom_class")
     @TypeAdapter(CustomClassTypeAdapter.class)
@@ -48,11 +58,11 @@ public interface ChangeListenersInterface {
     @ChangeListenerRegisterMethod
     @TypeAdapter(CustomClassTypeAdapter.class)
     void registerCustomClassChangeListener(
-            OnValueChangedListener<CustomClass> newValue);
+            OnValueChangedListener<CustomClass> listener);
 
     @KeyByString("key_custom_class")
     @ChangeListenerUnregisterMethod
     @TypeAdapter(CustomClassTypeAdapter.class)
     void unregisterCustomClassChangeListener(
-            OnValueChangedListener<CustomClass> newValue);
+            OnValueChangedListener<CustomClass> listener);
 }

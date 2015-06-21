@@ -30,6 +30,7 @@ import net.orange_box.storebox.utils.TypeUtils;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Locale;
@@ -67,38 +68,40 @@ public class ChangeListenerMethodHandler implements
             throw new IllegalArgumentException(
                     "Cannot have empty argument for register/unregister" +
                             " listener method");
-        } else if (!(args[0] instanceof OnValueChangedListener)) {
-            throw new IllegalArgumentException(String.format(
-                    Locale.ENGLISH,
-                    "Argument for register/unregister listener method must be" +
-                            " of %s type",
-                    OnValueChangedListener.class.getSimpleName()));
         }
         
-        final ListenerInfo listenerInfo = new ListenerInfo(
-                (OnValueChangedListener) args[0],
-                TypeUtils.getTypeAdapter(
-                        TypeResolver.resolveRawArguments(
-                                OnValueChangedListener.class,
-                                args[0].getClass())[0],
+        final Set<ListenerInfo> listenerInfos = new HashSet<>();
+        for (final Object arg : args) {
+            if (arg instanceof OnValueChangedListener) {
+                listenerInfos.add(ListenerInfo.create(
+                        (OnValueChangedListener) arg,
                         method.getAnnotation(TypeAdapter.class)));
+            } else if (arg instanceof OnValueChangedListener[]) {
+                listenerInfos.addAll(Arrays.asList(ListenerInfo.create(
+                        (OnValueChangedListener[]) arg,
+                        method.getAnnotation(TypeAdapter.class))));
+            } else {
+                throw new IllegalArgumentException(String.format(
+                        Locale.ENGLISH,
+                        "Argument for register/unregister" +
+                                " listener method must be of %s type",
+                        OnValueChangedListener.class.getSimpleName()));
+            }
+        }
         
         if (method.isAnnotationPresent(
                 ChangeListenerRegisterMethod.class)) {
             
             if (listeners.containsKey(key)) {
-                listeners.get(key).add(listenerInfo);
+                listeners.get(key).addAll(listenerInfos);
             } else {
-                final Set<ListenerInfo> set = new HashSet<>();
-                set.add(listenerInfo);
-                
-                listeners.put(key, set);
+                listeners.put(key, listenerInfos);
             }
         } else if (method.isAnnotationPresent(
                 ChangeListenerUnregisterMethod.class)) {
             
             if (listeners.containsKey(key)) {
-                listeners.get(key).remove(listenerInfo);
+                listeners.get(key).removeAll(listenerInfos);
             }
         }
         
@@ -135,7 +138,7 @@ public class ChangeListenerMethodHandler implements
         }
     }
     
-    private class ListenerInfo {
+    private static class ListenerInfo {
         
         private final WeakReference<OnValueChangedListener> listener;
         private final StoreBoxTypeAdapter adapter;
@@ -179,6 +182,32 @@ public class ChangeListenerMethodHandler implements
         @Override
         public int hashCode() {
             return hashCode;
+        }
+
+        private static ListenerInfo create(
+                OnValueChangedListener listener,
+                TypeAdapter adapterAnnotation) {
+
+            return new ListenerInfo(
+                    listener,
+                    TypeUtils.getTypeAdapter(
+                            TypeResolver.resolveRawArguments(
+                                    OnValueChangedListener.class,
+                                    listener.getClass())[0],
+                            adapterAnnotation));
+        }
+
+        private static ListenerInfo[] create(
+                OnValueChangedListener[] listeners,
+                TypeAdapter adapterAnnotation) {
+
+            final ListenerInfo[] result = new ListenerInfo[listeners.length];
+            
+            for (int i = 0; i < listeners.length; i++) {
+                result[i] = create(listeners[i], adapterAnnotation);
+            }
+            
+            return result;
         }
     }
 }

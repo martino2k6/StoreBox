@@ -81,6 +81,34 @@ public class ChangesListenersTestCase extends
 
         assertEquals(0, count.get());
     }
+
+    @SmallTest
+    public void testIntChangedVarArgs() {
+        final AtomicInteger count = new AtomicInteger(2);
+        final OnValueChangedListener<Integer> one =
+                new OnValueChangedListener<Integer>() {
+                    @Override
+                    public void onChanged(Integer newValue) {
+                        assertEquals(1, newValue.intValue());
+
+                        count.decrementAndGet();
+                    }
+                };
+        final OnValueChangedListener<Integer> two =
+                new OnValueChangedListener<Integer>() {
+                    @Override
+                    public void onChanged(Integer newValue) {
+                        assertEquals(1, newValue.intValue());
+
+                        count.decrementAndGet();
+                    }
+                };
+
+        uut.registerIntChangeListenerVarArgs(one, two);
+        uut.setInt(1);
+
+        assertEquals(0, count.get());
+    }
     
     @SmallTest
     public void testIntUnregistered() {
@@ -98,6 +126,31 @@ public class ChangesListenersTestCase extends
         uut.setInt(1);
 
         assertFalse(called.get());
+    }
+
+    @SmallTest
+    public void testIntUnregisteredVarArgs() {
+        final AtomicInteger count = new AtomicInteger(2);
+        final OnValueChangedListener<Integer> one =
+                new OnValueChangedListener<Integer>() {
+                    @Override
+                    public void onChanged(Integer newValue) {
+                        count.decrementAndGet();
+                    }
+                };
+        final OnValueChangedListener<Integer> two =
+                new OnValueChangedListener<Integer>() {
+                    @Override
+                    public void onChanged(Integer newValue) {
+                        count.decrementAndGet();
+                    }
+                };
+
+        uut.registerIntChangeListenerVarArgs(one, two);
+        uut.unregisterIntChangeListenerVarArgs(one, two);
+        uut.setInt(1);
+
+        assertEquals(2, count.get());
     }
 
     @SmallTest
@@ -185,6 +238,8 @@ public class ChangesListenersTestCase extends
 
         assertFalse(called.get());
     }
+    
+    
     
     @SmallTest
     public void testListenerGarbageCollected() throws Exception {
