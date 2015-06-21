@@ -58,13 +58,13 @@ preferences<span class="pl-k">.</span>setDateOfBirth(<span class="pl-s"><span cl
 <h3>
 <a id="jar" class="anchor" href="#jar" aria-hidden="true"><span class="octicon octicon-link"></span></a>JAR</h3>
 
-<p><a href="https://oss.sonatype.org/service/local/repositories/releases/content/net/orange-box/storebox/storebox-lib/1.2.1/storebox-lib-1.2.1.jar">v1.2.1 JAR</a><br>
-<a href="https://oss.sonatype.org/service/local/repositories/releases/content/net/orange-box/storebox/storebox-lib/1.2.1/storebox-lib-1.2.1-javadoc.jar">v1.2.1 JavaDoc JAR</a></p>
+<p><a href="https://oss.sonatype.org/service/local/repositories/releases/content/net/orange-box/storebox/storebox-lib/1.3.0/storebox-lib-1.3.0.jar">v1.3.0 JAR</a><br>
+<a href="https://oss.sonatype.org/service/local/repositories/releases/content/net/orange-box/storebox/storebox-lib/1.3.0/storebox-lib-1.3.0-javadoc.jar">v1.3.0 JavaDoc JAR</a></p>
 
 <h3>
 <a id="gradle" class="anchor" href="#gradle" aria-hidden="true"><span class="octicon octicon-link"></span></a>Gradle</h3>
 
-<pre><code>compile 'net.orange-box.storebox:storebox-lib:1.2.1'
+<pre><code>compile 'net.orange-box.storebox:storebox-lib:1.3.0'
 </code></pre>
 
 <h3>
@@ -73,7 +73,7 @@ preferences<span class="pl-k">.</span>setDateOfBirth(<span class="pl-s"><span cl
 <pre><code>&lt;dependency&gt;
   &lt;groupId&gt;net.orange-box.storebox&lt;/groupId&gt;
   &lt;artifactId&gt;storebox-lib&lt;/artifactId&gt;
-  &lt;version&gt;1.2.1&lt;/version&gt;
+  &lt;version&gt;1.3.0&lt;/version&gt;
 &lt;/dependency&gt;
 </code></pre>
 
@@ -165,6 +165,7 @@ preferences<span class="pl-k">.</span>setDateOfBirth(<span class="pl-s"><span cl
 
 <ul>
 <li><code>Date</code></li>
+<li><code>Double</code></li>
 <li><code>Enum</code></li>
 <li><code>Uri</code></li>
 </ul>
@@ -225,6 +226,40 @@ preferences<span class="pl-k">.</span>remove(<span class="pl-smi">R</span><span 
 <span class="pl-c">// usage</span>
 preferences.<span class="pl-en">removeUsername</span>();
 preferences.<span class="pl-en">removePassword</span>();</pre></div>
+
+<h3>
+<a id="change-listeners" class="anchor" href="#change-listeners" aria-hidden="true"><span class="octicon octicon-link"></span></a>Change listeners</h3>
+
+<p>Callbacks can be received when a preference value changes through the use of the <code>OnPreferenceValueChangedListener</code> interface. The listeners need to be parametrised with the type which is used for the value whose changes we would like to listen for. For example, if we would like to listen to changes to the password (from previous examples) then we could define the listener as</p>
+
+<div class="highlight highlight-Java"><pre><span class="pl-k">OnPreferenceValueChangedListener&lt;<span class="pl-smi">String</span>&gt;</span> listener <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-k">OnPreferenceValueChangedListener&lt;<span class="pl-smi">String</span>&gt;</span>() {
+    <span class="pl-k">@Override</span>
+    <span class="pl-k">public</span> <span class="pl-k">void</span> <span class="pl-en">onChanged</span>(<span class="pl-smi">String</span> <span class="pl-v">newValue</span>) {
+        <span class="pl-c">// do something with newValue</span>
+    }
+}</pre></div>
+
+<p>To register this listener a method for registering the listener would need to be defined using the <code>@RegisterChangeListenerMethod</code> annotation in the interface which gets passed to <code>StoreBox.create()</code>. Likewise, for unregistering a listener the method needs to be annotated with <code>@UnregisterChangeListenerMethod</code> instead. The <code>@KeyByString</code> or <code>@KeyByResource</code> annotation also needs to be used to specify which value we are interested in.</p>
+
+<div class="highlight highlight-Java"><pre><span class="pl-k">public</span> <span class="pl-k">interface</span> <span class="pl-en">ChangeListenerExample</span> {
+
+    <span class="pl-k">@KeyByString</span>(<span class="pl-s"><span class="pl-pds">"</span>key_password<span class="pl-pds">"</span></span>)
+    <span class="pl-k">@RegisterChangeListenerMethod</span>
+    <span class="pl-k">void</span> <span class="pl-en">registerPasswordListener</span>(<span class="pl-k">OnPreferenceValueChangedListener&lt;<span class="pl-smi">String</span>&gt;</span> <span class="pl-v">listener</span>);
+
+    <span class="pl-k">@KeyByString</span>(<span class="pl-s"><span class="pl-pds">"</span>key_password<span class="pl-pds">"</span></span>)
+    <span class="pl-k">@UnregisterChangeListenerMethod</span>
+    <span class="pl-k">void</span> <span class="pl-en">unregisterPasswordListener</span>(<span class="pl-k">OnPreferenceValueChangedListener&lt;<span class="pl-smi">String</span>&gt;</span> <span class="pl-v">listener</span>);
+}</pre></div>
+
+<p>If you would like to listen for changes to a custom type then the <code>@TypeAdapter</code> annotation will need to be added to the method in order to tell StoreBox how the value should be adapted when retrieving it from the preferences.</p>
+
+<p>More than one listener can be registered and unregistered at a time by changing the method definitions in the interface to use variable arguments.</p>
+
+<div class="highlight highlight-Java"><pre><span class="pl-c">// annotations omitted</span>
+<span class="pl-k">void</span> registerPasswordListeners(<span class="pl-k">OnPreferenceValueChangedListener&lt;<span class="pl-smi">String</span>&gt;</span><span class="pl-c1">...</span> listeners);</pre></div>
+
+<p><strong>Caution:</strong> StoreBox does not store strong references to the listeners. A strong reference must be kept to the listener for as long as the listener will be required, otherwise it will be susceptible to garbage collection.</p>
 
 <h3>
 <a id="chaining-calls" class="anchor" href="#chaining-calls" aria-hidden="true"><span class="octicon octicon-link"></span></a>Chaining calls</h3>
