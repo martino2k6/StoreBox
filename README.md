@@ -111,24 +111,39 @@ Saving custom types, which are not understood by Android's SharedPreferences, ca
 * `BaseStringTypeAdapter`
 * `BaseStringSetTypeAdapter` (only supported on API11 and newer)
 
-Telling StoreBox which type adapter should be used can be done by adding the `@TypeAdapter` annotation to the get and set methods.
-```Java
-@KeyByString("key_region")
-@TypeAdapter(RegionTypeAdapter.class)
-Region getRegion();
-
-@KeyByString("key_region")
-@TypeAdapter(RegionTypeAdapter.class)
-void setRegion(Region value);
-```
-
-Which type adapter needs to be extended depends on the use case. Take a look at the [`DateTypeAdapter`](https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/adapters/extra/DateTypeAdapter.java), [`UriTypeAdapter`](https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/adapters/extra/UriTypeAdapter.java), and [`CustomClassListTypeAdapter`](https://github.com/martino2k6/StoreBox/blob/master/storebox-harness/src/main/java/net/orange_box/storebox/harness/types/adapters/CustomClassListTypeAdapter.java) for some examples. It is worth noting that in the last example Gson is being used for serialising the type, as opposed to writing a custom implementation. Gson is not used internally by StoreBox, as such if you wish to use Gson for a type adapter you will need to add it to your project as a dependency.
-
-The following types will work out of the box, so type adapters don't need to be provided for them:
+The following types have built-in type adapters, so they will work out of the box without the need to provide type adapters and annotations for them:
 * `Date`
 * `Double`
 * `Enum`
 * `Uri`
+
+Telling StoreBox which type adapter should be used can be done by adding the `@TypeAdapter` or `@TypeAdapters` annotation to the interface. `@TypeAdapter` can be used in the case where a single custom type will be used, otherwise type adapters for multiple types can be provided through `@TypeAdapters`.
+```Java
+@TypeAdapters({
+    @TypeAdapter(
+        adapter = RegionTypeAdapter.class,
+        stringKeys = {"key_person", "key_partner"}),
+    @TypeAdapter(
+        adapter = RegionTypeAdapter.class,
+        stringKeys = {"key_region"})
+    })
+public interface TypeAdaptersExample {
+    
+    @KeyByString("key_user")
+    Person getUser();
+    
+    @KeyByString("key_partner")
+    Person getPartner();
+    
+    @KeyByString("key_region")
+    Region getRegion();
+    
+    @KeyByString("key_region")
+    void setRegion(Region value);
+}
+```
+
+Which type adapter needs to be extended depends on the use case. Take a look at the [`DateTypeAdapter`](https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/adapters/extra/DateTypeAdapter.java), [`UriTypeAdapter`](https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/adapters/extra/UriTypeAdapter.java), and [`CustomClassListTypeAdapter`](https://github.com/martino2k6/StoreBox/blob/master/storebox-harness/src/main/java/net/orange_box/storebox/harness/types/adapters/CustomClassListTypeAdapter.java) for some examples. It is worth noting that in the last example Gson is being used for serialising the type, as opposed to writing a custom implementation. Gson is not used internally by StoreBox, as such if you wish to use Gson for a type adapter you will need to add it to your project as a dependency.
 
 *Disclaimer: APIs around type adapters may change in the future, as I will keep looking for a less verbose way of achieving the same goal without requiring the use of Gson.*
 
@@ -207,7 +222,6 @@ public interface ChangeListenerExample {
     void unregisterPasswordListener(OnPreferenceValueChangedListener<String> listener);
 }
 ```
-If you would like to listen for changes to a custom type then the `@TypeAdapter` annotation will need to be added to the method in order to tell StoreBox how the value should be adapted when retrieving it from the preferences.
 
 More than one listener can be registered and unregistered at a time by changing the method definitions in the interface to use variable arguments.
 ```Java

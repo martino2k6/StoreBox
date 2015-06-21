@@ -23,7 +23,6 @@ import net.jodah.typetools.TypeResolver;
 import net.orange_box.storebox.adapters.StoreBoxTypeAdapter;
 import net.orange_box.storebox.annotations.method.RegisterChangeListenerMethod;
 import net.orange_box.storebox.annotations.method.UnregisterChangeListenerMethod;
-import net.orange_box.storebox.annotations.method.TypeAdapter;
 import net.orange_box.storebox.listeners.OnPreferenceValueChangedListener;
 import net.orange_box.storebox.utils.PreferenceUtils;
 import net.orange_box.storebox.utils.TypeUtils;
@@ -46,10 +45,16 @@ public class ChangeListenerMethodHandler implements
         SharedPreferences.OnSharedPreferenceChangeListener {
     
     private final SharedPreferences prefs;
+    private final Map<String, StoreBoxTypeAdapter> typeAdapters;
+    
     private final Map<String, Set<ListenerInfo>> listeners;
     
-    public ChangeListenerMethodHandler(SharedPreferences prefs) {
+    public ChangeListenerMethodHandler(
+            SharedPreferences prefs,
+            Map<String, StoreBoxTypeAdapter> typeAdapters) {
+        
         this.prefs = prefs;
+        this.typeAdapters = typeAdapters;
 
         listeners = new ConcurrentHashMap<>();
         
@@ -74,12 +79,14 @@ public class ChangeListenerMethodHandler implements
         for (final Object arg : args) {
             if (arg instanceof OnPreferenceValueChangedListener) {
                 listenerInfos.add(ListenerInfo.create(
+                        key,
                         (OnPreferenceValueChangedListener) arg,
-                        method.getAnnotation(TypeAdapter.class)));
+                        typeAdapters));
             } else if (arg instanceof OnPreferenceValueChangedListener[]) {
                 listenerInfos.addAll(Arrays.asList(ListenerInfo.create(
+                        key,
                         (OnPreferenceValueChangedListener[]) arg,
-                        method.getAnnotation(TypeAdapter.class))));
+                        typeAdapters)));
             } else {
                 throw new IllegalArgumentException(String.format(
                         Locale.ENGLISH,
@@ -185,26 +192,29 @@ public class ChangeListenerMethodHandler implements
         }
 
         private static ListenerInfo create(
+                String key,
                 OnPreferenceValueChangedListener listener,
-                TypeAdapter adapterAnnotation) {
+                Map<String, StoreBoxTypeAdapter> typeAdapters) {
 
             return new ListenerInfo(
                     listener,
                     TypeUtils.getTypeAdapter(
+                            key,
                             TypeResolver.resolveRawArguments(
                                     OnPreferenceValueChangedListener.class,
                                     listener.getClass())[0],
-                            adapterAnnotation));
+                            typeAdapters));
         }
 
         private static ListenerInfo[] create(
+                String key,
                 OnPreferenceValueChangedListener[] listeners,
-                TypeAdapter adapterAnnotation) {
+                Map<String, StoreBoxTypeAdapter> typeAdapters) {
 
             final ListenerInfo[] result = new ListenerInfo[listeners.length];
             
             for (int i = 0; i < listeners.length; i++) {
-                result[i] = create(listeners[i], adapterAnnotation);
+                result[i] = create(key, listeners[i], typeAdapters);
             }
             
             return result;

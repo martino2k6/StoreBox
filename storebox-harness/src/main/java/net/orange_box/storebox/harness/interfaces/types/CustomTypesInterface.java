@@ -19,7 +19,8 @@ package net.orange_box.storebox.harness.interfaces.types;
 import android.net.Uri;
 
 import net.orange_box.storebox.annotations.method.KeyByString;
-import net.orange_box.storebox.annotations.method.TypeAdapter;
+import net.orange_box.storebox.annotations.type.TypeAdapter;
+import net.orange_box.storebox.annotations.type.TypeAdapters;
 import net.orange_box.storebox.harness.types.CustomClass;
 import net.orange_box.storebox.harness.types.CustomEnum;
 import net.orange_box.storebox.harness.types.adapters.CustomClassListTypeAdapter;
@@ -28,6 +29,13 @@ import net.orange_box.storebox.harness.types.adapters.CustomClassTypeAdapter;
 import java.util.Date;
 import java.util.List;
 
+@TypeAdapters({
+        @TypeAdapter(
+                adapter = CustomClassTypeAdapter.class,
+                stringKeys = {"key_custom_class"}),
+        @TypeAdapter(
+                adapter = CustomClassListTypeAdapter.class,
+                stringKeys = {"key_custom_class_list"})})
 public interface CustomTypesInterface {
     
     @KeyByString("key_custom_enum")
@@ -70,28 +78,22 @@ public interface CustomTypesInterface {
     void setUri(Uri value);
     
     
-    @TypeAdapter(CustomClassTypeAdapter.class)
     @KeyByString("key_custom_class")
     CustomClass getCustomClass();
-
-    @TypeAdapter(CustomClassTypeAdapter.class)
+    
     @KeyByString("key_custom_class")
     CustomClass getCustomClass(CustomClass defValue);
-
-    @TypeAdapter(CustomClassTypeAdapter.class)
+    
     @KeyByString("key_custom_class")
     void setCustomClass(CustomClass value);
 
     
-    @TypeAdapter(CustomClassListTypeAdapter.class)
     @KeyByString("key_custom_class_list")
     List<CustomClass> getCustomClassList();
-
-    @TypeAdapter(CustomClassListTypeAdapter.class)
+    
     @KeyByString("key_custom_class_list")
     List<CustomClass> getCustomClassList(List<CustomClass> defValue);
-
-    @TypeAdapter(CustomClassListTypeAdapter.class)
+    
     @KeyByString("key_custom_class_list")
     void setCustomClassList(List<CustomClass> value);
 }

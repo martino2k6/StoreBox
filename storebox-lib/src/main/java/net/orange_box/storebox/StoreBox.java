@@ -20,16 +20,21 @@ import android.app.Activity;
 import android.content.Context;
 import android.text.TextUtils;
 
+import net.orange_box.storebox.adapters.StoreBoxTypeAdapter;
 import net.orange_box.storebox.annotations.option.SaveOption;
 import net.orange_box.storebox.annotations.type.ActivityPreferences;
 import net.orange_box.storebox.annotations.type.DefaultSharedPreferences;
 import net.orange_box.storebox.annotations.type.FilePreferences;
+import net.orange_box.storebox.annotations.type.TypeAdapter;
+import net.orange_box.storebox.annotations.type.TypeAdapters;
 import net.orange_box.storebox.enums.PreferencesMode;
 import net.orange_box.storebox.enums.PreferencesType;
 import net.orange_box.storebox.enums.SaveMode;
 
 import java.lang.reflect.Proxy;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Creates a no-thrills instance of the supplied interface, by reading any
@@ -67,7 +72,8 @@ public final class StoreBox {
         private String preferencesName = "";
         private PreferencesMode preferencesMode = PreferencesMode.MODE_PRIVATE;
         private SaveMode saveMode = SaveMode.APPLY;
-
+        private Map<String, StoreBoxTypeAdapter> typeAdapters = new HashMap<>();
+        
         public Builder(Context context, Class<T> cls) {
             this.context = context;
             this.cls = cls;
@@ -97,6 +103,47 @@ public final class StoreBox {
             saveMode = value;
             return this;
         }
+        
+        public Builder typeAdapter(
+                Class<? extends StoreBoxTypeAdapter> adapter,
+                String[] keys) {
+            
+            final StoreBoxTypeAdapter adapterInstance;
+            try {
+                adapterInstance = adapter.newInstance();
+            } catch (InstantiationException e) {
+                throw new IllegalArgumentException(String.format(
+                        Locale.ENGLISH,
+                        "Failed to instantiate %s, perhaps the no-arguments " +
+                                "constructor is missing?",
+                        adapter.getSimpleName()),
+                        e);
+            } catch (IllegalAccessException e) {
+                throw new IllegalArgumentException(String.format(
+                        Locale.ENGLISH,
+                        "Failed to instantiate %s, perhaps the no-arguments " +
+                                "constructor is not public?",
+                        adapter.getSimpleName()),
+                        e);
+            }
+            
+            for (final String key : keys) {
+                typeAdapters.put(key, adapterInstance);
+            }
+            return this;
+        }
+
+        public Builder typeAdapter(
+                Class<? extends StoreBoxTypeAdapter> adapter,
+                int[] resourceKeys) {
+            
+            final String[] keys = new String[resourceKeys.length];
+            for (int i = 0; i < keys.length; i++) {
+                keys[i] = context.getString(resourceKeys[i]);
+            }
+            
+            return typeAdapter(adapter, keys);
+        }
 
         /**
          * @return new instance of class {@code cls} using {@code context}
@@ -113,7 +160,8 @@ public final class StoreBox {
                             preferencesType,
                             preferencesName,
                             preferencesMode,
-                            saveMode));
+                            saveMode,
+                            typeAdapters));
         }
         
         private void readAnnotations() {
@@ -136,6 +184,34 @@ public final class StoreBox {
             // save option 
             if (cls.isAnnotationPresent(SaveOption.class)) {
                 saveMode(cls.getAnnotation(SaveOption.class).value());
+            }
+            
+            // type adapter(s)
+            if (cls.isAnnotationPresent(TypeAdapters.class)) {
+                for (   final TypeAdapter value
+                        : cls.getAnnotation(TypeAdapters.class).value()) {
+                    
+                    readTypeAdapterAnnotation(value);
+                }
+            } else if (cls.isAnnotationPresent(TypeAdapter.class)) {
+                readTypeAdapterAnnotation(cls.getAnnotation(TypeAdapter.class));
+            }
+        }
+        
+        private void readTypeAdapterAnnotation(TypeAdapter annotation) {
+            if (    annotation.stringKeys().length == 0
+                    && annotation.resourceKeys().length == 0) {
+                
+                throw new IllegalArgumentException(
+                        "A string or resource key must be specified for a" +
+                                " type adapter");
+            }
+            
+            if (annotation.stringKeys().length > 0) {
+                typeAdapter(annotation.adapter(), annotation.stringKeys());
+            }
+            if (annotation.resourceKeys().length > 0) {
+                typeAdapter(annotation.adapter(), annotation.resourceKeys());
             }
         }
         

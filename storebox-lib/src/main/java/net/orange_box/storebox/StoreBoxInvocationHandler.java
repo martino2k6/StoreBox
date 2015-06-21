@@ -28,9 +28,8 @@ import net.orange_box.storebox.adapters.StoreBoxTypeAdapter;
 import net.orange_box.storebox.annotations.method.DefaultValue;
 import net.orange_box.storebox.annotations.method.KeyByResource;
 import net.orange_box.storebox.annotations.method.KeyByString;
-import net.orange_box.storebox.annotations.method.RemoveMethod;
-import net.orange_box.storebox.annotations.method.TypeAdapter;
 import net.orange_box.storebox.annotations.method.RegisterChangeListenerMethod;
+import net.orange_box.storebox.annotations.method.RemoveMethod;
 import net.orange_box.storebox.annotations.method.UnregisterChangeListenerMethod;
 import net.orange_box.storebox.annotations.option.SaveOption;
 import net.orange_box.storebox.enums.PreferencesMode;
@@ -47,6 +46,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This is where the magic happens...
@@ -66,6 +67,7 @@ class StoreBoxInvocationHandler implements InvocationHandler {
     private final Resources res;
     
     private final SaveMode saveMode;
+    private final Map<String, StoreBoxTypeAdapter> typeAdapters;
     
     private final MethodHandler mChangesHandler;
     
@@ -76,7 +78,8 @@ class StoreBoxInvocationHandler implements InvocationHandler {
             PreferencesType preferencesType,
             String openNameValue,
             PreferencesMode preferencesMode,
-            SaveMode saveMode) {
+            SaveMode saveMode,
+            Map<String, StoreBoxTypeAdapter> typeAdapters) {
         
         switch (preferencesType) {
             case ACTIVITY:
@@ -98,8 +101,10 @@ class StoreBoxInvocationHandler implements InvocationHandler {
         res = context.getResources();
         
         this.saveMode = saveMode;
+        this.typeAdapters = new ConcurrentHashMap<>(typeAdapters);
 
-        mChangesHandler = new ChangeListenerMethodHandler(prefs);
+        mChangesHandler = new ChangeListenerMethodHandler(
+                prefs, this.typeAdapters);
     }
     
     @Override
@@ -201,8 +206,9 @@ class StoreBoxInvocationHandler implements InvocationHandler {
              * value under,
              */
             final StoreBoxTypeAdapter adapter = TypeUtils.getTypeAdapter(
+                    key,
                     MethodUtils.getValueParameterType(method),
-                    method.getAnnotation(TypeAdapter.class));
+                    typeAdapters);
             final Object value = adapter.adaptForPreferences(
                     MethodUtils.getValueArg(args));
             
@@ -216,8 +222,9 @@ class StoreBoxInvocationHandler implements InvocationHandler {
              * makes further operations a bit nicer.
              */
             final StoreBoxTypeAdapter adapter = TypeUtils.getTypeAdapter(
+                    key,
                     TypeUtils.wrapToBoxedType(method.getReturnType()),
-                    method.getAnnotation(TypeAdapter.class));
+                    typeAdapters);
             
             final Object defValue = getDefaultValueArg(
                     method,

@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package net.orange_box.storebox.annotations.method;
-
-import net.orange_box.storebox.adapters.StoreBoxTypeAdapter;
+package net.orange_box.storebox.annotations.type;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -24,17 +22,19 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation which should be used on set and get methods to declare the
- * {@link StoreBoxTypeAdapter} to be used for adapting the type for the
- * preferences.
+ * Annotation which should be used at interface-level to define the
+ * {@link TypeAdapter}s to be used for retrieving/storing custom
+ * types which are not supported by Android natively or as built-in
+ * type adapters provided by the library.
  * <p>
- * Type adapters for {@link java.util.Date}, {@link Enum}, and
- * {@link android.net.Uri} are already supported and as such there is no need
- * to provide a type adapter for them.
+ * For a single custom type {@link TypeAdapter} may be used instead.
+ * 
+ * @see TypeAdapter
+ * @see net.orange_box.storebox.adapters.StoreBoxTypeAdapter
  */
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface TypeAdapter {
-
-    Class<? extends StoreBoxTypeAdapter> value();
+public @interface TypeAdapters {
+    
+    TypeAdapter[] value();
 }

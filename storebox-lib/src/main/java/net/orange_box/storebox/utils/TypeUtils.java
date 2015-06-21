@@ -18,27 +18,27 @@ package net.orange_box.storebox.utils;
 
 import android.net.Uri;
 
+import net.orange_box.storebox.adapters.StoreBoxTypeAdapter;
 import net.orange_box.storebox.adapters.extra.DateTypeAdapter;
 import net.orange_box.storebox.adapters.extra.DoubleTypeAdapter;
 import net.orange_box.storebox.adapters.extra.EnumTypeAdapter;
-import net.orange_box.storebox.adapters.StoreBoxTypeAdapter;
+import net.orange_box.storebox.adapters.extra.UriTypeAdapter;
 import net.orange_box.storebox.adapters.standard.BooleanTypeAdapter;
 import net.orange_box.storebox.adapters.standard.FloatTypeAdapter;
 import net.orange_box.storebox.adapters.standard.IntegerTypeAdapter;
 import net.orange_box.storebox.adapters.standard.LongTypeAdapter;
 import net.orange_box.storebox.adapters.standard.StringSetTypeAdapter;
 import net.orange_box.storebox.adapters.standard.StringTypeAdapter;
-import net.orange_box.storebox.adapters.extra.UriTypeAdapter;
-import net.orange_box.storebox.annotations.method.TypeAdapter;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 public final class TypeUtils {
+    
+    private static final Object LOCK = new Object();
     
     private static final Map<Class<?>, Class<?>> PRIMITIVE_TO_BOXED_MAP;
     static {
@@ -56,8 +56,7 @@ public final class TypeUtils {
     
     private static final Map<Class<?>, StoreBoxTypeAdapter> ADAPTERS_MAP;
     static {
-        final Map<Class<?>, StoreBoxTypeAdapter> map =
-                new ConcurrentHashMap<>(9);
+        final Map<Class<?>, StoreBoxTypeAdapter> map = new HashMap<>(9);
         
         // standard
         map.put(Boolean.class, new BooleanTypeAdapter());
@@ -82,48 +81,38 @@ public final class TypeUtils {
             return type;
         }
     }
-    
-    @SuppressWarnings("unchecked")
+
     public static StoreBoxTypeAdapter getTypeAdapter(
+            String key,
             Class<?> type,
-            TypeAdapter annotation) {
+            Map<String, StoreBoxTypeAdapter> typeAdapters) {
+
+        StoreBoxTypeAdapter adapter;
         
-        if (annotation != null) {
-            try {
-                return annotation.value().newInstance();
-            } catch (InstantiationException e) {
-                throw new RuntimeException(String.format(
-                        Locale.ENGLISH,
-                        "Failed to instantiate %1$s, perhaps the no-arguments " +
-                                "constructor is missing?",
-                        annotation.value().getSimpleName()),
-                        e);
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(String.format(
-                        Locale.ENGLISH,
-                        "Failed to instantiate %1$s, perhaps the no-arguments " +
-                                "constructor is not public?",
-                        annotation.value().getSimpleName()),
-                        e);
-            }
-        } else {
-            StoreBoxTypeAdapter adapter = ADAPTERS_MAP.get(type);
-            
-            if (adapter == null && type.isEnum()) {
-                // enums have a special type adapter
-                adapter = new EnumTypeAdapter((Class<Enum>) type);
-                ADAPTERS_MAP.put(type, adapter);
-            }
-            
+        synchronized (LOCK) {
+            adapter = typeAdapters.get(key);
             if (adapter != null) {
                 return adapter;
             }
 
-            throw new RuntimeException(String.format(
-                    Locale.ENGLISH,
-                    "Failed to find type adapter for %1$s",
-                    type.getName()));
+            adapter = ADAPTERS_MAP.get(type);
+            if (adapter == null && type.isEnum()) {
+                // enums have a special type adapter
+                adapter = new EnumTypeAdapter((Class<Enum>) type);
+
+                ADAPTERS_MAP.put(type, adapter);
+                typeAdapters.put(key, adapter);
+            }
         }
+
+        if (adapter != null) {
+            return adapter;
+        }
+
+        throw new RuntimeException(String.format(
+                Locale.ENGLISH,
+                "Failed to find type adapter for %1$s",
+                type.getName()));
     }
     
     private TypeUtils() {}

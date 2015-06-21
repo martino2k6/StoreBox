@@ -17,13 +17,16 @@
 package net.orange_box.storebox.harness.interfaces.changes;
 
 import net.orange_box.storebox.annotations.method.KeyByString;
-import net.orange_box.storebox.annotations.method.TypeAdapter;
 import net.orange_box.storebox.annotations.method.RegisterChangeListenerMethod;
 import net.orange_box.storebox.annotations.method.UnregisterChangeListenerMethod;
+import net.orange_box.storebox.annotations.type.TypeAdapter;
 import net.orange_box.storebox.harness.types.CustomClass;
 import net.orange_box.storebox.harness.types.adapters.CustomClassTypeAdapter;
 import net.orange_box.storebox.listeners.OnPreferenceValueChangedListener;
 
+@TypeAdapter(
+        adapter = CustomClassTypeAdapter.class,
+        stringKeys = {"key_custom_class"})
 public interface ChangeListenersInterface {
     
     @KeyByString("key_int")
@@ -51,18 +54,15 @@ public interface ChangeListenersInterface {
     
 
     @KeyByString("key_custom_class")
-    @TypeAdapter(CustomClassTypeAdapter.class)
     void setCustomClass(CustomClass value);
 
     @KeyByString("key_custom_class")
     @RegisterChangeListenerMethod
-    @TypeAdapter(CustomClassTypeAdapter.class)
     void registerCustomClassChangeListener(
             OnPreferenceValueChangedListener<CustomClass> listener);
 
     @KeyByString("key_custom_class")
     @UnregisterChangeListenerMethod
-    @TypeAdapter(CustomClassTypeAdapter.class)
     void unregisterCustomClassChangeListener(
             OnPreferenceValueChangedListener<CustomClass> listener);
 }

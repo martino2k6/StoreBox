@@ -41,7 +41,8 @@ package net.orange_box.storebox.adapters;
  * @param <F> type which needs to be adapted
  * @param <T> type which goes into the preferences
  * 
- * @see net.orange_box.storebox.annotations.method.TypeAdapter
+ * @see net.orange_box.storebox.annotations.type.TypeAdapter
+ * @see net.orange_box.storebox.annotations.type.TypeAdapters
  */
 public interface StoreBoxTypeAdapter<F, T> {
     

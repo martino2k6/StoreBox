@@ -16,14 +16,10 @@
 
 package net.orange_box.storebox.harness.types;
 
-import android.annotation.SuppressLint;
-import android.content.SharedPreferences;
 import android.net.Uri;
-import android.preference.PreferenceManager;
-import android.test.InstrumentationTestCase;
 import android.test.suitebuilder.annotation.SmallTest;
 
-import net.orange_box.storebox.StoreBox;
+import net.orange_box.storebox.harness.base.PreferencesTestCase;
 import net.orange_box.storebox.harness.interfaces.types.CustomTypesInterface;
 
 import java.util.ArrayList;
@@ -32,33 +28,12 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-public class CustomTypesTestCase extends InstrumentationTestCase {
-    
-    private CustomTypesInterface uut;
-    private SharedPreferences prefs;
+public class CustomTypesTestCase extends
+        PreferencesTestCase<CustomTypesInterface> {
 
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-
-        uut = StoreBox.create(
-                getInstrumentation().getTargetContext(),
-                CustomTypesInterface.class);
-
-        prefs = PreferenceManager.getDefaultSharedPreferences(
-                getInstrumentation().getTargetContext());
-    }
-
-    @SuppressLint("CommitPrefEdits")
-    @Override
-    protected void tearDown() throws Exception {
-        uut = null;
-
-        // we are saving to the actual preferences so let's clear them
-        prefs.edit().clear().commit();
-        prefs = null;
-        
-        super.tearDown();
+    protected Class<CustomTypesInterface> getInterface() {
+        return CustomTypesInterface.class;
     }
     
     @SmallTest

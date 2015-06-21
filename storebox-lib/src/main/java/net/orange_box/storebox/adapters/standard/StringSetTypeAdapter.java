@@ -16,10 +16,14 @@
 
 package net.orange_box.storebox.adapters.standard;
 
+import android.annotation.TargetApi;
+import android.os.Build;
+
 import net.orange_box.storebox.adapters.base.BaseStringSetTypeAdapter;
 
 import java.util.Set;
 
+@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class StringSetTypeAdapter extends
         BaseStringSetTypeAdapter<Set<String>> {
 
