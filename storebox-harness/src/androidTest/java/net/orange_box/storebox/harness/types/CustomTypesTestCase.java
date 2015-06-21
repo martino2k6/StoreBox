@@ -104,6 +104,33 @@ public class CustomTypesTestCase extends InstrumentationTestCase {
         
         assertNull(uut.getDate());
     }
+
+    @SmallTest
+    public void testDoubleDefaults() {
+        assertEquals(0D, uut.getDouble());
+        assertEquals(1D, uut.getDouble(1D));
+    }
+
+    @SmallTest
+    public void testDouble() {
+        final double value = 1;
+
+        uut.setDouble(value);
+        assertEquals(value, uut.getDouble());
+        assertEquals(value, uut.getDouble(0D));
+    }
+
+    @SmallTest
+    public void testDoubleBoundaries() {
+        uut.setDouble(Double.MIN_VALUE);
+        assertEquals(Double.MIN_VALUE, uut.getDouble());
+
+        uut.setDouble(Double.MAX_VALUE);
+        assertEquals(Double.MAX_VALUE, uut.getDouble());
+
+        uut.setDouble(Double.MIN_NORMAL);
+        assertEquals(Double.MIN_NORMAL, uut.getDouble());
+    }
     
     @SmallTest
     public void testUriDefaults() {

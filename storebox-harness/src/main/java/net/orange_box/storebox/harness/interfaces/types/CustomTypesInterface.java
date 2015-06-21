@@ -50,6 +50,16 @@ public interface CustomTypesInterface {
     void setDate(Date value);
 
 
+    @KeyByString("key_double")
+    double getDouble();
+
+    @KeyByString("key_double")
+    double getDouble(double defValue);
+
+    @KeyByString("key_double")
+    void setDouble(double value);
+
+
     @KeyByString("key_uri")
     Uri getUri();
 

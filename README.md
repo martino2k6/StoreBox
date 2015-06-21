@@ -126,6 +126,7 @@ Which type adapter needs to be extended depends on the use case. Take a look at 
 
 The following types will work out of the box, so type adapters don't need to be provided for them:
 * `Date`
+* `Double`
 * `Enum`
 * `Uri`
 

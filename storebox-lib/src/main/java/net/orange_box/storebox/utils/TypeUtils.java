@@ -19,6 +19,7 @@ package net.orange_box.storebox.utils;
 import android.net.Uri;
 
 import net.orange_box.storebox.adapters.extra.DateTypeAdapter;
+import net.orange_box.storebox.adapters.extra.DoubleTypeAdapter;
 import net.orange_box.storebox.adapters.extra.EnumTypeAdapter;
 import net.orange_box.storebox.adapters.StoreBoxTypeAdapter;
 import net.orange_box.storebox.adapters.standard.BooleanTypeAdapter;
@@ -40,18 +41,21 @@ public final class TypeUtils {
     
     private static final Map<Class<?>, Class<?>> PRIMITIVE_TO_BOXED_MAP;
     static {
-        final Map<Class<?>, Class<?>> map = new HashMap<>(4);
+        final Map<Class<?>, Class<?>> map = new HashMap<>(5);
+        // standard
         map.put(boolean.class, Boolean.class);
         map.put(float.class, Float.class);
         map.put(int.class, Integer.class);
         map.put(long.class, Long.class);
+        // extra
+        map.put(double.class, Double.class);
         
         PRIMITIVE_TO_BOXED_MAP = map;
     }
     
     private static final Map<Class<?>, StoreBoxTypeAdapter> ADAPTERS_MAP;
     static {
-        final Map<Class<?>, StoreBoxTypeAdapter> map = new HashMap<>(8);
+        final Map<Class<?>, StoreBoxTypeAdapter> map = new HashMap<>(9);
         // standard
         map.put(Boolean.class, new BooleanTypeAdapter());
         map.put(Float.class, new FloatTypeAdapter());
@@ -61,6 +65,7 @@ public final class TypeUtils {
         map.put(Set.class, new StringSetTypeAdapter());
         // extra
         map.put(Date.class, new DateTypeAdapter());
+        map.put(Double.class, new DoubleTypeAdapter());
         map.put(Uri.class, new UriTypeAdapter());
         
         ADAPTERS_MAP = map;
