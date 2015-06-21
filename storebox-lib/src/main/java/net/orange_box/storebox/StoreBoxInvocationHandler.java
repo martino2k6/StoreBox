@@ -30,8 +30,8 @@ import net.orange_box.storebox.annotations.method.KeyByResource;
 import net.orange_box.storebox.annotations.method.KeyByString;
 import net.orange_box.storebox.annotations.method.RemoveMethod;
 import net.orange_box.storebox.annotations.method.TypeAdapter;
-import net.orange_box.storebox.annotations.method.ChangeListenerRegisterMethod;
-import net.orange_box.storebox.annotations.method.ChangeListenerUnregisterMethod;
+import net.orange_box.storebox.annotations.method.RegisterChangeListenerMethod;
+import net.orange_box.storebox.annotations.method.UnregisterChangeListenerMethod;
 import net.orange_box.storebox.annotations.option.SaveOption;
 import net.orange_box.storebox.enums.PreferencesMode;
 import net.orange_box.storebox.enums.PreferencesType;
@@ -120,8 +120,8 @@ class StoreBoxInvocationHandler implements InvocationHandler {
             isRemove = method.isAnnotationPresent(RemoveMethod.class);
             isChange = MethodUtils.areAnyAnnotationsPresent(
                     method,
-                    ChangeListenerRegisterMethod.class,
-                    ChangeListenerUnregisterMethod.class);
+                    RegisterChangeListenerMethod.class,
+                    UnregisterChangeListenerMethod.class);
         } else if (method.isAnnotationPresent(KeyByResource.class)) {
             key = res.getString(
                     method.getAnnotation(KeyByResource.class).value());
@@ -129,8 +129,8 @@ class StoreBoxInvocationHandler implements InvocationHandler {
             isRemove = method.isAnnotationPresent(RemoveMethod.class);
             isChange = MethodUtils.areAnyAnnotationsPresent(
                     method,
-                    ChangeListenerRegisterMethod.class,
-                    ChangeListenerUnregisterMethod.class);
+                    RegisterChangeListenerMethod.class,
+                    UnregisterChangeListenerMethod.class);
         } else if (method.isAnnotationPresent(RemoveMethod.class)) {
             key = MethodUtils.getKeyForRemove(res, args);
             

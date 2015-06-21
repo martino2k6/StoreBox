@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-package net.orange_box.storebox.listeners;
+package net.orange_box.storebox.annotations.method;
 
-public interface OnValueChangedListener<T> {
-    
-    void onChanged(T newValue);
-}
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface UnregisterChangeListenerMethod {}

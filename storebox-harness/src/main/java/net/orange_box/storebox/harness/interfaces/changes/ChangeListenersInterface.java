@@ -18,11 +18,11 @@ package net.orange_box.storebox.harness.interfaces.changes;
 
 import net.orange_box.storebox.annotations.method.KeyByString;
 import net.orange_box.storebox.annotations.method.TypeAdapter;
-import net.orange_box.storebox.annotations.method.ChangeListenerRegisterMethod;
-import net.orange_box.storebox.annotations.method.ChangeListenerUnregisterMethod;
+import net.orange_box.storebox.annotations.method.RegisterChangeListenerMethod;
+import net.orange_box.storebox.annotations.method.UnregisterChangeListenerMethod;
 import net.orange_box.storebox.harness.types.CustomClass;
 import net.orange_box.storebox.harness.types.adapters.CustomClassTypeAdapter;
-import net.orange_box.storebox.listeners.OnValueChangedListener;
+import net.orange_box.storebox.listeners.OnPreferenceValueChangedListener;
 
 public interface ChangeListenersInterface {
     
@@ -30,24 +30,24 @@ public interface ChangeListenersInterface {
     void setInt(int value);
     
     @KeyByString("key_int")
-    @ChangeListenerRegisterMethod
+    @RegisterChangeListenerMethod
     void registerIntChangeListener(
-            OnValueChangedListener<Integer> listener);
+            OnPreferenceValueChangedListener<Integer> listener);
 
     @KeyByString("key_int")
-    @ChangeListenerRegisterMethod
+    @RegisterChangeListenerMethod
     void registerIntChangeListenerVarArgs(
-            OnValueChangedListener<Integer>... listeners);
+            OnPreferenceValueChangedListener<Integer>... listeners);
 
     @KeyByString("key_int")
-    @ChangeListenerUnregisterMethod
+    @UnregisterChangeListenerMethod
     void unregisterIntChangeListener(
-            OnValueChangedListener<Integer> listener);
+            OnPreferenceValueChangedListener<Integer> listener);
 
     @KeyByString("key_int")
-    @ChangeListenerUnregisterMethod
+    @UnregisterChangeListenerMethod
     void unregisterIntChangeListenerVarArgs(
-            OnValueChangedListener<Integer>... listeners);
+            OnPreferenceValueChangedListener<Integer>... listeners);
     
 
     @KeyByString("key_custom_class")
@@ -55,14 +55,14 @@ public interface ChangeListenersInterface {
     void setCustomClass(CustomClass value);
 
     @KeyByString("key_custom_class")
-    @ChangeListenerRegisterMethod
+    @RegisterChangeListenerMethod
     @TypeAdapter(CustomClassTypeAdapter.class)
     void registerCustomClassChangeListener(
-            OnValueChangedListener<CustomClass> listener);
+            OnPreferenceValueChangedListener<CustomClass> listener);
 
     @KeyByString("key_custom_class")
-    @ChangeListenerUnregisterMethod
+    @UnregisterChangeListenerMethod
     @TypeAdapter(CustomClassTypeAdapter.class)
     void unregisterCustomClassChangeListener(
-            OnValueChangedListener<CustomClass> listener);
+            OnPreferenceValueChangedListener<CustomClass> listener);
 }

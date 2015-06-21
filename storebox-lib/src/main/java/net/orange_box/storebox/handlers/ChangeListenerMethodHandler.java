@@ -21,10 +21,10 @@ import android.support.annotation.Nullable;
 
 import net.jodah.typetools.TypeResolver;
 import net.orange_box.storebox.adapters.StoreBoxTypeAdapter;
-import net.orange_box.storebox.annotations.method.ChangeListenerRegisterMethod;
-import net.orange_box.storebox.annotations.method.ChangeListenerUnregisterMethod;
+import net.orange_box.storebox.annotations.method.RegisterChangeListenerMethod;
+import net.orange_box.storebox.annotations.method.UnregisterChangeListenerMethod;
 import net.orange_box.storebox.annotations.method.TypeAdapter;
-import net.orange_box.storebox.listeners.OnValueChangedListener;
+import net.orange_box.storebox.listeners.OnPreferenceValueChangedListener;
 import net.orange_box.storebox.utils.PreferenceUtils;
 import net.orange_box.storebox.utils.TypeUtils;
 
@@ -66,31 +66,31 @@ public class ChangeListenerMethodHandler implements
         
         if (args.length == 0) {
             throw new IllegalArgumentException(
-                    "Cannot have empty argument for register/unregister" +
-                            " listener method");
+                    "At least one argument must be supplied for" +
+                            "register/unregister listener method");
         }
         
         final Set<ListenerInfo> listenerInfos = new HashSet<>();
         for (final Object arg : args) {
-            if (arg instanceof OnValueChangedListener) {
+            if (arg instanceof OnPreferenceValueChangedListener) {
                 listenerInfos.add(ListenerInfo.create(
-                        (OnValueChangedListener) arg,
+                        (OnPreferenceValueChangedListener) arg,
                         method.getAnnotation(TypeAdapter.class)));
-            } else if (arg instanceof OnValueChangedListener[]) {
+            } else if (arg instanceof OnPreferenceValueChangedListener[]) {
                 listenerInfos.addAll(Arrays.asList(ListenerInfo.create(
-                        (OnValueChangedListener[]) arg,
+                        (OnPreferenceValueChangedListener[]) arg,
                         method.getAnnotation(TypeAdapter.class))));
             } else {
                 throw new IllegalArgumentException(String.format(
                         Locale.ENGLISH,
                         "Argument for register/unregister" +
                                 " listener method must be of %s type",
-                        OnValueChangedListener.class.getSimpleName()));
+                        OnPreferenceValueChangedListener.class.getSimpleName()));
             }
         }
         
         if (method.isAnnotationPresent(
-                ChangeListenerRegisterMethod.class)) {
+                RegisterChangeListenerMethod.class)) {
             
             if (listeners.containsKey(key)) {
                 listeners.get(key).addAll(listenerInfos);
@@ -98,7 +98,7 @@ public class ChangeListenerMethodHandler implements
                 listeners.put(key, listenerInfos);
             }
         } else if (method.isAnnotationPresent(
-                ChangeListenerUnregisterMethod.class)) {
+                UnregisterChangeListenerMethod.class)) {
             
             if (listeners.containsKey(key)) {
                 listeners.get(key).removeAll(listenerInfos);
@@ -126,7 +126,7 @@ public class ChangeListenerMethodHandler implements
                         adapter.getStoreType(),
                         adapter.getDefaultValue());
 
-                final OnValueChangedListener listener =
+                final OnPreferenceValueChangedListener listener =
                         listenerInfo.getListener();
 
                 if (listener != null) {
@@ -140,13 +140,13 @@ public class ChangeListenerMethodHandler implements
     
     private static class ListenerInfo {
         
-        private final WeakReference<OnValueChangedListener> listener;
+        private final WeakReference<OnPreferenceValueChangedListener> listener;
         private final StoreBoxTypeAdapter adapter;
         
         private final int hashCode;
         
         public ListenerInfo(
-                OnValueChangedListener listener,
+                OnPreferenceValueChangedListener listener,
                 StoreBoxTypeAdapter adapter) {
             
             this.listener = new WeakReference<>(listener);
@@ -156,7 +156,7 @@ public class ChangeListenerMethodHandler implements
         }
         
         @Nullable
-        public OnValueChangedListener getListener() {
+        public OnPreferenceValueChangedListener getListener() {
             return listener.get();
         }
         
@@ -185,20 +185,20 @@ public class ChangeListenerMethodHandler implements
         }
 
         private static ListenerInfo create(
-                OnValueChangedListener listener,
+                OnPreferenceValueChangedListener listener,
                 TypeAdapter adapterAnnotation) {
 
             return new ListenerInfo(
                     listener,
                     TypeUtils.getTypeAdapter(
                             TypeResolver.resolveRawArguments(
-                                    OnValueChangedListener.class,
+                                    OnPreferenceValueChangedListener.class,
                                     listener.getClass())[0],
                             adapterAnnotation));
         }
 
         private static ListenerInfo[] create(
-                OnValueChangedListener[] listeners,
+                OnPreferenceValueChangedListener[] listeners,
                 TypeAdapter adapterAnnotation) {
 
             final ListenerInfo[] result = new ListenerInfo[listeners.length];

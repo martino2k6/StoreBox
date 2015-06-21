@@ -21,7 +21,7 @@ import android.test.suitebuilder.annotation.SmallTest;
 import net.orange_box.storebox.harness.base.PreferencesTestCase;
 import net.orange_box.storebox.harness.interfaces.changes.ChangeListenersInterface;
 import net.orange_box.storebox.harness.types.CustomClass;
-import net.orange_box.storebox.listeners.OnValueChangedListener;
+import net.orange_box.storebox.listeners.OnPreferenceValueChangedListener;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -37,8 +37,8 @@ public class ChangesListenersTestCase extends
     @SmallTest
     public void testIntChanged() {
         final AtomicBoolean called = new AtomicBoolean();
-        final OnValueChangedListener<Integer> listener =
-                new OnValueChangedListener<Integer>() {
+        final OnPreferenceValueChangedListener<Integer> listener =
+                new OnPreferenceValueChangedListener<Integer>() {
                     @Override
                     public void onChanged(Integer newValue) {
                         assertEquals(1, newValue.intValue());
@@ -56,8 +56,8 @@ public class ChangesListenersTestCase extends
     @SmallTest
     public void testIntChangedMultiple() {
         final AtomicInteger count = new AtomicInteger(2);
-        final OnValueChangedListener<Integer> one =
-                new OnValueChangedListener<Integer>() {
+        final OnPreferenceValueChangedListener<Integer> one =
+                new OnPreferenceValueChangedListener<Integer>() {
                     @Override
                     public void onChanged(Integer newValue) {
                         assertEquals(1, newValue.intValue());
@@ -65,8 +65,8 @@ public class ChangesListenersTestCase extends
                         count.decrementAndGet();
                     }
                 };
-        final OnValueChangedListener<Integer> two =
-                new OnValueChangedListener<Integer>() {
+        final OnPreferenceValueChangedListener<Integer> two =
+                new OnPreferenceValueChangedListener<Integer>() {
                     @Override
                     public void onChanged(Integer newValue) {
                         assertEquals(1, newValue.intValue());
@@ -85,8 +85,8 @@ public class ChangesListenersTestCase extends
     @SmallTest
     public void testIntChangedVarArgs() {
         final AtomicInteger count = new AtomicInteger(2);
-        final OnValueChangedListener<Integer> one =
-                new OnValueChangedListener<Integer>() {
+        final OnPreferenceValueChangedListener<Integer> one =
+                new OnPreferenceValueChangedListener<Integer>() {
                     @Override
                     public void onChanged(Integer newValue) {
                         assertEquals(1, newValue.intValue());
@@ -94,8 +94,8 @@ public class ChangesListenersTestCase extends
                         count.decrementAndGet();
                     }
                 };
-        final OnValueChangedListener<Integer> two =
-                new OnValueChangedListener<Integer>() {
+        final OnPreferenceValueChangedListener<Integer> two =
+                new OnPreferenceValueChangedListener<Integer>() {
                     @Override
                     public void onChanged(Integer newValue) {
                         assertEquals(1, newValue.intValue());
@@ -113,8 +113,8 @@ public class ChangesListenersTestCase extends
     @SmallTest
     public void testIntUnregistered() {
         final AtomicBoolean called = new AtomicBoolean();
-        final OnValueChangedListener<Integer> listener =
-                new OnValueChangedListener<Integer>() {
+        final OnPreferenceValueChangedListener<Integer> listener =
+                new OnPreferenceValueChangedListener<Integer>() {
                     @Override
                     public void onChanged(Integer newValue) {
                         called.set(true);
@@ -131,15 +131,15 @@ public class ChangesListenersTestCase extends
     @SmallTest
     public void testIntUnregisteredVarArgs() {
         final AtomicInteger count = new AtomicInteger(2);
-        final OnValueChangedListener<Integer> one =
-                new OnValueChangedListener<Integer>() {
+        final OnPreferenceValueChangedListener<Integer> one =
+                new OnPreferenceValueChangedListener<Integer>() {
                     @Override
                     public void onChanged(Integer newValue) {
                         count.decrementAndGet();
                     }
                 };
-        final OnValueChangedListener<Integer> two =
-                new OnValueChangedListener<Integer>() {
+        final OnPreferenceValueChangedListener<Integer> two =
+                new OnPreferenceValueChangedListener<Integer>() {
                     @Override
                     public void onChanged(Integer newValue) {
                         count.decrementAndGet();
@@ -156,8 +156,8 @@ public class ChangesListenersTestCase extends
     @SmallTest
     public void testCustomClassChanged() {
         final AtomicBoolean called = new AtomicBoolean();
-        final OnValueChangedListener<CustomClass> listener =
-                new OnValueChangedListener<CustomClass>() {
+        final OnPreferenceValueChangedListener<CustomClass> listener =
+                new OnPreferenceValueChangedListener<CustomClass>() {
                     @Override
                     public void onChanged(CustomClass newValue) {
                         assertEquals(new CustomClass("a", "b"), newValue);
@@ -175,8 +175,8 @@ public class ChangesListenersTestCase extends
     @SmallTest
     public void testCustomClassChangedNull() {
         final AtomicBoolean called = new AtomicBoolean();
-        final OnValueChangedListener<CustomClass> listener =
-                new OnValueChangedListener<CustomClass>() {
+        final OnPreferenceValueChangedListener<CustomClass> listener =
+                new OnPreferenceValueChangedListener<CustomClass>() {
                     @Override
                     public void onChanged(CustomClass newValue) {
                         assertNull(newValue);
@@ -195,8 +195,8 @@ public class ChangesListenersTestCase extends
     @SmallTest
     public void testCustomClassChangedMultiple() {
         final AtomicInteger count = new AtomicInteger(2);
-        final OnValueChangedListener<CustomClass> one =
-                new OnValueChangedListener<CustomClass>() {
+        final OnPreferenceValueChangedListener<CustomClass> one =
+                new OnPreferenceValueChangedListener<CustomClass>() {
                     @Override
                     public void onChanged(CustomClass newValue) {
                         assertEquals(new CustomClass("a", "b"), newValue);
@@ -204,8 +204,8 @@ public class ChangesListenersTestCase extends
                         count.decrementAndGet();
                     }
                 };
-        final OnValueChangedListener<CustomClass> two =
-                new OnValueChangedListener<CustomClass>() {
+        final OnPreferenceValueChangedListener<CustomClass> two =
+                new OnPreferenceValueChangedListener<CustomClass>() {
                     @Override
                     public void onChanged(CustomClass newValue) {
                         assertEquals(new CustomClass("a", "b"), newValue);
@@ -224,8 +224,8 @@ public class ChangesListenersTestCase extends
     @SmallTest
     public void testCustomClassUnregistered() {
         final AtomicBoolean called = new AtomicBoolean();
-        final OnValueChangedListener<CustomClass> listener =
-                new OnValueChangedListener<CustomClass>() {
+        final OnPreferenceValueChangedListener<CustomClass> listener =
+                new OnPreferenceValueChangedListener<CustomClass>() {
                     @Override
                     public void onChanged(CustomClass newValue) {
                         called.set(true);
@@ -245,7 +245,7 @@ public class ChangesListenersTestCase extends
     public void testListenerGarbageCollected() throws Exception {
         final AtomicBoolean called = new AtomicBoolean();
 
-        uut.registerIntChangeListener(new OnValueChangedListener<Integer>() {
+        uut.registerIntChangeListener(new OnPreferenceValueChangedListener<Integer>() {
             @Override
             public void onChanged(Integer newValue) {
                 called.set(true);
