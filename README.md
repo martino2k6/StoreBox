@@ -184,6 +184,39 @@ preferences.removeUsername();
 preferences.removePassword();
 ```
 
+###Change listeners###
+Callbacks can be received when a preference value changes through the use of the `OnPreferenceValueChangedListener` interface. The listeners need to be parametrised with the type which is used for the value whose changes we would like to listen for. For example, if we would like to listen to changes to the password (from previous examples) then we could define the listener as
+```Java
+OnPreferenceValueChangedListener<String> listener = new OnPreferenceValueChangedListener<String>() {
+    @Override
+    public void onChanged(String newValue) {
+        // do something with newValue
+    }
+}
+```
+To register this listener a method for registering the listener would need to be defined using the `@RegisterChangeListenerMethod` annotation in the interface which gets passed to `StoreBox.create()`. Likewise, for unregistering a listener the method needs to be annotated with `@UnregisterChangeListenerMethod` instead. The `@KeyByString` or `@KeyByResource` annotation also needs to be used to specify which value we are interested in.
+```Java
+public interface ChangeListenerExample {
+    
+    @KeyByString("key_password")
+    @RegisterChangeListenerMethod
+    void registerPasswordListener(OnPreferenceValueChangedListener<String> listener);
+    
+    @KeyByString("key_password")
+    @UnregisterChangeListenerMethod
+    void unregisterPasswordListener(OnPreferenceValueChangedListener<String> listener);
+}
+```
+If you would like to listen for changes to a custom type then the `@TypeAdapter` annotation will need to be added to the method in order to tell StoreBox how the value should be adapted when retrieving it from the preferences.
+
+More than one listener can be registered and unregistered at a time by changing the method definitions in the interface to use variable arguments.
+```Java
+// annotations omitted
+void registerPasswordListeners(OnPreferenceValueChangedListener<String>... listeners);
+```
+
+**Caution:** StoreBox does not store strong references to the listeners. A strong reference must be kept to the listener for as long as the listener will be required, otherwise it will be susceptible to garbage collection.
+
 ###Chaining calls###
 With Android's `SharedPreferences.Editor` class it is possible to keep chaining put methods as each returns back the `SharedPreferences.Editor` instance. StoreBox allows the same functionality. All that needs to be done is to change the set/remove method definitions to either return interface type itself or `SharedPreferences.Editor`.
 ```Java
