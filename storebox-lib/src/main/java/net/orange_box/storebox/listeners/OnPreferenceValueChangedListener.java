@@ -16,6 +16,15 @@
 
 package net.orange_box.storebox.listeners;
 
+/**
+ * Interface definition for a callback to be invoked when a preference value
+ * is changed.
+ * 
+ * @param <T> type of the value
+ *
+ * @see net.orange_box.storebox.annotations.method.RegisterChangeListenerMethod
+ * @see net.orange_box.storebox.annotations.method.UnregisterChangeListenerMethod
+ */
 public interface OnPreferenceValueChangedListener<T> {
     
     void onChanged(T newValue);

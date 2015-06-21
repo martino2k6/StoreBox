@@ -21,6 +21,15 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Annotation which should be used for registering a
+ * {@link net.orange_box.storebox.listeners.OnPreferenceValueChangedListener}.
+ * The key for the value that should be listened to can be provided through
+ * a {@link KeyByString} or {@link KeyByResource} annotation.
+ * 
+ * @see UnregisterChangeListenerMethod
+ * @see net.orange_box.storebox.listeners.OnPreferenceValueChangedListener
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface RegisterChangeListenerMethod {}
