@@ -2,7 +2,7 @@
 **Android library for streamlining SharedPreferences.**  
 [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-StoreBox-brightgreen.svg?style=flat)](http://android-arsenal.com/details/1/1737)
 
-StoreBox is an annotation-based library for interacting with Android's SharedPreferences, with the aim take out the the *how* and *where* parts of retrieving/storing values and instead focus on the more important *what* part.
+StoreBox is an annotation-based library for interacting with Android's [SharedPreferences](http://developer.android.com/reference/android/content/SharedPreferences.html), with the aim take out the the *how* and *where* parts of retrieving/storing values and instead focus on the more important *what* part.
 
 Normally when retrieving or storing values we need to know two pieces of information during each call: the key and the type.
 ```Java
@@ -56,13 +56,13 @@ public interface MyPreferences {
     
 }
 ```
-Now you're ready to use ```StoreBox.create()``` to obtain an instance.
+Now you're ready to use [`StoreBox.create()`](https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/StoreBox.java) to obtain an instance.
 ```Java
 MyPreferences instance = StoreBox.create(context, MyPreferences.class);
 ```
 
 ##Adding get and set methods##
-If you would like to add a **getter** just add a method to the interface which returns a value and make sure to annotate it using `@KeyByString` or `@KeyByResource`.
+If you would like to add a **getter** just add a method to the interface which returns a value and make sure to annotate it using [`@KeyByString`](https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/annotations/method/KeyByString.java) or [`@KeyByResource`](https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/annotations/method/KeyByResource.java).
 ```Java
 @KeyByString("key_nickname")
 String getNickname();
@@ -104,14 +104,14 @@ long getRefreshInterval();
 
 ##Storing and retrieving custom types##
 Saving custom types, which are not understood by Android's SharedPreferences, can be supported through the use of type adapters. A type adapter implementation can be provided by extending from one of the following classes:
-* `BaseBooleanTypeAdapter` for storing as a `Boolean`
-* `BaseFloatTypeAdapter` for storing as a `Float` and so on...
-* `BaseIntegerTypeAdapter`
-* `BaseLongTypeAdapter`
-* `BaseStringTypeAdapter`
-* `BaseStringSetTypeAdapter` (only supported on API11 and newer)
+* [`BaseBooleanTypeAdapter`](https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/adapters/base/BaseBooleanTypeAdapter.java) for storing as a `Boolean`
+* [`BaseFloatTypeAdapter`](https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/adapters/base/BaseFloatTypeAdapter.java) for storing as a `Float` and so on...
+* [`BaseIntegerTypeAdapter`](https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/adapters/base/BaseIntegerTypeAdapter.java)
+* [`BaseLongTypeAdapter`](https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/adapters/base/BaseLongTypeAdapter.java)
+* [`BaseStringTypeAdapter`](https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/adapters/base/BaseStringTypeAdapter.java)
+* [`BaseStringSetTypeAdapter`](https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/adapters/base/BaseStringSetTypeAdapter.java) (only supported on API11 and newer)
 
-Telling StoreBox which type adapter should be used can be done by adding the `@TypeAdapter` annotation to the get and set methods.
+Telling StoreBox which type adapter should be used can be done by adding the [`@TypeAdapter`](https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/annotations/method/TypeAdapter.java) annotation to the get and set methods.
 ```Java
 @KeyByString("key_region")
 @TypeAdapter(RegionTypeAdapter.class)
@@ -135,7 +135,7 @@ The following types will work out of the box, so type adapters don't need to be 
 ##Opening different types of preferences##
 In all of the examples so far details about what preferences are opened and how have been omitted.
 
-Without any annotation the default shared preferences will be used, but the `@DefaultSharedPreferences` annotation can be added to the interface definition for explicitness. Likewise, `@ActivityPreferences` or `@FilePreferences` can be used to respectively open preferences private to an activity or to open preferences using a file name.
+Without any annotation the default shared preferences will be used, but the [`@DefaultSharedPreferences`](https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/annotations/type/DefaultSharedPreferences.java) annotation can be added to the interface definition for explicitness. Likewise, [`@ActivityPreferences`](https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/annotations/type/ActivityPreferences.java) or [`@FilePreferences`](https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/annotations/type/FilePreferences.java) can be used to respectively open preferences private to an activity or to open preferences using a file name.
 
 The mode with which the preferences should be opened can also be specified, although this option is not supported by all the types.
 ```Java
@@ -148,7 +148,7 @@ public interface WelcomeActivityPreferences {
 
 ##Advanced##
 ###Remove methods###
-In order to remove a value stored in the preferences under a key a method to perform the removal can be annotated with the `@RemoveMethod` annotation. The key can be supplied in two ways;
+In order to remove a value stored in the preferences under a key a method to perform the removal can be annotated with the [`@RemoveMethod`](https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/annotations/method/RemoveMethod.java) annotation. The key can be supplied in two ways;
 
 The key can be provided thorough an argument in the method, using either a `String` or an `int` in the case of the key being specified in an XML resource.
 ```Java
@@ -166,7 +166,7 @@ preferences.remove("key_username");
 preferences.remove(R.string.key_password);
 ```
 
-Or a value-specific remove method can be defined with the help of the `@KeyByString` or `@KeyByResource` annotations.
+Or a value-specific remove method can be defined with the help of the [`@KeyByString`](https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/annotations/method/KeyByString.java) or [`@KeyByResource`](https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/annotations/method/KeyByResource.java) annotations.
 ```Java
 public interface RemoveMethodExample {
     
@@ -185,7 +185,7 @@ preferences.removePassword();
 ```
 
 ###Change listeners###
-Callbacks can be received when a preference value changes through the use of the `OnPreferenceValueChangedListener` interface. The listeners need to be parametrised with the type which is used for the value whose changes we would like to listen for. For example, if we would like to listen to changes to the password (from previous examples) then we could define the listener as
+Callbacks can be received when a preference value changes through the use of the [`OnPreferenceValueChangedListener`](https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/listeners/OnPreferenceValueChangedListener.java) interface. The listeners need to be parametrised with the type which is used for the value whose changes we would like to listen for. For example, if we would like to listen to changes to the password (from previous examples) then we could define the listener as
 ```Java
 OnPreferenceValueChangedListener<String> listener = new OnPreferenceValueChangedListener<String>() {
     @Override
@@ -194,7 +194,7 @@ OnPreferenceValueChangedListener<String> listener = new OnPreferenceValueChanged
     }
 }
 ```
-To register this listener a method for registering the listener would need to be defined using the `@RegisterChangeListenerMethod` annotation in the interface which gets passed to `StoreBox.create()`. Likewise, for unregistering a listener the method needs to be annotated with `@UnregisterChangeListenerMethod` instead. The `@KeyByString` or `@KeyByResource` annotation also needs to be used to specify which value we are interested in.
+To register this listener a method for registering the listener would need to be defined using the [`@RegisterChangeListenerMethod`](https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/annotations/method/RegisterChangeListenerMethod.java) annotation in the interface which gets passed to [`StoreBox.create()`](https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/StoreBox.java). Likewise, for unregistering a listener the method needs to be annotated with [`@UnregisterChangeListenerMethod`](https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/annotations/method/UnregisterChangeListenerMethod.java) instead. The [`@KeyByString`](https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/annotations/method/KeyByString.java) or [`@KeyByResource`](https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/annotations/method/KeyByResource.java) annotation also needs to be used to specify which value we are interested in.
 ```Java
 public interface ChangeListenerExample {
     
@@ -207,7 +207,7 @@ public interface ChangeListenerExample {
     void unregisterPasswordListener(OnPreferenceValueChangedListener<String> listener);
 }
 ```
-If you would like to listen for changes to a custom type then the `@TypeAdapter` annotation will need to be added to the method in order to tell StoreBox how the value should be adapted when retrieving it from the preferences.
+If you would like to listen for changes to a custom type then the [`@TypeAdapter`](https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/annotations/method/TypeAdapter.java) annotation will need to be added to the method in order to tell StoreBox how the value should be adapted when retrieving it from the preferences.
 
 More than one listener can be registered and unregistered at a time by changing the method definitions in the interface to use variable arguments.
 ```Java
@@ -218,7 +218,7 @@ void registerPasswordListeners(OnPreferenceValueChangedListener<String>... liste
 **Caution:** StoreBox does not store strong references to the listeners. A strong reference must be kept to the listener for as long as the listener will be required, otherwise it will be susceptible to garbage collection.
 
 ###Chaining calls###
-With Android's `SharedPreferences.Editor` class it is possible to keep chaining put methods as each returns back the `SharedPreferences.Editor` instance. StoreBox allows the same functionality. All that needs to be done is to change the set/remove method definitions to either return interface type itself or `SharedPreferences.Editor`.
+With Android's [`SharedPreferences.Editor`](http://developer.android.com/reference/android/content/SharedPreferences.Editor.html) class it is possible to keep chaining put methods as each returns back the [`SharedPreferences.Editor`](http://developer.android.com/reference/android/content/SharedPreferences.Editor.html) instance. StoreBox allows the same functionality. All that needs to be done is to change the set/remove method definitions to either return interface type itself or [`SharedPreferences.Editor`](http://developer.android.com/reference/android/content/SharedPreferences.Editor.html).
 ```Java
 public interface ChainingExample {
     
@@ -238,7 +238,7 @@ preferences.setUsername("Joe").setPassword("jOe").removeCountry();
 ```
 
 ###Forwarding calls###
-If you would like to access methods from the `SharedPreferences` or `SharedPreferences.Editor`, you can do that by extending your interface from either of the above (or even both).
+If you would like to access methods from the [`SharedPreferences`](http://developer.android.com/reference/android/content/SharedPreferences.html) or [`SharedPreferences.Editor`](http://developer.android.com/reference/android/content/SharedPreferences.Editor.html), you can do that by extending your interface from either of the above (or even both).
 ```Java
 public interface ForwardingExample extends SharedPreferences, SharedPreferences.Editor {
     
@@ -252,9 +252,9 @@ preferences.putString("key_username", "Joe").apply();
 ```
 
 ###Save modes###
-Changes to preferences can normally be saved on Android either through `apply()` or `commit()`. Which method gets used can be customised in StoreBox through the use of the `@SaveOption` annotation.
+Changes to preferences can normally be saved on Android either through `apply()` or `commit()`. Which method gets used can be customised in StoreBox through the use of the [`@SaveOption`](https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/StoreBox.java) annotation.
 
-Unlike any of the previous annotations `@SaveOption` can be used to annotate both the interface as well as individual set/remove methods, however an annotation at method-level will take precedence over an interface annotation.
+Unlike any of the previous annotations [`@SaveOption`](https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/annotations/option/SaveOption.java) can be used to annotate both the interface as well as individual set/remove methods, however an annotation at method-level will take precedence over an interface annotation.
 ```Java
 @SaveOption(SaveMode.APPLY)
 public interface SaveModeExample {
@@ -271,7 +271,7 @@ public interface SaveModeExample {
 ```
 
 ###Obtaining a more customised instance at run-time###
-As previously described you can build an instance of your interface using `StoreBox.build()`, however if you'd like to override at run-time any annotations you can use `StoreBox.Builder` and apply different options.
+As previously described you can build an instance of your interface using [`StoreBox.build()`](https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/StoreBox.java), however if you'd like to override at run-time any annotations you can use [`StoreBox.Builder`](https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/StoreBox.java) and apply different options.
 ```Java
 MyPreferences preferences =
         new StoreBox.Builder(context, MyPreferences.class)
