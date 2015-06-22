@@ -22,7 +22,7 @@
       <h2>
 <a id="introduction" class="anchor" href="#introduction" aria-hidden="true"><span class="octicon octicon-link"></span></a>Introduction</h2>
 
-<p>StoreBox is an annotation-based library for interacting with Android's SharedPreferences, with the aim take out the the <em>how</em> and <em>where</em> parts of retrieving/storing values and instead focus on the more important <em>what</em> part.</p>
+<p>StoreBox is an annotation-based library for interacting with Android's <a href="http://developer.android.com/reference/android/content/SharedPreferences.html">SharedPreferences</a>, with the aim take out the the <em>how</em> and <em>where</em> parts of retrieving/storing values and instead focus on the more important <em>what</em> part.</p>
 
 <p>Normally when retrieving or storing values we need to know two pieces of information during each call: the key and the type.</p>
 
@@ -86,14 +86,14 @@ preferences<span class="pl-k">.</span>setDateOfBirth(<span class="pl-s"><span cl
 
 }</pre></div>
 
-<p>Now you're ready to use <code>StoreBox.create()</code> to obtain an instance.</p>
+<p>Now you're ready to use <a href="https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/StoreBox.java"><code>StoreBox.create()</code></a> to obtain an instance.</p>
 
 <div class="highlight highlight-Java"><pre><span class="pl-smi">MyPreferences</span> instance <span class="pl-k">=</span> <span class="pl-smi">StoreBox</span><span class="pl-k">.</span>create(context, <span class="pl-smi">MyPreferences</span><span class="pl-k">.</span>class);</pre></div>
 
 <h2>
 <a id="adding-get-and-set-methods" class="anchor" href="#adding-get-and-set-methods" aria-hidden="true"><span class="octicon octicon-link"></span></a>Adding get and set methods</h2>
 
-<p>If you would like to add a <strong>getter</strong> just add a method to the interface which returns a value and make sure to annotate it using <code>@KeyByString</code> or <code>@KeyByResource</code>.</p>
+<p>If you would like to add a <strong>getter</strong> just add a method to the interface which returns a value and make sure to annotate it using <a href="https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/annotations/method/KeyByString.java"><code>@KeyByString</code></a> or <a href="https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/annotations/method/KeyByResource.java"><code>@KeyByResource</code></a>.</p>
 
 <div class="highlight highlight-Java"><pre>@KeyByString(<span class="pl-s"><span class="pl-pds">"</span>key_nickname<span class="pl-pds">"</span></span>)
 <span class="pl-smi">String</span> getNickname();
@@ -138,18 +138,18 @@ preferences<span class="pl-k">.</span>setDateOfBirth(<span class="pl-s"><span cl
 
 <ul>
 <li>
-<code>BaseBooleanTypeAdapter</code> for storing as a <code>Boolean</code>
+<a href="https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/adapters/base/BaseBooleanTypeAdapter.java"><code>BaseBooleanTypeAdapter</code></a> for storing as a <code>Boolean</code>
 </li>
 <li>
-<code>BaseFloatTypeAdapter</code> for storing as a <code>Float</code> and so on...</li>
-<li><code>BaseIntegerTypeAdapter</code></li>
-<li><code>BaseLongTypeAdapter</code></li>
-<li><code>BaseStringTypeAdapter</code></li>
+<a href="https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/adapters/base/BaseFloatTypeAdapter.java"><code>BaseFloatTypeAdapter</code></a> for storing as a <code>Float</code> and so on...</li>
+<li><a href="https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/adapters/base/BaseIntegerTypeAdapter.java"><code>BaseIntegerTypeAdapter</code></a></li>
+<li><a href="https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/adapters/base/BaseLongTypeAdapter.java"><code>BaseLongTypeAdapter</code></a></li>
+<li><a href="https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/adapters/base/BaseStringTypeAdapter.java"><code>BaseStringTypeAdapter</code></a></li>
 <li>
-<code>BaseStringSetTypeAdapter</code> (only supported on API11 and newer)</li>
+<a href="https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/adapters/base/BaseStringSetTypeAdapter.java"><code>BaseStringSetTypeAdapter</code></a> (only supported on API11 and newer)</li>
 </ul>
 
-<p>Telling StoreBox which type adapter should be used can be done by adding the <code>@TypeAdapter</code> annotation to the get and set methods.</p>
+<p>Telling StoreBox which type adapter should be used can be done by adding the <a href="https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/annotations/method/TypeAdapter.java"><code>@TypeAdapter</code></a> annotation to the get and set methods.</p>
 
 <div class="highlight highlight-Java"><pre>@KeyByString(<span class="pl-s"><span class="pl-pds">"</span>key_region<span class="pl-pds">"</span></span>)
 @TypeAdapter(<span class="pl-smi">RegionTypeAdapter</span><span class="pl-k">.</span>class)
@@ -177,7 +177,7 @@ preferences<span class="pl-k">.</span>setDateOfBirth(<span class="pl-s"><span cl
 
 <p>In all of the examples so far details about what preferences are opened and how have been omitted.</p>
 
-<p>Without any annotation the default shared preferences will be used, but the <code>@DefaultSharedPreferences</code> annotation can be added to the interface definition for explicitness. Likewise, <code>@ActivityPreferences</code> or <code>@FilePreferences</code> can be used to respectively open preferences private to an activity or to open preferences using a file name.</p>
+<p>Without any annotation the default shared preferences will be used, but the <a href="https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/annotations/type/DefaultSharedPreferences.java"><code>@DefaultSharedPreferences</code></a> annotation can be added to the interface definition for explicitness. Likewise, <a href="https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/annotations/type/ActivityPreferences.java"><code>@ActivityPreferences</code></a> or <a href="https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/annotations/type/FilePreferences.java"><code>@FilePreferences</code></a> can be used to respectively open preferences private to an activity or to open preferences using a file name.</p>
 
 <p>The mode with which the preferences should be opened can also be specified, although this option is not supported by all the types.</p>
 
@@ -193,7 +193,7 @@ preferences<span class="pl-k">.</span>setDateOfBirth(<span class="pl-s"><span cl
 <h3>
 <a id="remove-methods" class="anchor" href="#remove-methods" aria-hidden="true"><span class="octicon octicon-link"></span></a>Remove methods</h3>
 
-<p>In order to remove a value stored in the preferences under a key a method to perform the removal can be annotated with the <code>@RemoveMethod</code> annotation. The key can be supplied in two ways;</p>
+<p>In order to remove a value stored in the preferences under a key a method to perform the removal can be annotated with the <a href="https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/annotations/method/RemoveMethod.java"><code>@RemoveMethod</code></a> annotation. The key can be supplied in two ways;</p>
 
 <p>The key can be provided thorough an argument in the method, using either a <code>String</code> or an <code>int</code> in the case of the key being specified in an XML resource.</p>
 
@@ -210,7 +210,7 @@ preferences<span class="pl-k">.</span>setDateOfBirth(<span class="pl-s"><span cl
 preferences<span class="pl-k">.</span>remove(<span class="pl-s"><span class="pl-pds">"</span>key_username<span class="pl-pds">"</span></span>);
 preferences<span class="pl-k">.</span>remove(<span class="pl-smi">R</span><span class="pl-k">.</span>string<span class="pl-k">.</span>key_password);</pre></div>
 
-<p>Or a value-specific remove method can be defined with the help of the <code>@KeyByString</code> or <code>@KeyByResource</code> annotations.</p>
+<p>Or a value-specific remove method can be defined with the help of the <a href="https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/annotations/method/KeyByString.java"><code>@KeyByString</code></a> or <a href="https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/annotations/method/KeyByResource.java"><code>@KeyByResource</code></a> annotations.</p>
 
 <div class="highlight highlight-Java"><pre><span class="pl-k">public</span> <span class="pl-k">interface</span> <span class="pl-en">RemoveMethodExample</span> {
 
@@ -230,7 +230,7 @@ preferences.<span class="pl-en">removePassword</span>();</pre></div>
 <h3>
 <a id="change-listeners" class="anchor" href="#change-listeners" aria-hidden="true"><span class="octicon octicon-link"></span></a>Change listeners</h3>
 
-<p>Callbacks can be received when a preference value changes through the use of the <code>OnPreferenceValueChangedListener</code> interface. The listeners need to be parametrised with the type which is used for the value whose changes we would like to listen for. For example, if we would like to listen to changes to the password (from previous examples) then we could define the listener as</p>
+<p>Callbacks can be received when a preference value changes through the use of the <a href="https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/listeners/OnPreferenceValueChangedListener.java"><code>OnPreferenceValueChangedListener</code></a> interface. The listeners need to be parametrised with the type which is used for the value whose changes we would like to listen for. For example, if we would like to listen to changes to the password (from previous examples) then we could define the listener as</p>
 
 <div class="highlight highlight-Java"><pre><span class="pl-k">OnPreferenceValueChangedListener&lt;<span class="pl-smi">String</span>&gt;</span> listener <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-k">OnPreferenceValueChangedListener&lt;<span class="pl-smi">String</span>&gt;</span>() {
     <span class="pl-k">@Override</span>
@@ -239,7 +239,7 @@ preferences.<span class="pl-en">removePassword</span>();</pre></div>
     }
 }</pre></div>
 
-<p>To register this listener a method for registering the listener would need to be defined using the <code>@RegisterChangeListenerMethod</code> annotation in the interface which gets passed to <code>StoreBox.create()</code>. Likewise, for unregistering a listener the method needs to be annotated with <code>@UnregisterChangeListenerMethod</code> instead. The <code>@KeyByString</code> or <code>@KeyByResource</code> annotation also needs to be used to specify which value we are interested in.</p>
+<p>To register this listener a method for registering the listener would need to be defined using the <a href="https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/annotations/method/RegisterChangeListenerMethod.java"><code>@RegisterChangeListenerMethod</code></a> annotation in the interface which gets passed to <a href="https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/StoreBox.java"><code>StoreBox.create()</code></a>. Likewise, for unregistering a listener the method needs to be annotated with <a href="https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/annotations/method/UnregisterChangeListenerMethod.java"><code>@UnregisterChangeListenerMethod</code></a> instead. The <a href="https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/annotations/method/KeyByString.java"><code>@KeyByString</code></a> or <a href="https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/annotations/method/KeyByResource.java"><code>@KeyByResource</code></a> annotation also needs to be used to specify which value we are interested in.</p>
 
 <div class="highlight highlight-Java"><pre><span class="pl-k">public</span> <span class="pl-k">interface</span> <span class="pl-en">ChangeListenerExample</span> {
 
@@ -252,7 +252,7 @@ preferences.<span class="pl-en">removePassword</span>();</pre></div>
     <span class="pl-k">void</span> <span class="pl-en">unregisterPasswordListener</span>(<span class="pl-k">OnPreferenceValueChangedListener&lt;<span class="pl-smi">String</span>&gt;</span> <span class="pl-v">listener</span>);
 }</pre></div>
 
-<p>If you would like to listen for changes to a custom type then the <code>@TypeAdapter</code> annotation will need to be added to the method in order to tell StoreBox how the value should be adapted when retrieving it from the preferences.</p>
+<p>If you would like to listen for changes to a custom type then the <a href="https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/annotations/method/TypeAdapter.java"><code>@TypeAdapter</code></a> annotation will need to be added to the method in order to tell StoreBox how the value should be adapted when retrieving it from the preferences.</p>
 
 <p>More than one listener can be registered and unregistered at a time by changing the method definitions in the interface to use variable arguments.</p>
 
@@ -264,7 +264,7 @@ preferences.<span class="pl-en">removePassword</span>();</pre></div>
 <h3>
 <a id="chaining-calls" class="anchor" href="#chaining-calls" aria-hidden="true"><span class="octicon octicon-link"></span></a>Chaining calls</h3>
 
-<p>With Android's <code>SharedPreferences.Editor</code> class it is possible to keep chaining put methods as each returns back the <code>SharedPreferences.Editor</code> instance. StoreBox allows the same functionality. All that needs to be done is to change the set/remove method definitions to either return interface type itself or <code>SharedPreferences.Editor</code>.</p>
+<p>With Android's <a href="http://developer.android.com/reference/android/content/SharedPreferences.Editor.html"><code>SharedPreferences.Editor</code></a> class it is possible to keep chaining put methods as each returns back the <a href="http://developer.android.com/reference/android/content/SharedPreferences.Editor.html"><code>SharedPreferences.Editor</code></a> instance. StoreBox allows the same functionality. All that needs to be done is to change the set/remove method definitions to either return interface type itself or <a href="http://developer.android.com/reference/android/content/SharedPreferences.Editor.html"><code>SharedPreferences.Editor</code></a>.</p>
 
 <div class="highlight highlight-Java"><pre><span class="pl-k">public</span> <span class="pl-k">interface</span> <span class="pl-en">ChainingExample</span> {
 
@@ -285,7 +285,7 @@ preferences.<span class="pl-en">removePassword</span>();</pre></div>
 <h3>
 <a id="forwarding-calls" class="anchor" href="#forwarding-calls" aria-hidden="true"><span class="octicon octicon-link"></span></a>Forwarding calls</h3>
 
-<p>If you would like to access methods from the <code>SharedPreferences</code> or <code>SharedPreferences.Editor</code>, you can do that by extending your interface from either of the above (or even both).</p>
+<p>If you would like to access methods from the <a href="http://developer.android.com/reference/android/content/SharedPreferences.html"><code>SharedPreferences</code></a> or <a href="http://developer.android.com/reference/android/content/SharedPreferences.Editor.html"><code>SharedPreferences.Editor</code></a>, you can do that by extending your interface from either of the above (or even both).</p>
 
 <div class="highlight highlight-Java"><pre><span class="pl-k">public</span> <span class="pl-k">interface</span> <span class="pl-en">ForwardingExample</span> <span class="pl-k">extends</span> <span class="pl-e">SharedPreferences</span>, <span class="pl-e">SharedPreferences</span>.<span class="pl-e">Editor</span> {
 
@@ -300,9 +300,9 @@ preferences<span class="pl-k">.</span>putString(<span class="pl-s"><span class="
 <h3>
 <a id="save-modes" class="anchor" href="#save-modes" aria-hidden="true"><span class="octicon octicon-link"></span></a>Save modes</h3>
 
-<p>Changes to preferences can normally be saved on Android either through <code>apply()</code> or <code>commit()</code>. Which method gets used can be customised in StoreBox through the use of the <code>@SaveOption</code> annotation.</p>
+<p>Changes to preferences can normally be saved on Android either through <code>apply()</code> or <code>commit()</code>. Which method gets used can be customised in StoreBox through the use of the <a href="https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/StoreBox.java"><code>@SaveOption</code></a> annotation.</p>
 
-<p>Unlike any of the previous annotations <code>@SaveOption</code> can be used to annotate both the interface as well as individual set/remove methods, however an annotation at method-level will take precedence over an interface annotation.</p>
+<p>Unlike any of the previous annotations <a href="https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/annotations/option/SaveOption.java"><code>@SaveOption</code></a> can be used to annotate both the interface as well as individual set/remove methods, however an annotation at method-level will take precedence over an interface annotation.</p>
 
 <div class="highlight highlight-Java"><pre>@SaveOption(<span class="pl-smi">SaveMode</span><span class="pl-c1"><span class="pl-k">.</span>APPLY</span>)
 <span class="pl-k">public</span> <span class="pl-k">interface</span> <span class="pl-en">SaveModeExample</span> {
@@ -320,7 +320,7 @@ preferences<span class="pl-k">.</span>putString(<span class="pl-s"><span class="
 <h3>
 <a id="obtaining-a-more-customised-instance-at-run-time" class="anchor" href="#obtaining-a-more-customised-instance-at-run-time" aria-hidden="true"><span class="octicon octicon-link"></span></a>Obtaining a more customised instance at run-time</h3>
 
-<p>As previously described you can build an instance of your interface using <code>StoreBox.build()</code>, however if you'd like to override at run-time any annotations you can use <code>StoreBox.Builder</code> and apply different options.</p>
+<p>As previously described you can build an instance of your interface using <a href="https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/StoreBox.java"><code>StoreBox.build()</code></a>, however if you'd like to override at run-time any annotations you can use <a href="https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/StoreBox.java"><code>StoreBox.Builder</code></a> and apply different options.</p>
 
 <div class="highlight highlight-Java"><pre><span class="pl-smi">MyPreferences</span> preferences <span class="pl-k">=</span>
         <span class="pl-k">new</span> <span class="pl-smi">StoreBox</span>.<span class="pl-smi">Builder</span>(context, <span class="pl-smi">MyPreferences</span><span class="pl-k">.</span>class)
@@ -337,6 +337,20 @@ preferences<span class="pl-k">.</span>putString(<span class="pl-s"><span class="
 <li>Preferences mode: Private</li>
 <li>Save mode: Apply</li>
 <li>Default value mode: Empty</li>
+</ul>
+
+<h2>
+<a id="contributing" class="anchor" href="#contributing" aria-hidden="true"><span class="octicon octicon-link"></span></a>Contributing</h2>
+
+<p>Any contributions thorough pull requests as well as raised issues (bugs are rated just as highly as features!) will be welcome and highly appreciated.</p>
+
+<p>If you would like to submit a pull request please make sure to do so against the develop branch, and please follow a similar code style to the one used in the existing code base. Running the tests before and after any changes is highly recommended, just as is adding new test cases.</p>
+
+<h3>
+<a id="contributors" class="anchor" href="#contributors" aria-hidden="true"><span class="octicon octicon-link"></span></a>Contributors</h3>
+
+<ul>
+<li><a href="https://github.com/cr5315">cr5315</a></li>
 </ul>
 
 <h2>
