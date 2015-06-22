@@ -286,6 +286,14 @@ Given the minimum amount of details provided to the interface and method definit
 * Save mode: Apply
 * Default value mode: Empty
 
+##Contributing##
+Any contributions thorough pull requests as well as raised issues (bugs are rated just as highly as features!) will be welcome and highly appreciated.
+
+If you would like to submit a pull request please make sure to do so against the develop branch, and please follow a similar code style to the one used in the existing code base. Running the tests before and after any changes is highly recommended, just as is adding new test cases.
+
+###Contributors###
+* [cr5315](https://github.com/cr5315)
+
 ##License##
 ```
 Copyright 2015 Martin Bella
