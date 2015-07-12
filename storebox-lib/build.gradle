@@ -69,8 +69,10 @@ check.doLast {
 
 // https://github.com/danielemaddaluno/gradle-jcenter-publish
 Properties properties = new Properties()
-properties.load(project.rootProject.file('local.properties')
-        .newDataInputStream())
+File propertiesFile = project.rootProject.file('local.properties')
+if (propertiesFile.exists()) {
+    properties.load(propertiesFile.newDataInputStream())
+}
 
 version = VERSION_NAME
 group = 'net.orange-box.storebox'
