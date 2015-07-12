@@ -60,12 +60,16 @@ class StoreBoxInvocationHandler implements InvocationHandler {
             MethodUtils.getObjectMethod("hashCode");
     private static final Method OBJECT_TOSTRING =
             MethodUtils.getObjectMethod("toString");
+    private static final String VERSION_KEY =
+            "net.orange_box.storebox.version";
     
     private final SharedPreferences prefs;
     private final SharedPreferences.Editor editor;
     private final Resources res;
     
     private final SaveMode saveMode;
+    private final int preferencesVersion;
+    private final PreferencesVersionHandler preferencesVersionHandler;
     
     private final MethodHandler mChangesHandler;
     
@@ -76,7 +80,9 @@ class StoreBoxInvocationHandler implements InvocationHandler {
             PreferencesType preferencesType,
             String openNameValue,
             PreferencesMode preferencesMode,
-            SaveMode saveMode) {
+            SaveMode saveMode,
+            int preferencesVersion,
+            PreferencesVersionHandler preferencesVersionHandler) {
         
         switch (preferencesType) {
             case ACTIVITY:
@@ -98,7 +104,11 @@ class StoreBoxInvocationHandler implements InvocationHandler {
         res = context.getResources();
         
         this.saveMode = saveMode;
-
+        this.preferencesVersion = preferencesVersion;
+        this.preferencesVersionHandler= preferencesVersionHandler;
+        
+        checkVersion();
+        
         mChangesHandler = new ChangeListenerMethodHandler(prefs);
     }
     
@@ -275,6 +285,24 @@ class StoreBoxInvocationHandler implements InvocationHandler {
         }
         
         return hashCode;
+    }
+
+    private void checkVersion() {
+        synchronized (VERSION_KEY) {
+            final int version = prefs.getInt(VERSION_KEY, 0);
+
+            if (preferencesVersion != version) {
+                if (preferencesVersion > version) {
+                    preferencesVersionHandler.onUpgrade(
+                            prefs, editor, version, preferencesVersion);
+                } else {
+                    preferencesVersionHandler.onDowngrade(
+                            prefs, editor, version, preferencesVersion);
+                }
+
+                editor.putInt(VERSION_KEY, preferencesVersion).commit();
+            }
+        }
     }
     
     private Object getDefaultValueArg(

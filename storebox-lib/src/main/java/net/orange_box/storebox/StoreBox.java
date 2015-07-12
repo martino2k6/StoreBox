@@ -24,6 +24,7 @@ import net.orange_box.storebox.annotations.option.SaveOption;
 import net.orange_box.storebox.annotations.type.ActivityPreferences;
 import net.orange_box.storebox.annotations.type.DefaultSharedPreferences;
 import net.orange_box.storebox.annotations.type.FilePreferences;
+import net.orange_box.storebox.annotations.type.PreferencesVersion;
 import net.orange_box.storebox.enums.PreferencesMode;
 import net.orange_box.storebox.enums.PreferencesType;
 import net.orange_box.storebox.enums.SaveMode;
@@ -67,6 +68,9 @@ public final class StoreBox {
         private String preferencesName = "";
         private PreferencesMode preferencesMode = PreferencesMode.MODE_PRIVATE;
         private SaveMode saveMode = SaveMode.APPLY;
+        
+        private int preferencesVersion = 0;
+        private PreferencesVersionHandler preferencesVersionHandler;
 
         public Builder(Context context, Class<T> cls) {
             this.context = context;
@@ -113,7 +117,17 @@ public final class StoreBox {
                             preferencesType,
                             preferencesName,
                             preferencesMode,
-                            saveMode));
+                            saveMode,
+                            preferencesVersion,
+                            preferencesVersionHandler));
+        }
+        
+        private Builder preferencesVersion(
+                int version, PreferencesVersionHandler handler) {
+            
+            preferencesVersion = version;
+            preferencesVersionHandler = handler;
+            return this;
         }
         
         private void readAnnotations() {
@@ -136,6 +150,32 @@ public final class StoreBox {
             // save option 
             if (cls.isAnnotationPresent(SaveOption.class)) {
                 saveMode(cls.getAnnotation(SaveOption.class).value());
+            }
+            
+            // preferences version
+            if (cls.isAnnotationPresent(PreferencesVersion.class)) {
+                final PreferencesVersion annotation =
+                        cls.getAnnotation(PreferencesVersion.class);
+                
+                try {
+                    preferencesVersion(
+                            annotation.version(),
+                            annotation.handler().newInstance());
+                } catch (InstantiationException e) {
+                    throw new RuntimeException(String.format(
+                            Locale.ENGLISH,
+                            "Failed to instantiate %1$s, perhaps the " +
+                                    "no-arguments constructor is missing?",
+                            annotation.handler().getSimpleName()),
+                            e);
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(String.format(
+                            Locale.ENGLISH,
+                            "Failed to instantiate %1$s, perhaps the " +
+                                    "no-arguments constructor is not public?",
+                            annotation.handler().getSimpleName()),
+                            e);
+                }
             }
         }
         
