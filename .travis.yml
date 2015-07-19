@@ -3,9 +3,13 @@ jdk: oraclejdk7
 
 android:
   components:
+    - platform-tools
+    - tools
+    
     - build-tools-22.0.1
     - android-22
-
+    - extra
+    
     # min
     #- sys-img-armeabi-v7a-android-10
     #- sys-img-x86-android-10
