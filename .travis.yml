@@ -13,12 +13,7 @@ android:
     - android-22
     - extra
     
-    # min
-    - sys-img-armeabi-v7a-android-10
-    # target
-    - sys-img-armeabi-v7a-android-22
-    # most common
-    - sys-img-armeabi-v7a-android-19
+    - $ANDROID_SDKS
 
 before_script:
   - echo no | android create avd --force -n test -t $ANDROID_TARGET --abi $ANDROID_ABI
