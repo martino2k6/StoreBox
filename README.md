@@ -218,7 +218,7 @@ void registerPasswordListeners(OnPreferenceValueChangedListener<String>... liste
 **Caution:** StoreBox does not store strong references to the listeners. A strong reference must be kept to the listener for as long as the listener will be required, otherwise it will be susceptible to garbage collection.
 
 ###Chaining calls###
-With Android's [`SharedPreferences.Editor`](http://developer.android.com/reference/android/content/SharedPreferences.Editor.html) class it is possible to keep chaining put methods as each returns back the [`SharedPreferences.Editor`] instance. StoreBox allows the same functionality. All that needs to be done is to change the set/remove method definitions to either return interface type itself or [`SharedPreferences.Editor`].
+With Android's [`SharedPreferences.Editor`](http://developer.android.com/reference/android/content/SharedPreferences.Editor.html) class it is possible to keep chaining put methods as each returns back the `SharedPreferences.Editor` instance. StoreBox allows the same functionality. All that needs to be done is to change the set/remove method definitions to either return interface type itself or `SharedPreferences.Editor`.
 ```Java
 public interface ChainingExample {
     
@@ -254,7 +254,7 @@ preferences.putString("key_username", "Joe").apply();
 ###Save modes###
 Changes to preferences can normally be saved on Android either through `apply()` or `commit()`. Which method gets used can be customised in StoreBox through the use of the [`@SaveOption`](storebox-lib/src/main/java/net/orange_box/storebox/annotations/option/SaveOption.java) annotation.
 
-Unlike any of the previous annotations [`@SaveOption`] can be used to annotate both the interface as well as individual set/remove methods, however an annotation at method-level will take precedence over an interface annotation.
+Unlike any of the previous annotations `@SaveOption` can be used to annotate both the interface as well as individual set/remove methods, however an annotation at method-level will take precedence over an interface annotation.
 ```Java
 @SaveOption(SaveMode.APPLY)
 public interface SaveModeExample {
