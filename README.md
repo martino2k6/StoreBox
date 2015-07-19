@@ -275,7 +275,28 @@ StoreBox supports versioning of preferences through the use of the [`@Preference
 
 By default, without the `@PreferencesVersion` annotation, the version used is assumed to be `0`. The first time a change is required the `version` for the annotation should be set to `1`, with the value being incremented for any subsequent changes. To provide the logic for handling version upgrades a `handler` class extending from [`PreferencesVersionHandler`](storebox-lib/src/main/java/net/orange_box/storebox/PreferencesVersionHandler.java) needs to be specified.
 
-For an initial upgrade from `0` to `1` the `onUpgrade` method will be called with `oldVersion = 0` and `newVersion = 1`. If the version of the preferences would be updated to `2`, then the handler would be called with `oldVersion = 1` and `newVersion = 2`. If however an application update using version `1` was skipped, then `onUpgrade` would be called with `oldVersion = 0` and `newVersion = 2`, which means that handling the intermediate upgrade between versions `1` and `2` would be required. Take a look at [`VersionHandler`](storebox-harness/src/main/java/net/orange_box/storebox/harness/interfaces/versions/VersionHandler.java) for an example of how upgrades could be handled. There is no need to manually call `apply()` or `commit()` after any changes are made to the `editor`, as StoreBox will perform this when saving the new version value into the preferences.
+```Java
+@PreferencesVersion(version = 1, handler = MyPreferencesVersionHandler.class)
+public interface MyPreferences {
+    
+    // method definitions here
+}
+
+public class MyPreferencesVersionHandler extends PreferencesVersionHandler {
+    
+    @Override
+    protected void onUpgrade(
+            SharedPreferences prefs,
+            SharedPreferences.Editor editor,
+            int oldVersion,
+            int newVersion) {
+        
+        // logic for handling upgrades
+    }
+}
+```
+
+For an initial upgrade from `0` to `1` the `onUpgrade` method will be called with `oldVersion = 0` and `newVersion = 1`. If the version of the preferences would be updated to `2`, then the handler would be called with `oldVersion = 1` and `newVersion = 2`. If however an application update using version `1` was skipped, then `onUpgrade` would be called with `oldVersion = 0` and `newVersion = 2`, which means that handling the intermediate upgrade between versions `1` and `2` would be required. Calling `apply()` or `commit()` on the `editor` is not required after changes are made, as StoreBox will take care of this when saving the new version value into the preferences. Take a look [here](storebox-harness/src/main/java/net/orange_box/storebox/harness/interfaces/versions/VersionHandler.java) for an example of how upgrades could be handled.
 
 The versions are also independent of each other, and apply only to specific preference files. For example, you could have a shared preferences with *version X*, *activity A* preferences with *version Y*, and *activity B* preferences with *version Z*. Or none at all, if versioning is not needed.
 
