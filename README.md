@@ -1,6 +1,6 @@
 # StoreBox #
 **Android library for streamlining SharedPreferences.**  
-[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-StoreBox-brightgreen.svg?style=flat)](http://android-arsenal.com/details/1/1737)
+[![Build Status](https://travis-ci.org/martino2k6/StoreBox.svg?branch=develop-travis)](https://travis-ci.org/martino2k6/StoreBox) [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-StoreBox-brightgreen.svg?style=flat)](http://android-arsenal.com/details/1/1737)
 
 StoreBox is an annotation-based library for interacting with Android's [SharedPreferences](http://developer.android.com/reference/android/content/SharedPreferences.html), with the aim take out the the *how* and *where* parts of retrieving/storing values and instead focus on the more important *what* part.
 
