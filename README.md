@@ -270,6 +270,11 @@ public interface SaveModeExample {
 }
 ```
 
+###Versioning###
+In a similar fashion to Android's [`SQLiteOpenHelper`](http://developer.android.com/reference/android/database/sqlite/SQLiteOpenHelper.html) StoreBox supports versioning of preferences through the use of the [`@PreferencesVersion`](storebox-lib/src/main/java/net/orange_box/storebox/annotations/type/PreferencesVersion.java) annotation. This may be required in the case where schema of the preferences needs to be changed, such as when a key or type of a preference change, an enum is added/renamed/removed, or the implementation of a class which is being stored in the preferences changes. This annotation needs to be added to the interface which will be passed to `StoreBox.create()`.
+
+By default, without the `@PreferencesVersion` annotation, the version used is assumed to be `0`. The first time a change is required the `version` for the annotation should be set to `1`, with the value incremented for any subsequent changes. To provide the logic for handling version upgrades a `handler` extending from [`PreferencesVersionHandler`](storebox-lib/src/main/java/net/orange_box/storebox/PreferencesVersionHandler.java) needs to be specified. Take a look at [`VersionHandler`](storebox-harness/src/main/java/net/orange_box/storebox/harness/interfaces/versions/VersionHandler.java) for an example of how upgrades could be handled.
+
 ###Obtaining a more customised instance at run-time###
 As previously described you can build an instance of your interface using [`StoreBox.build()`](https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/StoreBox.java), however if you'd like to override at run-time any annotations you can use [`StoreBox.Builder`](https://github.com/martino2k6/StoreBox/blob/master/storebox-lib/src/main/java/net/orange_box/storebox/StoreBox.java) and apply different options.
 ```Java
