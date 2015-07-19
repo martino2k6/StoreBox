@@ -16,15 +16,7 @@
 
 package net.orange_box.storebox.harness.interfaces.versions;
 
-import net.orange_box.storebox.annotations.method.KeyByString;
 import net.orange_box.storebox.annotations.type.PreferencesVersion;
 
 @PreferencesVersion(version = 1, handler = VersionHandler.class)
-public interface FirstVersionInterface {
-    
-    @KeyByString("key")
-    String getPreference();
-    
-    @KeyByString("key")
-    void putPreference(String value);
-}
+public interface FirstVersionInterface { /* NOP */ }

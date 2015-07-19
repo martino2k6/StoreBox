@@ -27,6 +27,7 @@ import net.orange_box.storebox.StoreBox;
 import net.orange_box.storebox.harness.interfaces.versions.FirstVersionInterface;
 import net.orange_box.storebox.harness.interfaces.versions.NoVersionInterface;
 import net.orange_box.storebox.harness.interfaces.versions.SecondVersionInterface;
+import net.orange_box.storebox.harness.interfaces.versions.VersionHandler;
 
 public class PreferencesVersionTestCase extends InstrumentationTestCase {
     
@@ -49,48 +50,105 @@ public class PreferencesVersionTestCase extends InstrumentationTestCase {
     }
 
     @SmallTest
-    public void testNoChange() {
+    public void testNoChange_Empty() {
         StoreBox.create(getContext(), NoVersionInterface.class);
         
         assertFalse(containsVersion());
+        assertFalse(invokedFirst());
+        assertFalse(invokedSecond());
+    }
+
+    @SuppressLint("CommitPrefEdits")
+    @SmallTest
+    public void testNoChange_WithItems() {
+        prefs.edit().putString("key", "value").commit();
+        
+        StoreBox.create(getContext(), NoVersionInterface.class);
+
+        assertFalse(containsVersion());
+        assertFalse(invokedFirst());
+        assertFalse(invokedSecond());
     }
 
     @SmallTest
-    public void testZeroToOne() {
-        final NoVersionInterface zero =
-                StoreBox.create(getContext(), NoVersionInterface.class);
-        
-        zero.putPreference("value");
-
+    public void testZeroToOne_Empty() {
+        StoreBox.create(getContext(), NoVersionInterface.class);
         StoreBox.create(getContext(), FirstVersionInterface.class);
         
         assertEquals(1, getVersion());
-        assertFalse(containsPreference());
+        assertFalse(invokedFirst());
+        assertFalse(invokedSecond());
     }
 
+    @SuppressLint("CommitPrefEdits")
     @SmallTest
-    public void testOneToTwo() {
-        final FirstVersionInterface one =
-                StoreBox.create(getContext(), FirstVersionInterface.class);
+    public void testZeroToOne_WithItems() {
+        StoreBox.create(getContext(), NoVersionInterface.class);
+        
+        prefs.edit().putString("key", "value").commit();
+        
+        StoreBox.create(getContext(), FirstVersionInterface.class);
 
         assertEquals(1, getVersion());
-        one.putPreference("value");
-
-        final SecondVersionInterface two =
-                StoreBox.create(getContext(), SecondVersionInterface.class);
-
-        assertEquals(2, getVersion());
-        assertEquals(1, two.getPreference());
+        assertTrue(invokedFirst());
+        assertFalse(invokedSecond());
     }
 
     @SmallTest
-    public void testZeroToTwo() {
-        StoreBox.create(getContext(), NoVersionInterface.class);
-        final SecondVersionInterface two =
-                StoreBox.create(getContext(), SecondVersionInterface.class);
+    public void testOneToTwo_Empty() {
+        StoreBox.create(getContext(), FirstVersionInterface.class);
+
+        assertEquals(1, getVersion());
+        assertFalse(invokedFirst());
+        assertFalse(invokedSecond());
+
+        StoreBox.create(getContext(), SecondVersionInterface.class);
 
         assertEquals(2, getVersion());
-        assertEquals(1, two.getPreference());
+        assertFalse(invokedFirst());
+        assertFalse(invokedSecond());
+    }
+
+    @SuppressLint("CommitPrefEdits")
+    @SmallTest
+    public void testOneToTwo_WithItems() {
+        StoreBox.create(getContext(), FirstVersionInterface.class);
+
+        assertEquals(1, getVersion());
+        assertFalse(invokedFirst());
+        assertFalse(invokedSecond());
+
+        prefs.edit().putString("key", "value").commit();
+
+        StoreBox.create(getContext(), SecondVersionInterface.class);
+
+        assertEquals(2, getVersion());
+        assertFalse(invokedFirst());
+        assertTrue(invokedSecond());
+    }
+
+    @SmallTest
+    public void testZeroToTwo_Empty() {
+        StoreBox.create(getContext(), NoVersionInterface.class);
+        StoreBox.create(getContext(), SecondVersionInterface.class);
+
+        assertEquals(2, getVersion());
+        assertFalse(invokedFirst());
+        assertFalse(invokedSecond());
+    }
+
+    @SuppressLint("CommitPrefEdits")
+    @SmallTest
+    public void testZeroToTwo_WithItems() {
+        StoreBox.create(getContext(), NoVersionInterface.class);
+
+        prefs.edit().putString("key", "value").commit();
+        
+        StoreBox.create(getContext(), SecondVersionInterface.class);
+
+        assertEquals(2, getVersion());
+        assertTrue(invokedFirst());
+        assertTrue(invokedSecond());
     }
     
     private Context getContext() {
@@ -101,11 +159,15 @@ public class PreferencesVersionTestCase extends InstrumentationTestCase {
         return prefs.contains("net.orange_box.storebox.version");
     }
     
-    private boolean containsPreference() {
-        return prefs.contains("key");
-    }
-    
     private int getVersion() {
         return prefs.getInt("net.orange_box.storebox.version", 0);
+    }
+    
+    private boolean invokedFirst() {
+        return prefs.contains(VersionHandler.KEY_FIRST);
+    }
+    
+    private boolean invokedSecond() {
+        return prefs.contains(VersionHandler.KEY_SECOND);
     }
 }

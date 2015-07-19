@@ -107,7 +107,7 @@ class StoreBoxInvocationHandler implements InvocationHandler {
         this.preferencesVersion = preferencesVersion;
         this.preferencesVersionHandler= preferencesVersionHandler;
         
-        checkVersion();
+        checkAndHandleVersion();
         
         mChangesHandler = new ChangeListenerMethodHandler(prefs);
     }
@@ -287,20 +287,24 @@ class StoreBoxInvocationHandler implements InvocationHandler {
         return hashCode;
     }
 
-    private void checkVersion() {
-        synchronized (VERSION_KEY) {
+    private void checkAndHandleVersion() {
+        synchronized (prefs) {
             final int version = prefs.getInt(VERSION_KEY, 0);
+            final int size = prefs.getAll().size();
+            final boolean present = prefs.contains(VERSION_KEY);
 
             if (preferencesVersion != version) {
-                if (preferencesVersion > version) {
-                    preferencesVersionHandler.onUpgrade(
-                            prefs, editor, version, preferencesVersion);
-                } else {
-                    preferencesVersionHandler.onDowngrade(
-                            prefs, editor, version, preferencesVersion);
+                if ((size > 0 && !present) || (size > 1 && present)) {
+                    if (preferencesVersion > version) {
+                        preferencesVersionHandler.onUpgrade(
+                                prefs, editor, version, preferencesVersion);
+                    } else {
+                        preferencesVersionHandler.onDowngrade(
+                                prefs, editor, version, preferencesVersion);
+                    }
                 }
 
-                editor.putInt(VERSION_KEY, preferencesVersion).commit();
+                editor.putInt(VERSION_KEY, preferencesVersion).apply();
             }
         }
     }

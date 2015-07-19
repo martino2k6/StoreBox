@@ -59,7 +59,7 @@ public final class StoreBox {
      * 
      * @param <T>
      */
-    public static class Builder<T> {
+    public static final class Builder<T> {
 
         private final Context context;
         private final Class<T> cls;
@@ -69,8 +69,10 @@ public final class StoreBox {
         private PreferencesMode preferencesMode = PreferencesMode.MODE_PRIVATE;
         private SaveMode saveMode = SaveMode.APPLY;
         
-        private int preferencesVersion = 0;
-        private PreferencesVersionHandler preferencesVersionHandler;
+        private int preferencesVersion =
+                0;
+        private PreferencesVersionHandler preferencesVersionHandler =
+                new DefaultPreferencesVersionHandler();
 
         public Builder(Context context, Class<T> cls) {
             this.context = context;
@@ -206,6 +208,15 @@ public final class StoreBox {
                             "Cannot use %1$s with an empty file name",
                             PreferencesType.FILE.name()));
                 }
+            }
+            
+            if (!(preferencesVersionHandler instanceof DefaultPreferencesVersionHandler)
+                    && preferencesVersion < 1) {
+                
+                throw new IllegalArgumentException(String.format(
+                        Locale.ENGLISH,
+                        "Version in %s cannot be less than 1",
+                        PreferencesVersion.class.getSimpleName()));
             }
         }
     }

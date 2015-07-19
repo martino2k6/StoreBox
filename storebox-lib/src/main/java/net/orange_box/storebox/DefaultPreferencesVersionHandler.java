@@ -14,9 +14,19 @@
  * limitations under the License.
  */
 
-package net.orange_box.storebox.harness.interfaces.versions;
+package net.orange_box.storebox;
 
-import net.orange_box.storebox.annotations.type.PreferencesVersion;
+import android.content.SharedPreferences;
 
-@PreferencesVersion(version = 2, handler = VersionHandler.class)
-public interface SecondVersionInterface { /* NOP */ }
+class DefaultPreferencesVersionHandler extends PreferencesVersionHandler {
+    
+    @Override
+    protected void onUpgrade(
+            SharedPreferences prefs,
+            SharedPreferences.Editor editor,
+            int oldVersion,
+            int newVersion) {
+        
+        // NOP
+    }
+}

@@ -21,24 +21,30 @@ import android.content.SharedPreferences;
 import net.orange_box.storebox.PreferencesVersionHandler;
 
 public class VersionHandler extends PreferencesVersionHandler {
+
+    public static final String KEY_FIRST = "key_first";
+    public static final String KEY_SECOND = "key_second";
     
     @Override
-    public void onUpgrade(
+    protected void onUpgrade(
             SharedPreferences prefs,
             SharedPreferences.Editor editor,
             int oldVersion,
             int newVersion) {
         
-        int version = oldVersion;
+        int version = oldVersion + 1;
         
+        // iteratively upgrade until newVersion
         while (version <= newVersion) {
             switch (version) {
                 case 1:
-                    editor.clear();
+                    // handles 0 -> 1
+                    editor.putBoolean(KEY_FIRST, true);
                     break;
                 
                 case 2:
-                    editor.putInt("key", 1);
+                    // handles 1 -> 2
+                    editor.putBoolean(KEY_SECOND, true);
                     break;
             }
             

@@ -28,14 +28,19 @@ import java.lang.annotation.Target;
  * preferences and the {@link PreferencesVersionHandler} for handling the
  * version changes.
  * <p>
- * If not previously specified, the version used by default is {@code 0},
- * as such first time the version needs to be changed due to schema changes
- * then a {@link #version()} of {@code 1} should be used.
- * <p>
  * This annotation will normally not be required, but it may be needed for
  * handling changes to the schema of stored values, for example if a value
  * stored as a string is changed to a different type, or if an enum constant
  * is renamed or removed, amongst other cases.
+ * <p>
+ * If not previously specified, the version used by default is {@code 0},
+ * as such the first time versioning is required due to schema changes then
+ * a {@link #version()} of {@code 1} should be used.
+ * <p>
+ * The {@link #handler()}'s upgrade method will not be called if there are
+ * no values saved in the preferences, for example in the case where an
+ * app using a non-zero version is first installed or when the preferences/
+ * application data is cleared.
  * 
  * @see PreferencesVersionHandler
  */

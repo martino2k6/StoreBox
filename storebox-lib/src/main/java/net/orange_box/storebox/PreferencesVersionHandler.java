@@ -19,7 +19,7 @@ package net.orange_box.storebox;
 import android.content.SharedPreferences;
 
 /**
- * Helper class to manage preference versioning.
+ * Helper class to manage preferences versioning.
  * 
  * @see net.orange_box.storebox.annotations.type.PreferencesVersion
  */
@@ -40,7 +40,7 @@ public abstract class PreferencesVersionHandler {
      * @param oldVersion The old preferences version.
      * @param newVersion The new preferences version.
      */
-    public abstract void onUpgrade(
+    protected abstract void onUpgrade(
             SharedPreferences prefs,
             SharedPreferences.Editor editor,
             int oldVersion,
@@ -61,7 +61,7 @@ public abstract class PreferencesVersionHandler {
      * @param oldVersion The old preferences version.
      * @param newVersion The new preferences version.
      */
-    public void onDowngrade(
+    protected void onDowngrade(
             SharedPreferences prefs,
             SharedPreferences.Editor editor,
             int oldVersion,

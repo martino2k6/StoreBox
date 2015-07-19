@@ -16,13 +16,4 @@
 
 package net.orange_box.storebox.harness.interfaces.versions;
 
-import net.orange_box.storebox.annotations.method.KeyByString;
-
-public interface NoVersionInterface {
-    
-    @KeyByString("key")
-    String getPreference();
-    
-    @KeyByString("key")
-    void putPreference(String value);
-}
+public interface NoVersionInterface { /* NOP */ }
