@@ -19,10 +19,6 @@ android {
     }
     
     buildTypes {
-        debug {
-            //testCoverageEnabled true
-        }
-        
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -33,7 +29,7 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
-    compile 'com.android.support:support-annotations:20.0.0'
+    compile 'com.android.support:support-annotations:22.2.1'
     compile 'net.jodah:typetools:0.4.1'
 }
 
