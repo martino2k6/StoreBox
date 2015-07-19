@@ -3,11 +3,9 @@ jdk: oraclejdk7
 
 env:
   matrix:
-    - ANDROID_SDKS=sys-img-x86-android-10 ANDROID_TARGET=android-10 ANDROID_ABI=x86
+    - ANDROID_SDKS=sys-img-armeabi-v7a-android-10 ANDROID_TARGET=android-10 ANDROID_ABI=armeabi-v7a
     - ANDROID_SDKS=sys-img-armeabi-v7a-android-22 ANDROID_TARGET=android-22 ANDROID_ABI=armeabi-v7a
-    - ANDROID_SDKS=sys-img-x86-android-22 ANDROID_TARGET=android-22 ANDROID_ABI=x86
     - ANDROID_SDKS=sys-img-armeabi-v7a-android-19 ANDROID_TARGET=android-19 ANDROID_ABI=armeabi-v7a
-    - ANDROID_SDKS=sys-img-x86-android-19 ANDROID_TARGET=android-19 ANDROID_ABI=x86
 
 android:
   components:
@@ -19,14 +17,11 @@ android:
     - extra
     
     # min
-    #- sys-img-armeabi-v7a-android-10
-    - sys-img-x86-android-10
+    - sys-img-armeabi-v7a-android-10
     # target
     - sys-img-armeabi-v7a-android-22
-    - sys-img-x86-android-22
     # most common
     - sys-img-armeabi-v7a-android-19
-    - sys-img-x86-android-19
 
 before_script:
   - echo no | android create avd --force -n test -t $ANDROID_TARGET --abi $ANDROID_ABI
