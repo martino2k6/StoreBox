@@ -321,7 +321,7 @@ For an initial upgrade from `0` to `1` the `onUpgrade` method will be called wit
 The versions are also independent of each other, and apply only to specific preference files. For example, you could have a shared preferences with *version X*, *activity A* preferences with *version Y*, and *activity B* preferences with *version Z*. Or none at all, if versioning is not needed.
 
 ###Obtaining a more customised instance at run-time###
-As previously described you can build an instance of your interface using [`StoreBox.build()`], however if you'd like to override at run-time any annotations you can use [`StoreBox.Builder`](storebox-lib/src/main/java/net/orange_box/storebox/StoreBox.java) and apply different options.
+As previously described you can build an instance of your interface using `StoreBox.create()`, however if you'd like to override at run-time any annotations you can use [`StoreBox.Builder`](storebox-lib/src/main/java/net/orange_box/storebox/StoreBox.java) and apply different options.
 ```Java
 MyPreferences preferences =
         new StoreBox.Builder(context, MyPreferences.class)
