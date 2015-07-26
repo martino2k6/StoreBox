@@ -111,6 +111,14 @@ public final class StoreBox {
         public T build() {
             validate();
 
+            final PreferencesVersionDetails versionDetails =
+                    new PreferencesVersionDetails(
+                            context,
+                            preferencesType,
+                            preferencesName,
+                            preferencesVersion,
+                            preferencesVersionHandler);
+            
             return (T) Proxy.newProxyInstance(
                     cls.getClassLoader(),
                     new Class[]{cls},
@@ -120,8 +128,7 @@ public final class StoreBox {
                             preferencesName,
                             preferencesMode,
                             saveMode,
-                            preferencesVersion,
-                            preferencesVersionHandler));
+                            versionDetails));
         }
         
         private Builder preferencesVersion(

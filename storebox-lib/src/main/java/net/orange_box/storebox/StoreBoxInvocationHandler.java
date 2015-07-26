@@ -60,16 +60,16 @@ class StoreBoxInvocationHandler implements InvocationHandler {
             MethodUtils.getObjectMethod("hashCode");
     private static final Method OBJECT_TOSTRING =
             MethodUtils.getObjectMethod("toString");
-    private static final String VERSION_KEY =
-            "net.orange_box.storebox.version";
+    
+    private static final String VERSION_PREFS =
+            "net.orange_box.storebox.versions";
     
     private final SharedPreferences prefs;
     private final SharedPreferences.Editor editor;
     private final Resources res;
     
     private final SaveMode saveMode;
-    private final int preferencesVersion;
-    private final PreferencesVersionHandler preferencesVersionHandler;
+    private final PreferencesVersionDetails versionDetails;
     
     private final MethodHandler mChangesHandler;
     
@@ -81,8 +81,7 @@ class StoreBoxInvocationHandler implements InvocationHandler {
             String openNameValue,
             PreferencesMode preferencesMode,
             SaveMode saveMode,
-            int preferencesVersion,
-            PreferencesVersionHandler preferencesVersionHandler) {
+            PreferencesVersionDetails version) {
         
         switch (preferencesType) {
             case ACTIVITY:
@@ -104,10 +103,9 @@ class StoreBoxInvocationHandler implements InvocationHandler {
         res = context.getResources();
         
         this.saveMode = saveMode;
-        this.preferencesVersion = preferencesVersion;
-        this.preferencesVersionHandler= preferencesVersionHandler;
+        this.versionDetails = version;
         
-        checkAndHandleVersion();
+        checkAndHandleVersion(context);
         
         mChangesHandler = new ChangeListenerMethodHandler(prefs);
     }
@@ -286,25 +284,41 @@ class StoreBoxInvocationHandler implements InvocationHandler {
         
         return hashCode;
     }
-
-    private void checkAndHandleVersion() {
-        synchronized (prefs) {
-            final int version = prefs.getInt(VERSION_KEY, 0);
-            final int size = prefs.getAll().size();
-            final boolean present = prefs.contains(VERSION_KEY);
-
-            if (preferencesVersion != version) {
-                if ((size > 0 && !present) || (size > 1 && present)) {
-                    if (preferencesVersion > version) {
-                        preferencesVersionHandler.onUpgrade(
-                                prefs, editor, version, preferencesVersion);
+    
+    @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
+    private void checkAndHandleVersion(Context context) {
+        final SharedPreferences versionPrefs = context.getSharedPreferences(
+                VERSION_PREFS, Context.MODE_PRIVATE);
+        
+        synchronized (versionPrefs) {
+            final int versionCurrent =
+                    versionPrefs.getInt(versionDetails.getKey(), 0);
+            final int versionNew =
+                    versionDetails.getVersion();
+            
+            if (versionNew != versionCurrent) {
+                if (!prefs.getAll().isEmpty()) {
+                    if (versionNew > versionCurrent) {
+                        versionDetails.getHandler().onUpgrade(
+                                prefs,
+                                editor,
+                                versionCurrent,
+                                versionNew);
                     } else {
-                        preferencesVersionHandler.onDowngrade(
-                                prefs, editor, version, preferencesVersion);
+                        versionDetails.getHandler().onDowngrade(
+                                prefs,
+                                editor,
+                                versionCurrent,
+                                versionNew);
                     }
+                    
+                    editor.commit();
                 }
-
-                editor.putInt(VERSION_KEY, preferencesVersion).apply();
+                
+                versionPrefs
+                        .edit()
+                        .putInt(versionDetails.getKey(), versionNew)
+                        .commit();
             }
         }
     }

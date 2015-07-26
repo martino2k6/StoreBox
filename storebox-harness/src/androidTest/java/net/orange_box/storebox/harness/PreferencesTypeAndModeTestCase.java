@@ -168,6 +168,11 @@ public class PreferencesTypeAndModeTestCase extends ActivityUnitTestCase<TestAct
 
         @Override
         public SharedPreferences getSharedPreferences(String name, int mode) {
+            // FIXME better way to only check the call we're interested in
+            if (name != null && name.equals("net.orange_box.storebox.versions")) {
+                return super.getSharedPreferences(name, mode);
+            }
+            
             if (expectedName != null) {
                 assertEquals(expectedName, name);
             }

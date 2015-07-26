@@ -29,22 +29,29 @@ import net.orange_box.storebox.harness.interfaces.versions.NoVersionInterface;
 import net.orange_box.storebox.harness.interfaces.versions.SecondVersionInterface;
 import net.orange_box.storebox.harness.interfaces.versions.VersionHandler;
 
+// TODO test version independence of different shared preferences
 public class PreferencesVersionTestCase extends InstrumentationTestCase {
     
     private SharedPreferences prefs;
+    private SharedPreferences prefsVersion;
     
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-
+        
         prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        prefsVersion = getContext().getSharedPreferences(
+                "net.orange_box.storebox.versions", Context.MODE_PRIVATE);
     }
 
     @SuppressLint("CommitPrefEdits")
     @Override
     protected void tearDown() throws Exception {
         prefs.edit().clear().commit();
+        prefsVersion.edit().clear().commit();
+        
         prefs = null;
+        prefsVersion = null;
         
         super.tearDown();
     }
@@ -156,11 +163,13 @@ public class PreferencesVersionTestCase extends InstrumentationTestCase {
     }
     
     private boolean containsVersion() {
-        return prefs.contains("net.orange_box.storebox.version");
+        return prefsVersion
+                .contains(getContext().getPackageName() + "_preferences");
     }
     
     private int getVersion() {
-        return prefs.getInt("net.orange_box.storebox.version", 0);
+        return prefsVersion
+                .getInt(getContext().getPackageName() + "_preferences", 0);
     }
     
     private boolean invokedFirst() {
