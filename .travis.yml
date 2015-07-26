@@ -23,3 +23,8 @@ before_script:
 
 script:
   - ./gradlew clean build connectedCheck
+
+cache:
+  directories:
+    - $HOME/.gradle
+
