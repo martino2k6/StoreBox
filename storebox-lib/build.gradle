@@ -101,6 +101,7 @@ install {
 }
 
 task javadoc(type: Javadoc) {
+    failOnError false
     source = android.sourceSets.main.java.sourceFiles
 }
 
