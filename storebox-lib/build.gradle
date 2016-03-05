@@ -3,19 +3,15 @@ apply plugin: 'findbugs'
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
-def VERSION_CODE = 6
-def VERSION_NAME = '1.3.0'
-
 android {
-    compileSdkVersion 22
-    buildToolsVersion '22.0.1'
-
+    compileSdkVersion project.compileSdkVersion
+    buildToolsVersion project.buildToolsVersion
+    
     defaultConfig {
-        minSdkVersion 10
-        targetSdkVersion 22
+        minSdkVersion    project.minSdkVersion
+        targetSdkVersion project.targetSdkVersion
         
-        versionCode VERSION_CODE
-        versionName VERSION_NAME
+        versionName project.versionName
     }
     
     buildTypes {
@@ -26,9 +22,7 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-
-    compile 'com.android.support:support-annotations:22.2.1'
+    compile 'com.android.support:support-annotations:23.2.0'
     compile 'net.jodah:typetools:0.4.1'
 }
 
@@ -69,7 +63,7 @@ if (propertiesFile.exists()) {
     properties.load(propertiesFile.newDataInputStream())
 }
 
-version = VERSION_NAME
+version = project.versionName
 group = 'net.orange-box.storebox'
 
 install {
@@ -147,8 +141,8 @@ bintray {
         publicDownloadNumbers = true
 
         version {
-            name = VERSION_NAME
-            vcsTag = VERSION_NAME
+            name = project.versionName
+            vcsTag = project.versionName
             
             gpg {
                 sign = true
