@@ -16,6 +16,7 @@
 
 package net.orange_box.storebox.harness.changes;
 
+import android.test.UiThreadTest;
 import android.test.suitebuilder.annotation.SmallTest;
 
 import net.orange_box.storebox.harness.base.PreferencesTestCase;
@@ -25,6 +26,7 @@ import net.orange_box.storebox.listeners.OnPreferenceValueChangedListener;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class ChangesListenersTestCase extends
         PreferencesTestCase<ChangeListenersInterface> {
@@ -34,25 +36,25 @@ public class ChangesListenersTestCase extends
         return ChangeListenersInterface.class;
     }
     
+    @UiThreadTest
     @SmallTest
     public void testIntChanged() {
-        final AtomicBoolean called = new AtomicBoolean();
+        final AtomicInteger value = new AtomicInteger(-1);
         final OnPreferenceValueChangedListener<Integer> listener =
                 new OnPreferenceValueChangedListener<Integer>() {
                     @Override
                     public void onChanged(Integer newValue) {
-                        assertEquals(1, newValue.intValue());
-
-                        called.set(true);
+                        value.set(newValue);
                     }
                 };
         
         uut.registerIntChangeListener(listener);
         uut.setInt(1);
         
-        assertTrue(called.get());
+        assertEquals(1, value.get());
     }
     
+    @UiThreadTest
     @SmallTest
     public void testIntChangedMultiple() {
         final AtomicInteger count = new AtomicInteger(2);
@@ -81,7 +83,8 @@ public class ChangesListenersTestCase extends
 
         assertEquals(0, count.get());
     }
-
+    
+    @UiThreadTest
     @SmallTest
     public void testIntChangedVarArgs() {
         final AtomicInteger count = new AtomicInteger(2);
@@ -110,6 +113,7 @@ public class ChangesListenersTestCase extends
         assertEquals(0, count.get());
     }
     
+    @UiThreadTest
     @SmallTest
     public void testIntUnregistered() {
         final AtomicBoolean called = new AtomicBoolean();
@@ -127,7 +131,8 @@ public class ChangesListenersTestCase extends
 
         assertFalse(called.get());
     }
-
+    
+    @UiThreadTest
     @SmallTest
     public void testIntUnregisteredVarArgs() {
         final AtomicInteger count = new AtomicInteger(2);
@@ -152,46 +157,45 @@ public class ChangesListenersTestCase extends
 
         assertEquals(2, count.get());
     }
-
+    
+    @UiThreadTest
     @SmallTest
     public void testCustomClassChanged() {
-        final AtomicBoolean called = new AtomicBoolean();
+        final AtomicReference<CustomClass> value = new AtomicReference<>();
         final OnPreferenceValueChangedListener<CustomClass> listener =
                 new OnPreferenceValueChangedListener<CustomClass>() {
                     @Override
                     public void onChanged(CustomClass newValue) {
-                        assertEquals(new CustomClass("a", "b"), newValue);
-
-                        called.set(true);
+                        value.set(newValue);
                     }
                 };
-
+        
         uut.registerCustomClassChangeListener(listener);
         uut.setCustomClass(new CustomClass("a", "b"));
-
-        assertTrue(called.get());
+        
+        assertEquals(new CustomClass("a", "b"), value.get());
     }
-
+    
+    @UiThreadTest
     @SmallTest
     public void testCustomClassChangedNull() {
-        final AtomicBoolean called = new AtomicBoolean();
+        final AtomicReference<CustomClass> value = new AtomicReference<>();
         final OnPreferenceValueChangedListener<CustomClass> listener =
                 new OnPreferenceValueChangedListener<CustomClass>() {
                     @Override
                     public void onChanged(CustomClass newValue) {
-                        assertNull(newValue);
-
-                        called.set(true);
+                        value.set(newValue);
                     }
                 };
-
+        
         uut.setCustomClass(new CustomClass("a", "b"));
         uut.registerCustomClassChangeListener(listener);
         uut.setCustomClass(null);
-
-        assertTrue(called.get());
+        
+        assertNull(value.get());
     }
-
+    
+    @UiThreadTest
     @SmallTest
     public void testCustomClassChangedMultiple() {
         final AtomicInteger count = new AtomicInteger(2);
@@ -220,7 +224,8 @@ public class ChangesListenersTestCase extends
 
         assertEquals(0, count.get());
     }
-
+    
+    @UiThreadTest
     @SmallTest
     public void testCustomClassUnregistered() {
         final AtomicBoolean called = new AtomicBoolean();
@@ -239,8 +244,7 @@ public class ChangesListenersTestCase extends
         assertFalse(called.get());
     }
     
-    
-    
+    @UiThreadTest
     @SmallTest
     public void testListenerGarbageCollected() throws Exception {
         final AtomicBoolean called = new AtomicBoolean();
