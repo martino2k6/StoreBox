@@ -3,6 +3,8 @@ jdk: oraclejdk8
 sudo : false
 
 env:
+  global:
+    - ADB_INSTALL_TIMEOUT=5
   matrix:
     - ANDROID_SDKS=sys-img-armeabi-android-10 ANDROID_TARGET=android-10 ANDROID_ABI=armeabi
     - ANDROID_SDKS=sys-img-armeabi-v7a-android-23 ANDROID_TARGET=android-23 ANDROID_ABI=armeabi-v7a
@@ -15,7 +17,6 @@ android:
     - build-tools-23.0.2
     - android-23
     - extra-android-m2repository
-    
     - $ANDROID_SDKS
 
 before_script:
