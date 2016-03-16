@@ -25,6 +25,7 @@ import android.preference.PreferenceManager;
 import android.util.TypedValue;
 
 import net.orange_box.storebox.adapters.StoreBoxTypeAdapter;
+import net.orange_box.storebox.annotations.method.ClearMethod;
 import net.orange_box.storebox.annotations.method.DefaultValue;
 import net.orange_box.storebox.annotations.method.KeyByResource;
 import net.orange_box.storebox.annotations.method.KeyByString;
@@ -121,11 +122,13 @@ class StoreBoxInvocationHandler implements InvocationHandler {
          */
         final String key;
         final boolean isRemove;
+        final boolean isClear;
         final boolean isChange;
         if (method.isAnnotationPresent(KeyByString.class)) {
             key = method.getAnnotation(KeyByString.class).value();
             
             isRemove = method.isAnnotationPresent(RemoveMethod.class);
+            isClear = false;
             isChange = MethodUtils.areAnyAnnotationsPresent(
                     method,
                     RegisterChangeListenerMethod.class,
@@ -135,6 +138,7 @@ class StoreBoxInvocationHandler implements InvocationHandler {
                     method.getAnnotation(KeyByResource.class).value());
             
             isRemove = method.isAnnotationPresent(RemoveMethod.class);
+            isClear = false;
             isChange = MethodUtils.areAnyAnnotationsPresent(
                     method,
                     RegisterChangeListenerMethod.class,
@@ -143,6 +147,13 @@ class StoreBoxInvocationHandler implements InvocationHandler {
             key = MethodUtils.getKeyForRemove(res, args);
             
             isRemove = true;
+            isClear = false;
+            isChange = false;
+        } else if (method.isAnnotationPresent(ClearMethod.class)) {
+            key = null;
+            
+            isRemove = false;
+            isClear = true;
             isChange = false;
         } else {
             // handle Object's equals/hashCode/toString
@@ -194,6 +205,8 @@ class StoreBoxInvocationHandler implements InvocationHandler {
         final Class<?> returnType = method.getReturnType();
         if (isRemove) {
             editor.remove(key);
+        } else if (isClear) {
+            editor.clear();
         } else if (isChange) {
             return mChangesHandler.handleInvocation(key, proxy, method, args);
         } else if (

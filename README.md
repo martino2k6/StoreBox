@@ -11,7 +11,7 @@
 * [Custom types](#storing-and-retrieving-custom-types)
 * [Preference types](#opening-different-types-of-preferences)
 * [Advanced](#advanced)
- * [Remove methods](#remove-methods)
+ * [Remove and clear methods](#remove-and-clear-methods)
  * [Change listeners](#change-listeners)
  * [Chaining calls](#chaining-calls)
  * [Forwarding calls](#forwarding-calls)
@@ -166,12 +166,12 @@ public interface WelcomeActivityPreferences {
 }
 ```
 
-##Advanced##
-###Remove methods###
+## Advanced
+### Remove and clear methods
 In order to remove a value stored in the preferences under a key a method to perform the removal can be annotated with the [`@RemoveMethod`](storebox-lib/src/main/java/net/orange_box/storebox/annotations/method/RemoveMethod.java) annotation. The key can be supplied in two ways;
 
 The key can be provided thorough an argument in the method, using either a `String` or an `int` in the case of the key being specified in an XML resource.
-```Java
+```java
 public interface RemoveMethodExample {
     
     @RemoveMethod
@@ -187,7 +187,7 @@ preferences.remove(R.string.key_password);
 ```
 
 Or a value-specific remove method can be defined with the help of the [`@KeyByString`](storebox-lib/src/main/java/net/orange_box/storebox/annotations/method/KeyByString.java) or [`@KeyByResource`](storebox-lib/src/main/java/net/orange_box/storebox/annotations/method/KeyByResource.java) annotations.
-```Java
+```java
 public interface RemoveMethodExample {
     
     @KeyByString("key_username")
@@ -196,12 +196,24 @@ public interface RemoveMethodExample {
     
     @KeyByResource(R.string.key_password)
     @RemoveMethod
-    void removePassword()
+    void removePassword();
 }
 
 // usage
 preferences.removeUsername();
 preferences.removePassword();
+```
+
+Clearing all values stored in the preferences can be done by annotating a method with the [`@ClearMethod`](storebox-lib/src/main/java/net/orange_box/storebox/annotations/method/ClearMethod.java) annotation.
+```java
+public interface ClearMethodExample {
+    
+    @ClearMethod
+    void clear();
+}
+
+// usage
+preferences.clear();
 ```
 
 ###Change listeners###
