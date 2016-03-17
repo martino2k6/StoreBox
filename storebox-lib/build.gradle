@@ -22,7 +22,7 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:support-annotations:23.2.0'
+    compile 'com.android.support:support-annotations:23.2.1'
     compile 'net.jodah:typetools:0.4.1'
 }
 
