@@ -24,6 +24,9 @@ ext {
     
     minSdkVersion = 10
     targetSdkVersion = 23
+    
+    sourceCompatibilityVersion = JavaVersion.VERSION_1_6
+    targetCompatibilityVersion = JavaVersion.VERSION_1_6
 }
 
 task wrapper(type: Wrapper) {

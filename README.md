@@ -18,6 +18,7 @@
  * [Save modes](#save-modes)
  * [Versioning](#versioning)
  * [Builder & Defaults](#obtaining-a-more-customised-instance-at-run-time)
+ * [ProGuard](#proguard)
 * [Contributing](#contributing)
 * [License](#license)
 
@@ -347,6 +348,15 @@ Given the minimum amount of details provided to the interface and method definit
 * Preferences mode: Private
 * Save mode: Apply
 * Default value mode: Empty
+
+### Proguard
+If you are using ProGuard add the following lines to your configuration.
+```
+-dontwarn net.jodah.typetools.TypeResolver
+-keep class net.orange_box.storebox.** { *; }
+-keepattributes *Annotation*,Exceptions,InnerClasses,Signature
+
+```
 
 ##Contributing##
 Any contributions thorough pull requests as well as raised issues (bugs are rated just as highly as features!) will be welcome and highly appreciated.

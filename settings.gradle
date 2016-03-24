@@ -1,1 +1,4 @@
-include ':storebox-lib', ':storebox-harness'
+include ':storebox-lib'
+include ':storebox-harness'
+include ':example-proguard'
+project(':example-proguard').projectDir = file('examples/proguard')

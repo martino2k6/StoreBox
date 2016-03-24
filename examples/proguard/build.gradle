@@ -1,0 +1,45 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion project.compileSdkVersion
+    buildToolsVersion project.buildToolsVersion
+    
+    defaultConfig {
+        applicationId 'net.orange_box.storebox.example.proguard'
+        
+        minSdkVersion    project.minSdkVersion
+        targetSdkVersion project.targetSdkVersion
+        
+        versionCode 1
+        versionName project.versionName
+    }
+    
+    compileOptions {
+        sourceCompatibility project.sourceCompatibilityVersion
+        targetCompatibility project.targetCompatibilityVersion
+    }
+    
+    signingConfigs {
+        release.initWith(debug)
+    }
+    
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            
+            signingConfig signingConfigs.release
+        }
+        
+        releaseOptimize {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            
+            signingConfig signingConfigs.release
+        }
+    }
+}
+
+dependencies {
+    compile project(':storebox-lib')
+}
