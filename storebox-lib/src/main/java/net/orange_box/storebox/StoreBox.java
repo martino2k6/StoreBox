@@ -24,7 +24,6 @@ import net.orange_box.storebox.annotations.option.SaveOption;
 import net.orange_box.storebox.annotations.type.ActivityPreferences;
 import net.orange_box.storebox.annotations.type.DefaultSharedPreferences;
 import net.orange_box.storebox.annotations.type.FilePreferences;
-import net.orange_box.storebox.annotations.type.PreferencesVersion;
 import net.orange_box.storebox.enums.PreferencesMode;
 import net.orange_box.storebox.enums.PreferencesType;
 import net.orange_box.storebox.enums.SaveMode;
@@ -68,11 +67,6 @@ public final class StoreBox {
         private String preferencesName = "";
         private PreferencesMode preferencesMode = PreferencesMode.MODE_PRIVATE;
         private SaveMode saveMode = SaveMode.APPLY;
-        
-        private int preferencesVersion =
-                0;
-        private PreferencesVersionHandler preferencesVersionHandler =
-                new DefaultPreferencesVersionHandler();
 
         public Builder(Context context, Class<T> cls) {
             this.context = context;
@@ -110,14 +104,6 @@ public final class StoreBox {
         @SuppressWarnings("unchecked")
         public T build() {
             validate();
-
-            final PreferencesVersionDetails versionDetails =
-                    new PreferencesVersionDetails(
-                            context,
-                            preferencesType,
-                            preferencesName,
-                            preferencesVersion,
-                            preferencesVersionHandler);
             
             return (T) Proxy.newProxyInstance(
                     cls.getClassLoader(),
@@ -127,16 +113,7 @@ public final class StoreBox {
                             preferencesType,
                             preferencesName,
                             preferencesMode,
-                            saveMode,
-                            versionDetails));
-        }
-        
-        private Builder preferencesVersion(
-                int version, PreferencesVersionHandler handler) {
-            
-            preferencesVersion = version;
-            preferencesVersionHandler = handler;
-            return this;
+                            saveMode));
         }
         
         private void readAnnotations() {
@@ -159,32 +136,6 @@ public final class StoreBox {
             // save option 
             if (cls.isAnnotationPresent(SaveOption.class)) {
                 saveMode(cls.getAnnotation(SaveOption.class).value());
-            }
-            
-            // preferences version
-            if (cls.isAnnotationPresent(PreferencesVersion.class)) {
-                final PreferencesVersion annotation =
-                        cls.getAnnotation(PreferencesVersion.class);
-                
-                try {
-                    preferencesVersion(
-                            annotation.version(),
-                            annotation.handler().newInstance());
-                } catch (InstantiationException e) {
-                    throw new RuntimeException(String.format(
-                            Locale.ENGLISH,
-                            "Failed to instantiate %1$s, perhaps the " +
-                                    "no-arguments constructor is missing?",
-                            annotation.handler().getSimpleName()),
-                            e);
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException(String.format(
-                            Locale.ENGLISH,
-                            "Failed to instantiate %1$s, perhaps the " +
-                                    "no-arguments constructor is not public?",
-                            annotation.handler().getSimpleName()),
-                            e);
-                }
             }
         }
         
@@ -215,15 +166,6 @@ public final class StoreBox {
                             "Cannot use %1$s with an empty file name",
                             PreferencesType.FILE.name()));
                 }
-            }
-            
-            if (!(preferencesVersionHandler instanceof DefaultPreferencesVersionHandler)
-                    && preferencesVersion < 1) {
-                
-                throw new IllegalArgumentException(String.format(
-                        Locale.ENGLISH,
-                        "Version in %s cannot be less than 1",
-                        PreferencesVersion.class.getSimpleName()));
             }
         }
     }

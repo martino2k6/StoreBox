@@ -62,15 +62,11 @@ class StoreBoxInvocationHandler implements InvocationHandler {
     private static final Method OBJECT_TOSTRING =
             MethodUtils.getObjectMethod("toString");
     
-    private static final String VERSION_PREFS =
-            "net.orange_box.storebox.versions";
-    
     private final SharedPreferences prefs;
     private final SharedPreferences.Editor editor;
     private final Resources res;
     
     private final SaveMode saveMode;
-    private final PreferencesVersionDetails versionDetails;
     
     private final MethodHandler mChangesHandler;
     
@@ -81,8 +77,7 @@ class StoreBoxInvocationHandler implements InvocationHandler {
             PreferencesType preferencesType,
             String openNameValue,
             PreferencesMode preferencesMode,
-            SaveMode saveMode,
-            PreferencesVersionDetails version) {
+            SaveMode saveMode) {
         
         switch (preferencesType) {
             case ACTIVITY:
@@ -104,9 +99,6 @@ class StoreBoxInvocationHandler implements InvocationHandler {
         res = context.getResources();
         
         this.saveMode = saveMode;
-        this.versionDetails = version;
-        
-        checkAndHandleVersion(context);
         
         mChangesHandler = new ChangeListenerMethodHandler(prefs);
     }
@@ -296,44 +288,6 @@ class StoreBoxInvocationHandler implements InvocationHandler {
         }
         
         return hashCode;
-    }
-    
-    @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
-    private void checkAndHandleVersion(Context context) {
-        final SharedPreferences versionPrefs = context.getSharedPreferences(
-                VERSION_PREFS, Context.MODE_PRIVATE);
-        
-        synchronized (versionPrefs) {
-            final int versionCurrent =
-                    versionPrefs.getInt(versionDetails.getKey(), 0);
-            final int versionNew =
-                    versionDetails.getVersion();
-            
-            if (versionNew != versionCurrent) {
-                if (!prefs.getAll().isEmpty()) {
-                    if (versionNew > versionCurrent) {
-                        versionDetails.getHandler().onUpgrade(
-                                prefs,
-                                editor,
-                                versionCurrent,
-                                versionNew);
-                    } else {
-                        versionDetails.getHandler().onDowngrade(
-                                prefs,
-                                editor,
-                                versionCurrent,
-                                versionNew);
-                    }
-                    
-                    editor.commit();
-                }
-                
-                versionPrefs
-                        .edit()
-                        .putInt(versionDetails.getKey(), versionNew)
-                        .commit();
-            }
-        }
     }
     
     private Object getDefaultValueArg(
