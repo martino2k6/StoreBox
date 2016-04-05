@@ -48,7 +48,7 @@ dependencies {
     compile project(':storebox-lib')
     
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    compile 'com.google.code.gson:gson:2.4'
+    compile 'com.google.code.gson:gson:2.6.2'
     
     androidTestCompile 'com.google.dexmaker:dexmaker:1.2'
     androidTestCompile 'com.google.dexmaker:dexmaker-mockito:1.2'
@@ -57,7 +57,7 @@ dependencies {
 
 // https://github.com/dam5s/android-example-kotlin/issues/1
 buildscript {
-    ext.kotlin_version = '1.0.0'
+    ext.kotlin_version = '1.0.1'
     
     repositories {
         jcenter()
