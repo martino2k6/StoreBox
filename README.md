@@ -1,6 +1,9 @@
 # StoreBox #
 **Android library for streamlining SharedPreferences.**  
-[![Build Status](https://travis-ci.org/martino2k6/StoreBox.svg)](https://travis-ci.org/martino2k6/StoreBox) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/net.orange-box.storebox/storebox-lib/badge.svg)](https://maven-badges.herokuapp.com/maven-central/net.orange-box.storebox/storebox-lib) [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-StoreBox-brightgreen.svg?style=flat)](http://android-arsenal.com/details/1/1737)
+[![Build Status](https://travis-ci.org/martino2k6/StoreBox.svg)](https://travis-ci.org/martino2k6/StoreBox)
+[![Codacy Badge](https://api.codacy.com/project/badge/grade/b86aa22c7a8f48be9b3c3bd254710475)](https://www.codacy.com/app/martino2k6/StoreBox)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/net.orange-box.storebox/storebox-lib/badge.svg)](https://maven-badges.herokuapp.com/maven-central/net.orange-box.storebox/storebox-lib)
+[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-StoreBox-brightgreen.svg?style=flat)](http://android-arsenal.com/details/1/1737)
 
 ##Contents##
 * [Overview](#overview)
