@@ -58,7 +58,7 @@ check.doLast {
 
 // https://github.com/danielemaddaluno/gradle-jcenter-publish
 Properties properties = new Properties()
-File propertiesFile = project.rootProject.file('local.properties')
+File propertiesFile = project.rootProject.file('publishing.properties')
 if (propertiesFile.exists()) {
     properties.load(propertiesFile.newDataInputStream())
 }

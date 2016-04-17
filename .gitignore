@@ -2,6 +2,7 @@
 *.iml
 
 local.properties
+publishing.properties
 
 .gradle
 build/
