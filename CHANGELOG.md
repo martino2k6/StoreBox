@@ -1,4 +1,7 @@
-##1.3.0 (2015-06-21)
+## 1.4.0 (2016-04-17)
+- added clear method annotation #15
+
+## 1.3.0 (2015-06-21)
 - added support for preference change listeners #9
 - added support for double/Double types #10
 

@@ -12,7 +12,7 @@ android {
         minSdkVersion    project.minSdkVersion
         targetSdkVersion project.targetSdkVersion
         
-        versionCode 7
+        versionCode 1
         versionName project.versionName
         
         testInstrumentationRunner 'net.orange_box.storebox.harness.CustomInstrumentationTestRunner'
